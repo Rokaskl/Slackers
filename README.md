@@ -1,3 +1,2 @@
 # Slackers
-# readme failas
-# THE END
+# https://trello.com/b/SkFgwlXA - Trello work list(Contact Rokas)
