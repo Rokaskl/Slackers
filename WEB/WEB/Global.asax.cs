@@ -19,5 +19,10 @@ namespace WEB
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        private void ConnectToDB()
+        {
+
+        }
     }
 }
