@@ -32,6 +32,17 @@ namespace WebApi.Controllers
             _userService = userService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+            TestSeed(20); // Kiek randomu sugeneruoti testavimui
+        }
+
+        public void TestSeed(int n)
+        {
+            string y;
+            for (int i = 0; i < n; i++)
+            {
+                y = i.ToString();
+                Register(new UserDto("Vardas" + y, "Pavarde" + y, "User" + y, "Password" + y));
+            }
         }
 
         [AllowAnonymous]
