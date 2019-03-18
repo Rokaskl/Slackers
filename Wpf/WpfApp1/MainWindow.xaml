@@ -7,6 +7,15 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <RichTextBox HorizontalAlignment="Left" Height="81" Margin="133,149,0,0" VerticalAlignment="Top" Width="298" Name="txtBody">  
+            <FlowDocument>  
+                <Paragraph>  
+                    <Run Text="WPF"/>  
+                </Paragraph>  
+            </FlowDocument>  
+        </RichTextBox>  
+        <Button Content="Register" HorizontalAlignment="Left" Margin="133,253,0,0" VerticalAlignment="Top" Width="298" Height="37" Name="Dildo" Click="btnRegister_Click"/>  
+        <Button Content="Authorize" HorizontalAlignment="Right" Margin="50,300,0,0" VerticalAlignment="Bottom" Width="298" Height="37" x:Name="authorize" Click="btnAuthorize_Click"/>  
+
     </Grid>
 </Window>
