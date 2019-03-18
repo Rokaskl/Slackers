@@ -9,6 +9,9 @@ namespace WebApi.Helpers
 
         public DbSet<User> Users
         { get; set; }
+<<<<<<< HEAD
         public DbSet<Room> Rooms { get; set; }
+=======
+>>>>>>> 050215db5888b4bd489eacf3e31ad7d19694412d
     }
 }
