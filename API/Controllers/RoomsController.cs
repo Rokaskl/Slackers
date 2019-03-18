@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Dtos;
 using WebApi.Entities;
 using WebApi.Helpers;
 
@@ -14,11 +16,12 @@ namespace WebApi.Controllers
     [ApiController]
     public class RoomsController : ControllerBase
     {
-        private readonly DataContext _context;
+        private IMapper _mapper;
+        private I
 
-        public RoomsController(DataContext context)
+        public RoomsController(IMapper mapper)
         {
-            _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Rooms
@@ -74,12 +77,13 @@ namespace WebApi.Controllers
 
         // POST: api/Rooms
         [HttpPost]
-        public async Task<ActionResult<Room>> PostRoom(Room room)
+        public async Task<ActionResult<Room>> PostRoom(RoomDto room)
         {
-            _context.Rooms.Add(room);
+            var roomie = _mapper.Map<Room>(room);
+            _context.Rooms.Add(roomie);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRoom", new { id = room.roomId }, room);
+            return CreatedAtAction("GetRoom", new { id = roomie.roomId }, roomie);
         }
 
         // DELETE: api/Rooms/5

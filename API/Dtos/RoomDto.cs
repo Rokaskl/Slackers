@@ -19,6 +19,11 @@ namespace WebApi.Dtos
             this.roomName = roomName;
             this.users =ids;
         }
+
+        public RoomDto()
+        {
+
+        }
     }
 
 }

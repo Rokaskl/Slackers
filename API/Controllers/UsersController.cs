@@ -24,10 +24,7 @@ namespace WebApi.Controllers
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
-        public UsersController(
-            IUserService userService,
-            IMapper mapper,
-            IOptions<AppSettings> appSettings)
+        public UsersController(IUserService userService,IMapper mapper,IOptions<AppSettings> appSettings)
         {
             _userService = userService;
             _mapper = mapper;

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <UserSecretsId>e22268ee-9855-495d-97df-5ddc3f34cc59</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Migrations\20190309175916_InitialCreate.cs" />
