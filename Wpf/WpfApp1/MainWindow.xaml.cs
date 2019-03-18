@@ -34,13 +34,15 @@ namespace WpfApp1
         }
         private void btnRegister_Click(object sender, RoutedEventArgs e)
         {
-            roomMaker(1,1,"GayClub",new int[]{1,2,3,4,5,6});
-            //register("tadas","Šiknaspardis","suldubulduVabaliukai","gayClub");
+            //roomMaker(1,1,"GayClub",new int[]{1,2,3,4,5,6});
+            register("tadas","Šiknaspardis","suldubulduVabaliukai","gayClub");
         }
         private void btnAuthorize_Click(object sender, RoutedEventArgs e)
         {
             Task<HttpClient> sesion= authenticate("gayClub","suldubulduVabaliukai");
-            
+            //var user = sesion.
+     //       MessageBox.Show();
+
         }
 
         public async void register(string firstName, string lastName, string password,string username)
@@ -52,7 +54,7 @@ namespace WpfApp1
             {
                 var dude = new  UserDto()
                 {
-                    Id = 1,
+                    Id = 699,
                     FirstName = firstName,
                     LastName = lastName,
                     Password = password,
@@ -118,7 +120,11 @@ namespace WpfApp1
             if (response.IsSuccessStatusCode)  
             {  
                 var user = response.Content.ReadAsAsync<User>().Result;
+                
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + user.token);
+                var res = await client.GetAsync("/Users/1");
+                var auhf = res.Content.ReadAsAsync<object>().Result;
+                MessageBox.Show(auhf.ToString());
                 return client;
             }  
             else  
