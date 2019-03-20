@@ -17,11 +17,12 @@ namespace WebApi.Controllers
     public class RoomsController : ControllerBase
     {
         private IMapper _mapper;
-        private I
+        private DataContext _context;
+        //private I
 
-        public RoomsController(IMapper mapper)
+        public RoomsController(DataContext dataContext)
         {
-            _mapper = mapper;
+            _context = dataContext;
         }
 
         // GET: api/Rooms
