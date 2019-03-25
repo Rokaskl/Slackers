@@ -34,12 +34,15 @@ namespace WpfApp1
         }
         private void btnRegister_Click(object sender, RoutedEventArgs e)
         {
-            //roomMaker(1,1,"GayClub",new int[]{1,2,3,4,5,6});
-            register("tadas","Šiknaspardis","suldubulduVabaliukai","gayClub");
+            roomMaker(1,1,"Club",new int[]{1,2,3,4,5,6});
+            //string str = new TextRange(txtBody.Document.ContentStart,txtBody.Document.ContentEnd).Text;
+            
+            //register("tadas","Sisnaspardis","suldubulduVabaliukai","lalala");
+
         }
         private void btnAuthorize_Click(object sender, RoutedEventArgs e)
         {
-            Task<HttpClient> sesion= authenticate("gayClub","suldubulduVabaliukai");
+            Task<HttpClient> sesion= authenticate("lalala","suldubulduVabaliukai");
             //var user = sesion.
      //       MessageBox.Show();
 
@@ -54,7 +57,7 @@ namespace WpfApp1
             {
                 var dude = new  UserDto()
                 {
-                    Id = 699,
+                    Id = 69911,
                     FirstName = firstName,
                     LastName = lastName,
                     Password = password,
@@ -90,7 +93,7 @@ namespace WpfApp1
                     roomName = name,
                     users = users
                 };
-                var response = await client.PostAsJsonAsync("/Rooms", club);
+                var response = await client.PostAsJsonAsync("/Rooms/register", club);
                 if (response.IsSuccessStatusCode)  
                 {  
                     MessageBox.Show("Register Successfully");  
