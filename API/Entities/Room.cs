@@ -12,7 +12,8 @@ namespace WebApi.Entities
         public int roomId { get; set; }
         public int roomAdminId { get; set; }
         public string roomName { get; set; }
-        public byte[] usersByte { get; set; }
+        public string guid {get;set;}
+        public byte[] usersBytes { get; set; }
     }
 }
        

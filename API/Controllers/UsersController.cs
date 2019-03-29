@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using WebApi.Services;
 using WebApi.Dtos;
 using WebApi.Entities;
+using System.Linq;
 
 namespace WebApi.Controllers
 {
@@ -33,7 +34,7 @@ namespace WebApi.Controllers
         }
 
         public void TestSeed(int n)
-        {
+        {           
             string y;
             for (int i = 0; i < n; i++)
             {
@@ -59,18 +60,19 @@ namespace WebApi.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
             // return basic user info (without password) and token to store client side
-            return Ok(new {
+             return Ok(new {
                 Id = user.Id,
                 Username = user.Username,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Rooms = user.rooms,
                 Token = tokenString
             });
         }
@@ -96,23 +98,21 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll()//reiks ištrint arba paliktri kad gražintų tik vardus
         {
             var users =  _userService.GetAll();
             var userDtos = _mapper.Map<IList<UserDto>>(users);
             return Ok(userDtos);
-        }
-
+        }        
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(int id)//save kap viršesnio ^^^
         {
             var user =  _userService.GetById(id);
             var userDto = _mapper.Map<UserDto>(user);
             return Ok(userDto);
         }
-
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]UserDto userDto)
+        public IActionResult Update(int id, [FromBody]UserDto userDto)//gal pakeisti reikės 
         {
             // map dto to entity and set id
             var user = _mapper.Map<User>(userDto);
@@ -131,9 +131,10 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete]
+        public IActionResult Delete()
         {
+            int id = Convert.ToInt32(Request.HttpContext.User.Identity.Name);//pašalina prisijungusį vartotoją
             _userService.Delete(id);
             return Ok();
         }

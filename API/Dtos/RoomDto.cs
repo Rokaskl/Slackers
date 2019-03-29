@@ -10,9 +10,10 @@ namespace WebApi.Dtos
         public int roomId { get; set; }
         public int roomAdminId { get; set; }
         public string roomName { get; set; }
-        public int[] users { get; set; }
+        public string guid {get;set;}
+        public List<int> users { get; set; }    
 
-        public RoomDto(int roomId, int roomAdminId, string roomName,int[] ids)
+        public RoomDto(int roomId, int roomAdminId, string roomName,List<int> ids)
         {
             this.roomId = roomId;
             this.roomAdminId = roomAdminId;
@@ -23,6 +24,21 @@ namespace WebApi.Dtos
         public RoomDto()
         {
 
+        }
+
+        public RoomDto(int roomId, int roomAdminId, string roomName, string guid, List<int> users)
+        {
+            this.roomId = roomId;
+            this.roomAdminId = roomAdminId;
+            this.roomName = roomName;
+            this.guid = guid;
+            this.users = users;
+        }
+
+        public RoomDto(int roomAdminId, string roomName)
+        {
+            this.roomAdminId = roomAdminId;
+            this.roomName = roomName;
         }
     }
 
