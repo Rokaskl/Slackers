@@ -28,6 +28,8 @@ namespace WebApi.Services
 
         public Room Create(Room room,List<int> users)
         {
+            if (_context.Rooms.Any(x => x.roomName == room.roomName))//valiidacijja
+                throw new AppException("Room name \"" + room.roomName + "\" is already taken");
             Guid g;
             g = Guid.NewGuid();
 
@@ -125,6 +127,7 @@ namespace WebApi.Services
             }
             return _rooms;
         }
+        //private helpers
         private byte[] ConvertToBytes(List<int> users)
         {
             if (users==null)
@@ -138,6 +141,7 @@ namespace WebApi.Services
             }
             return _users;
         }
+
         private List<int> ConvertToInts(byte[] users)
         {
             if (users==null)
@@ -151,6 +155,7 @@ namespace WebApi.Services
             }
             return _users;
         }
+
         private Room AddUser(Room room,User user, int id)
         {
             List<int> users = ConvertToInts(room.usersBytes);//rooms users

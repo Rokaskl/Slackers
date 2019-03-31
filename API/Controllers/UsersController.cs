@@ -105,7 +105,7 @@ namespace WebApi.Controllers
             return Ok(userDtos);
         }        
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)//save kap viršesnio ^^^
+        public IActionResult GetById(int id)//same kap viršesnio ^^^
         {
             var user =  _userService.GetById(id);
             var userDto = _mapper.Map<UserDto>(user);

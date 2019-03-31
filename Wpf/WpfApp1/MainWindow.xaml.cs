@@ -28,6 +28,7 @@ namespace WpfApp1
     public partial class MainWindow : Window
     {
         private static Uri uri= new Uri("http://localhost:4000");
+        private HttpClient client = new HttpClient();
         public MainWindow()
         {
             InitializeComponent();
@@ -42,7 +43,7 @@ namespace WpfApp1
         }
         private void btnAuthorize_Click(object sender, RoutedEventArgs e)
         {
-            Task<HttpClient> sesion= authenticate("lalala","suldubulduVabaliukai");
+            Task<HttpClient> sesion= authenticate("User1","Password1");            
             //var user = sesion.
      //       MessageBox.Show();
 
@@ -80,8 +81,7 @@ namespace WpfApp1
             }
         }
         public async void roomMaker(int id,int Aid,string name,int[] users)
-        {
-            HttpClient client = new HttpClient();
+        {            
             client.BaseAddress = uri;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             try
@@ -111,7 +111,7 @@ namespace WpfApp1
         }
         public async Task<HttpClient> authenticate(string username, string password)
         {
-            HttpClient client = new HttpClient();
+            //HttpClient client = new HttpClient();
             client.BaseAddress = uri;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var dude = new UserDto()
