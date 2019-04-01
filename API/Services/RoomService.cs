@@ -9,7 +9,7 @@ namespace WebApi.Services
 {
     public interface IRoomService
     {
-        RoomDto GetById(int id);
+        RoomDto GetById(int id,int requesterId);
         Room Create(Room room,List<int> users);
         void Delete(int id,int requesterId);
         IEnumerable<RoomDto> GetAllRooms();
@@ -64,11 +64,14 @@ namespace WebApi.Services
             _context.SaveChanges();
             return _room;
         }
-        public RoomDto GetById(int id)
+        public RoomDto GetById(int id,int requesterId)
         {
             Room temp = _context.Rooms.Find(id);
             List<int> _users = ConvertToInts(temp.usersBytes);
-
+            if (!_users.Contains(requesterId))
+            {
+                throw new AppException("User do not belong to group");
+            }
             return new RoomDto(temp.roomId,temp.roomAdminId,temp.roomName,_users);
         }
         
@@ -126,7 +129,9 @@ namespace WebApi.Services
                 }
             }
             return _rooms;
-        }
+        }     
+        
+
         //private helpers
         private byte[] ConvertToBytes(List<int> users)
         {

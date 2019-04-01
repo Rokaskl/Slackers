@@ -40,6 +40,11 @@ namespace WebApi.Dtos
             this.roomAdminId = roomAdminId;
             this.roomName = roomName;
         }
+
+        public RoomDto(string roomName)
+        {
+            this.roomName = roomName;
+        }
     }
 
 }

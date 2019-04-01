@@ -38,18 +38,20 @@ namespace WebApi.Controllers
             return Ok(_rooms);
         }
 
-        //// GET: Rooms/5
-        //[HttpGet("{id}")]//žemiau yra kur ima pagal requesterio id>> atskirai useriams be guid ir atskirai adminams su guid
-        //public IActionResult GetRoom(int id)//reiks padaryt kad gražintų tik jei useris tam rūmui priklauso
-        //{
-        //    var room = _roomService.GetById(id);     
-        //    return Ok(room);
-        //}
+        // GET: Rooms/5
+        [HttpGet("{id}")]
+        public IActionResult GetRoom(int id)//reiks padaryt kad gražintų tik jei useris tam rūmui priklauso
+        {
+            int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            var room = _roomService.GetById(id,requesterId);
+            return Ok(room);
+        }
 
         // POST: Rooms/register
         [HttpPost("register")]
         public IActionResult Register([FromBody]RoomDto room)// registruoja rooma, užtenka pateikti admino ID ir roomo vardą
         {//reiks daryti validaciją kad priimtų tik su unikaliais vardais
+            room.roomAdminId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
             var roomie = _mapper.Map<Room>(room);
             try
             {
@@ -62,19 +64,19 @@ namespace WebApi.Controllers
             }
         }
 
-        // GET: Rooms/users_get_rooms
-        [HttpGet("users_get_rooms")]
-        public IActionResult UsersGetRooms(JObject list)//negaliu tiesiog dėti list idk why
+        // GET: Rooms/user_get_rooms
+        [HttpGet("user_get_rooms")]
+        public IActionResult UsersGetRooms(JObject list)
         {
             List<int> rooms = (list.Value<JArray>("rooms")).ToObject<List<int>>();
             string idString = Request.HttpContext.User.Identity.Name;//ima requesterio id
-            var _rooms = _roomService.GetRoomsUsers(rooms,idString);//ima tik tuos rūmus kuriuose jis registruotas
+            var _rooms = _roomService.GetRoomsUsers(rooms,idString);//ima tik tuos roomus kuriuose jis registruotas
             return Ok(_rooms);//gražina roomus su roomId roomAdminId roomName users
         }
 
         // GET: Rooms/admin_get_rooms
         [HttpGet("admin_get_rooms")]
-        public IActionResult AdminGetRooms(JObject list)//negaliu tiesiog dėti list idk why
+        public IActionResult AdminGetRooms(JObject list)
         {
             List<int> rooms = (list.Value<JArray>("rooms")).ToObject<List<int>>();
             string idString = Request.HttpContext.User.Identity.Name;//ima requesterio id
@@ -84,12 +86,14 @@ namespace WebApi.Controllers
 
         // PUT: Rooms/join_group
         [HttpPut("join_group")]
-        public IActionResult JoinGroup(JObject guid)//ima tik sukurtus objektus su get set
+        public IActionResult JoinGroup(JObject guid)
         {
-            string _guid = guid.Value<string>("guid");
-            int id = Convert.ToInt32(Request.HttpContext.User.Identity.Name);//gauna authentifikuoto asmens id, nes taip saugiau
+
             try//
             {
+            string _guid = guid.Value<string>("guid");
+            int id = Convert.ToInt32(Request.HttpContext.User.Identity.Name);//gauna authentifikuoto asmens id, nes taip saugiau
+            
             Room temp = _roomService.JoinGroup(id,_guid);//įrašo į roomo userių šąrašą ir userio roomų sąrašą
                 if (temp == null)
                 {
