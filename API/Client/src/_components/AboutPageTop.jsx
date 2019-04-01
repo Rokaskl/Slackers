@@ -13,15 +13,10 @@ export class AboutPageTop extends React.Component{
 
           <div className="text-white text-center py-5 px-4 my-5">
             <div>
-                <h1>More</h1>
-                <div id="flip">
-                  <div><div>wOrK</div></div>
-                  <div><div>lifeStyle</div></div>
-                  <div><div>Everything</div></div>
-                </div>
-                <h1>WORK!</h1>
-              </div>
-            <button type="button" class="btn btn-light">View project</button>
+                <h1>Start Now!</h1>
+              
+            </div>
+            <button type="button" class="btn btn-light">REGISTER</button>
             </div>
           </div>
         </div>

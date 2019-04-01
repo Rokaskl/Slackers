@@ -1,24 +1,70 @@
 import React from 'react';
-import { Navbar, NavItem, NavDropdown, MenuItem, Nav, Form, FormControl , Button} from 'react-bootstrap';
+import { Navbar, NavItem, NavDropdown, MenuItem, Nav, Form, FormControl , Button, DropdownButton,Image} from 'react-bootstrap';
+import { connect } from 'react-redux';
 
-export class NavigationBar extends React.Component{
+class NavigationBar extends React.Component{
     render() {
+      const { authentication  } = this.props;
+      
         return (
-          <nav class="navbar sticky-top navbar-light bg-light">
+        <dev>
+          <nav className="navbar sticky-top navbar-light bg-light">
               <Navbar.Brand href="#home">Slackers</Navbar.Brand>
                 <Nav className="mr-auto">
-                  <Nav.Link href="./home">Home</Nav.Link>
+                  <Nav.Link href="./">Home</Nav.Link>
                   <Nav.Link href="https://github.com/Rokaskl/Slackers">GIT</Nav.Link>
-                    <Nav.Link href="./about">About</Nav.Link>
+                  <Nav.Link href="./about">About</Nav.Link>
+                  <Nav.Link href="./rooms">Rooms</Nav.Link>
                 </Nav>
-                <Form inline>
-                <button type="button" className="btn btn-outline-primary">Login</button>
-
-                <button type="button" className="btn btn-outline-secondary">Register</button>
-
-                </Form>
+                <ButtonsOrProfile authentication={this.props.authentication}/>
             </nav>
-
+          </dev>
         );
     }
+    
 }
+function mapStateToProps(state) {
+  const { authentication  } = state;
+
+  return {
+      authentication
+  };
+}
+function ButtonsOrProfile(props)
+{
+  
+  if(props.authentication.loggedIn == undefined || props.authentication.loggedIn ==false)
+   {
+        return(
+        <div>
+          
+        <a href="./login" className="btn btn-primary" role="button" aria-pressed="true">Login</a>
+        <a href="./register" className="btn btn-secondary" role="button" aria-pressed="true">Register</a>
+        </div>)
+      }
+      else
+      {
+        var style = {
+          color: 'blue',
+          padding: "5px",
+        };
+    
+        return(
+          <form class="form-inline">
+          Signed in as:  
+          <div style={style}>{'  '}{props.authentication.user.username}</div>  
+          <a className="avatar" href="./profilePage">
+            <Image src=".//..//images/avatar.png"   roundedCircle width={50} height={50}  />
+          </a>
+       </form>
+       )
+
+      }
+    }
+
+
+               
+             
+  
+const connectedNavBar = connect(mapStateToProps)(NavigationBar);
+export { connectedNavBar as NavigationBar };

@@ -8,6 +8,7 @@ export const userActions = {
     logout,
     register,
     getAll,
+    getById,
     delete: _delete
 };
 
@@ -76,6 +77,21 @@ function getAll() {
     function success(users) { return { type: userConstants.GETALL_SUCCESS, users } }
     function failure(error) { return { type: userConstants.GETALL_FAILURE, error } }
 }
+function getById(id){
+    return dispatch => {
+        dispatch(request(id));
+
+        userService.getById(id)
+            .then(
+                user => dispatch(success(user)),
+                error => dispatch(failure(id, error.toString()))
+            );
+    };
+    function request(id) { return { type: userConstants.GETBYID_REQUEST, id } }
+    function success(user) { return { type: userConstants.GETBYID_SUCCESS, user } }
+    function failure(error) { return { type: userConstants.GETBYID_FAILURE, error } }
+}
+
 
 // prefixed function name with underscore because delete is a reserved word in javascript
 function _delete(id) {

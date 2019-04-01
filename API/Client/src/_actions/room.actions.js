@@ -1,0 +1,66 @@
+import { roomConstants } from '../_constants';
+import { roomService } from '../_services';
+import { alertActions } from './';
+
+export const roomActions = {
+    register,
+    getAll,
+    delete: _delete
+};
+
+
+
+function register(room) {
+    return dispatch => {
+        dispatch(request(room));
+
+        roomService.register(room)
+            .then(
+                room => { 
+                    dispatch(success());
+                    dispatch(alertActions.success('Registration successful'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            );
+    };
+
+    function request(room) { return { type: roomConstants.REGISTER_REQUEST, room } }
+    function success(room) { return { type: roomConstants.REGISTER_SUCCESS, room } }
+    function failure(error) { return { type: roomConstants.REGISTER_FAILURE, error } }
+}
+
+function getAll() {
+    return dispatch => {
+        dispatch(request());
+
+        roomService.getAll()
+            .then(
+                rooms => dispatch(success(rooms)),
+                error => dispatch(failure(error.toString()))
+            );
+    };
+
+    function request() { return { type: roomConstants.GETALL_REQUEST } }
+    function success(rooms) { return { type: roomConstants.GETALL_SUCCESS, rooms } }
+    function failure(error) { return { type: roomConstants.GETALL_FAILURE, error } }
+}
+
+// prefixed function name with underscore because delete is a reserved word in javascript
+function _delete(id) {
+    return dispatch => {
+        dispatch(request(id));
+
+        roomService.delete(id)
+            .then(
+                room => dispatch(success(id)),
+                error => dispatch(failure(id, error.toString()))
+            );
+    };
+
+    function request(id) { return { type: roomConstants.DELETE_REQUEST, id } }
+    function success(id) { return { type: roomConstants.DELETE_SUCCESS, id } }
+    function failure(id, error) { return { type: roomConstants.DELETE_FAILURE, id, error } }
+}
