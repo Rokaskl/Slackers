@@ -10,7 +10,7 @@ namespace WebApi.Services
     public interface IUserService
     {
         UserDto Authenticate(string username, string password);
-        IEnumerable<User> GetAll();
+        IEnumerable<UserDto> GetAll();
         User GetById(int id);
         User Create(User user, string password);
         void Update(User user, string password = null);
@@ -47,9 +47,13 @@ namespace WebApi.Services
             return _user;
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<UserDto> GetAll()
         {
-            return _context.Users;
+            List<UserDto> _users = new List<UserDto>();
+            var users = _context.Users;
+            foreach (var user in users) 
+                _users.Add(new UserDto(user.Id,user.FirstName,user.LastName,user.Username,ConvertToInts(user.roomsBytes)));
+            return _users;
         }
 
         public User GetById(int id)

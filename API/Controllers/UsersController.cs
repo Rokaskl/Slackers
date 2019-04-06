@@ -101,8 +101,7 @@ namespace WebApi.Controllers
         public IActionResult GetAll()//reiks ištrint arba paliktri kad gražintų tik vardus
         {
             var users =  _userService.GetAll();
-            var userDtos = _mapper.Map<IList<UserDto>>(users);
-            return Ok(userDtos);
+            return Ok(users);
         }        
         [HttpGet("{id}")]
         public IActionResult GetById(int id)//same kap viršesnio ^^^

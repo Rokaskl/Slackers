@@ -53,7 +53,7 @@ namespace WebApi.Services
             }
             if (room.roomAdminId==id)
             {
-                return null;
+                return room;
             }
             var _room = AddUser(room,user,id);
             if (_room==null)
@@ -70,7 +70,7 @@ namespace WebApi.Services
             List<int> _users = ConvertToInts(temp.usersBytes);
             if (!_users.Contains(requesterId))
             {
-                throw new AppException("User do not belong to group");
+                throw new AppException("User do not belong to room");
             }
             return new RoomDto(temp.roomId,temp.roomAdminId,temp.roomName,_users);
         }
@@ -123,10 +123,7 @@ namespace WebApi.Services
             foreach (var item in rooms)
             {
                 List<int> users = ConvertToInts(item.usersBytes);
-                if (users!=null&&users.Contains(id))
-                {
-                    _rooms.Add(new RoomDto(item.roomId,item.roomAdminId,item.roomName,item.guid,users));
-                }
+                _rooms.Add(new RoomDto(item.roomId,item.roomAdminId,item.roomName,item.guid,users));                
             }
             return _rooms;
         }     

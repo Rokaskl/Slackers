@@ -76,9 +76,8 @@ namespace WebApi.Controllers
 
         // GET: Rooms/admin_get_rooms
         [HttpGet("admin_get_rooms")]
-        public IActionResult AdminGetRooms(JObject list)
+        public IActionResult AdminGetRooms()
         {
-            List<int> rooms = (list.Value<JArray>("rooms")).ToObject<List<int>>();
             string idString = Request.HttpContext.User.Identity.Name;//ima requesterio id
             var _rooms = _roomService.GetRoomsAdmin(idString);//ima tik tuos rūmus kuriuose jis adminas
             return Ok(_rooms);//gražina roomus su roomId roomAdminId roomName guid users
