@@ -10,6 +10,7 @@ import { LoginPage } from '../LoginPage';
 import { RegisterPage } from '../RegisterPage';
 import { AboutPage } from '../AboutPage';
 import { RoomsPage } from '../RoomsPage';
+import { ProfilePage } from '../ProfilePage';
 import { RoomPage } from '../SingleRoomPage';
 import { NavigationBar} from '../_components/NavBar.js';
 import { StickyFooter} from '../_components/Footer.jsx';
@@ -47,6 +48,7 @@ class App extends React.Component {
                                 <Route path="/register" component={RegisterPage} />
                                 <Route path="/about" component={AboutPage} />
                                 <Route path="/room" component={RoomPage} />
+                                <Route path="/profilePage" component={ProfilePage} />
                                 <Route path="/rooms" component={RoomsPage} onEnter={requireAuth} />
                                  
 
