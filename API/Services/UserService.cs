@@ -157,7 +157,7 @@ namespace WebApi.Services
             return true;
         }
         
-        private byte[] ConvertToBytes(List<int> users)
+        private static byte[] ConvertToBytes(List<int> users)
         {
             if (users==null)
             {
@@ -171,7 +171,7 @@ namespace WebApi.Services
             return _users;
         }
         
-        private List<int> ConvertToInts(byte[] users)
+        private static List<int> ConvertToInts(byte[] users)
         {
             if (users==null)
             {

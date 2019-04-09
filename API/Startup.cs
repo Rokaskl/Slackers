@@ -19,6 +19,7 @@ namespace WebApi
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            App.CreateInst();
         }
 
         public IConfiguration Configuration { get; }
@@ -75,7 +76,7 @@ namespace WebApi
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IRoomService,RoomService>();
+            services.AddScoped<IRoomService, RoomService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

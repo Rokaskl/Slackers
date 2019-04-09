@@ -13,6 +13,7 @@ using WebApi.Services;
 using WebApi.Dtos;
 using WebApi.Entities;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace WebApi.Controllers
 {
@@ -23,11 +24,13 @@ namespace WebApi.Controllers
     {
         private IMapper _mapper;
         private IRoomService _roomService;
+        private IUserService _userService;
 
-        public RoomsController(IRoomService roomService,IMapper mapper)
+        public RoomsController(IRoomService roomService,IMapper mapper, IUserService userService)
         {
             _roomService = roomService;
             _mapper = mapper;
+            _userService = userService;
         }
 
         // GET: Rooms
@@ -114,5 +117,88 @@ namespace WebApi.Controllers
             _roomService.Delete(id,requesterId);//tik roomo adminas gali ištrinti roomą
             return Ok();
         }
+
+        [AllowAnonymous]//Pratestuoti
+        [Route("login_group/{RoomId:int}")]
+        public IActionResult LoginToGroup(int RoomId)
+        {
+            //ar RoomId roomas egzistuoja?\
+            if(!(_roomService.GetAllRooms().Any(x => x.roomId == RoomId)))
+            {
+                //throw new AppException("Room with that ID does not exist!");
+                return Content("Room with that ID does not exist!");
+            }
+            //patikrinti ar useris priklauso roomui
+            int UserId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            TempRoom tempRoom;//sukuriamas specialus objektas roomu stebejimui ir valdymui sesijos metu.
+            if (App.Inst.tempRooms.Any(x => x.usersById.Any(y => y.Key == UserId)))//jei useris priklauso jau kazkuriam roomui, reikia jam neleisti prisijungti arba atjungti reiketu pries prijungiant. Kolkas nieko nedarysiu.
+            {
+                //throw new AppException("User is already logged in!");
+                return Content("User is already logged in!");
+            }
+            if (!(tempRoom = App.Inst.tempRooms.Find(x => x.roomId == RoomId))?.usersById.Any(y => y.Key == UserId) ?? true)//tikrina ta rooma, i kuri bando useris jungtis. Tikrinama ar useris ten jau nera prisijunges
+            {
+                if (tempRoom == null)
+                {
+                    tempRoom = new TempRoom(RoomId);
+                    
+                }
+                tempRoom.usersById.Add(UserId, "A");//reikes padaryti kad uzkrautu paskutini userio statusa.
+                App.Inst.tempRooms.Add(tempRoom);
+                //raise room modified event?
+            }
+            else
+            {
+                //throw new AppException("User is already logged into that room!");
+                return Content("User is already logged into that room!");
+            }
+            return Ok();
+        }
+
+        [AllowAnonymous]//Pratestuoti
+        [Route("logout_group/{RoomId:int}")]
+        public IActionResult LogoutFromGroup(int RoomId)
+        {
+            int UserId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            TempRoom tempRoom;
+            if ((tempRoom = App.Inst.tempRooms.Where(x => x.usersById.Keys.Contains(UserId)).FirstOrDefault()) == null)//jei useris priklauso jau kazkuriam roomui, reikia jam neleisti prisijungti arba atjungti reiketu pries prijungiant. Kolkas nieko nedarysiu.
+            {
+                //throw new AppException("User is already logged out!");
+                return Content("User is already logged out!");
+                //return ResponseMessage();
+                //Content()
+            }
+            else
+            {
+                tempRoom.usersById.Remove(UserId);
+                if (tempRoom.usersById.Count == 0)
+                {
+                    App.Inst.tempRooms.Remove(tempRoom);
+                }
+                //raise room modified event?
+            }
+            
+            return Ok();
+        }
+
+        [AllowAnonymous]//Pratestuoti
+        [Route("group/{RoomId:int}")]
+        public IActionResult GroupInfo(int RoomId)
+        {
+            //reikia is db pasiimti visus userius
+            //for (int i = 1; i < 5; i++)
+            //{
+            //    TempRoom t;
+            //    App.Inst.tempRooms.Add(t = new TempRoom(i));
+            //    t.usersById.Add(i + 3 * (i - 1), "A");
+            //    t.usersById.Add((i + 1) + 3 * (i - 1), "A");
+            //    t.usersById.Add((i + 2) + 3 * (i - 1), "A");
+            //}
+            
+            var o = App.Inst.tempRooms.FirstOrDefault(x => x.roomId == RoomId)?.usersById.Select(y => new {key = _userService.GetAll().FirstOrDefault(z => z.Id == y.Key), value = y.Value });
+            return Ok(o);//prideti userio statusa
+        }
+
+
     }
 }
