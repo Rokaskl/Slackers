@@ -5,17 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <RichTextBox HorizontalAlignment="Left" Height="81" Margin="133,149,0,0" VerticalAlignment="Top" Width="298" Name="txtBody">  
-            <FlowDocument>  
-                <Paragraph>  
-                    <Run Text="WPF"/>  
-                </Paragraph>  
-            </FlowDocument>  
-        </RichTextBox>  
-        <Button Content="Register" HorizontalAlignment="Left" Margin="133,253,0,0" VerticalAlignment="Top" Width="298" Height="37" Name="Dildo" Click="btnRegister_Click"/>  
-        <Button Content="Authorize" HorizontalAlignment="Right" Margin="50,300,0,0" VerticalAlignment="Bottom" Width="298" Height="37" x:Name="authorize" Click="btnAuthorize_Click"/>  
-
+        Title="Slackers!" Height="270" Width="523">
+    <Grid Margin="0,0,199,194">
+        <Label Content="Logged in!" HorizontalAlignment="Left" Height="64" Margin="212,98,-81,-117" VerticalAlignment="Top" Width="185"/>
     </Grid>
 </Window>

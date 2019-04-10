@@ -16,9 +16,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Json.Net;
+//using Json.Net;
 using WebApi.Dtos;
 using  Newtonsoft.Json;
+using WpfApp1.Forms;
 
 namespace WpfApp1
 {
@@ -27,10 +28,20 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static Uri uri= new Uri("http://localhost:4000");
-        private HttpClient client = new HttpClient();
+        //private static Uri uri= new Uri("http://localhost:4000");
+        private HttpClient client;
         public MainWindow()
         {
+            Inst.CreateInstance();
+            client = Inst.Utils.HttpClient;
+            LoginForm loginForm = new LoginForm();
+            if(!(loginForm.ShowDialog() ?? false))
+            {
+                //Application.Exit
+                //Environment.Exit
+                this.Close();
+                return;
+            }
             InitializeComponent();
         }
         private void btnRegister_Click(object sender, RoutedEventArgs e)
@@ -51,9 +62,9 @@ namespace WpfApp1
 
         public async void register(string firstName, string lastName, string password,string username)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = uri;
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //HttpClient client = new HttpClient();
+            //client.BaseAddress = uri;
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             try
             {
                 var dude = new  UserDto()
@@ -82,8 +93,8 @@ namespace WpfApp1
         }
         public async void roomMaker(int id,int Aid,string name,int[] users)
         {            
-            client.BaseAddress = uri;
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //client.BaseAddress = uri;
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             try
             {
                 var club = new  RoomDto()
@@ -109,11 +120,13 @@ namespace WpfApp1
                 Console.WriteLine(ex.ToString());
             }
         }
+
+        //nenaudojamas
         public async Task<HttpClient> authenticate(string username, string password)
         {
             //HttpClient client = new HttpClient();
-            client.BaseAddress = uri;
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //client.BaseAddress = uri;
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var dude = new UserDto()
             {
                 Username = username,
@@ -136,13 +149,21 @@ namespace WpfApp1
             }
             return null;
         }
-        public class User
-        {
-            public string id { get; set; }
-            public  string username { get; set; }
-            public  string firstName { get; set; }
-            public string lastName { get; set; }
-            public  string token { get; set; }
-        }
+
+        //public class User
+        //{
+        //    public string id { get; set; }
+        //    public  string username { get; set; }
+        //    public  string firstName { get; set; }
+        //    public string lastName { get; set; }
+        //    public  string token { get; set; }
+        //}
+
+        //private void BtnLogin_Click(object sender, RoutedEventArgs e)
+        //{
+        //    this.Close();
+        //}
+
+
     }
 }
