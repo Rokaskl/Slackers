@@ -5,13 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1.Forms"
         mc:Ignorable="d"
-        Title="LoginForm" Height="200" Width="300">
-    <Grid x:Name="LoginGrid" Margin="0,0,0,0">
-        <Label x:Name="label1" Content="Username" HorizontalAlignment="Left" Margin="53,38,0,0" VerticalAlignment="Top" Height="28" Width="67"/>
-        <Label x:Name="label2" Content="Password" HorizontalAlignment="Left" Margin="53,71,0,0" VerticalAlignment="Top" Height="28" Width="67"/>
-        <TextBox x:Name="txt1" HorizontalAlignment="Left" Height="23" Margin="152,42,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="txt2" HorizontalAlignment="Left" Height="23" Margin="152,76,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <Button Content="Login!" HorizontalAlignment="Left" Margin="112,122,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-
-    </Grid>
+        Title="LoginForm" Height="319" Width="300">
+    <StackPanel Margin="20">
+        <Label Content="Slackers" Foreground="Black" FontSize="25" HorizontalAlignment="Center"/>
+        <Label Content="Username"/>
+        <TextBox Name="Username"/>
+        <Label Content="Password"/>
+        <PasswordBox Name="Password"/>
+        <Button Name="btnLogin" Content="Login" Margin="60 10" Click="btnLogin_Click"/>
+        <TextBlock>
+            <Hyperlink NavigateUri="http://localhost:4000" RequestNavigate="Hyperlink_RequestNavigate">
+                Not registered?
+            </Hyperlink>
+        </TextBlock>
+    </StackPanel>
 </Window>

@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WebApi.Dtos;
+using System.Diagnostics;
+using System.Windows.Navigation;
 
 namespace WpfApp1.Forms
 {
@@ -22,16 +24,23 @@ namespace WpfApp1.Forms
     public partial class LoginForm : Window
     {
         private HttpClient client = Inst.Utils.HttpClient;
+        private static Uri uri = new Uri("http://localhost:4000");
 
         public LoginForm()
         {
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            string nick = txt1.Text;
-            string pw = txt2.Text;
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
+        }
+
+        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            string nick = Username.Text;
+            string pw = Password.Password;
             Task<bool> x = Login();
         }
 
@@ -43,8 +52,8 @@ namespace WpfApp1.Forms
             {
                 var credentials = new UserDto()
                 {
-                    Username = txt1.Text,
-                    Password = txt2.Text
+                    Username = Username.Text,
+                    Password = Password.Password
                 };
                 var response = await client.PostAsJsonAsync("/Users/authenticate", credentials);
                 
@@ -60,8 +69,8 @@ namespace WpfApp1.Forms
                 }
                 else
                 {
-                    txt1.Text = string.Empty;
-                    txt2.Text = string.Empty;
+                    Username.Text = string.Empty;
+                    Password.Password = string.Empty;
                     MessageBox.Show("Register Failed...");
                     return false;
                 }
