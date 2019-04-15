@@ -47,7 +47,7 @@ class App extends React.Component {
                                 <Route path="/login" component={LoginPage} />
                                 <Route path="/register" component={RegisterPage} />
                                 <Route path="/about" component={AboutPage} />
-                                <Route path="/room" component={RoomPage} />
+                                <Route path= "/room" component={RoomPage} />
                                 <Route path="/profilePage" component={ProfilePage} />
                                 <Route path="/rooms" component={RoomsPage} onEnter={requireAuth} />
                                  

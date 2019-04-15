@@ -32,12 +32,15 @@ class RoomsPage extends React.Component {
                             <div key={room.roomId}>
                                 {RoomCard({room})}
                                 <div className="card-footer">
-                                {
+                                {   
                                     room.deleting ? <em> - Deleting...</em>
                                     : room.deleteError ? <span className="text-danger"> - ERROR: {room.deleteError}</span>
                                     :   <span> 
+                                         <a href="/room" className="btn btn-secondary" role="button" aria-pressed="true">Room Info</a>
                                          <button type="button" className="btn btn-danger" onClick={this.handleDeleteroom(room.roomId)}>Delete</button>
+                                        
                                         </span>
+                                        
                                 }
                                 </div>
                             </div>

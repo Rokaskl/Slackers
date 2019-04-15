@@ -14,16 +14,6 @@ export class ProfilePage extends React.Component {
     render() {
         return (
           <div>
-  {/*  Plugin for Switches, full documentation here: http://www.jque.re/plugins/version3/bootstrap.switch/ */}
-  {/*  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ */}
-  {/*  Plugin for the DatePicker, full documentation here: https://github.com/uxsolutions/bootstrap-datepicker */}
-  {/*  Google Maps Plugin    */}
-  {/* Control Center for Now Ui Kit: parallax effects, scripts for the example pages etc */}
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossOrigin="anonymous" />
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
-  <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" />
-  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="../assets/css/now-ui-kit.css?v=1.2.0" rel="stylesheet" />
 
 
   <div className="wrapper">
@@ -32,7 +22,7 @@ export class ProfilePage extends React.Component {
     </div>
     <div className="container">
       <div className="photo-container">
-        <img src="../assets/img/ryan.jpg" alt />
+        <img src="../images/avatar.png" alt />
       </div>
       <h3 className="title">Ryan Scheinder</h3>
       <p className="category">Photographer</p>

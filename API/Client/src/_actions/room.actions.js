@@ -5,6 +5,7 @@ import { alertActions } from './';
 export const roomActions = {
     register,
     getAll,
+    getById,
     delete: _delete
 };
 
@@ -47,7 +48,20 @@ function getAll() {
     function success(rooms) { return { type: roomConstants.GETALL_SUCCESS, rooms } }
     function failure(error) { return { type: roomConstants.GETALL_FAILURE, error } }
 }
+function getById(id){
+    return dispatch => {
+        dispatch(request(id));
 
+        roomService.getById(id)
+            .then(
+                room => dispatch(success(room)),
+                error => dispatch(failure(id, error.toString()))
+            );
+    };
+    function request(id) { return { type: roomConstants.GETBYID_REQUEST, id } }
+    function success(room) { return { type: roomConstants.GETBYID_SUCCESS, room } }
+    function failure(error) { return { type: roomConstants.GETBYID_FAILURE, error } }
+}
 // prefixed function name with underscore because delete is a reserved word in javascript
 function _delete(id) {
     return dispatch => {

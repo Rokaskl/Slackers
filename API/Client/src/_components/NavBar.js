@@ -8,7 +8,7 @@ class NavigationBar extends React.Component{
       
         return (
         <dev>
-          <nav className="navbar sticky-top navbar-light bg-light">
+          <nav className="navbar sticky-top navbar-dark bg-primary">
               <Navbar.Brand href="#home">Slackers</Navbar.Brand>
                 <Nav className="mr-auto">
                   <Nav.Link href="./">Home</Nav.Link>
