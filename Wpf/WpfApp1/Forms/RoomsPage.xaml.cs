@@ -50,7 +50,7 @@ namespace WpfApp1.Forms
             try
             {
                 var res = await client.GetAsync("Rooms/admin_get_rooms");
-                List<Dictionary<string, string>> adminR = res.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;
+                List<Dictionary<string, object>> adminR = res.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result;
                 adminRooms.ItemsSource = adminR;
 
                 /*var res2 = await client.GetAsync("Rooms/user_get_rooms");

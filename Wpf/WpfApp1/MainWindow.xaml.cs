@@ -18,24 +18,23 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 //using Json.Net;
 using WebApi.Dtos;
-using  Newtonsoft.Json;
+using Newtonsoft.Json;
 using WpfApp1.Forms;
 
 namespace WpfApp1
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainForm.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private static Uri uri= new Uri("http://localhost:4000");
         private HttpClient client;
         public MainWindow()
         {
             Inst.CreateInstance();
             client = Inst.Utils.HttpClient;
             LoginForm loginForm = new LoginForm();
-            if(!(loginForm.ShowDialog() ?? false))
+            if (!(loginForm.ShowDialog() ?? false))
             {
                 //Application.Exit
                 //Environment.Exit
@@ -43,127 +42,18 @@ namespace WpfApp1
                 return;
             }
             InitializeComponent();
+            frame.NavigationService.Navigate(new RoomsPage());
         }
-        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        private void ButtonOpenMenu_Click(object sender, RoutedEventArgs e)
         {
-            roomMaker(1,1,"Club",new int[]{1,2,3,4,5,6});
-            //string str = new TextRange(txtBody.Document.ContentStart,txtBody.Document.ContentEnd).Text;
-            
-            //register("tadas","Sisnaspardis","suldubulduVabaliukai","lalala");
-
+            ButtonOpenMenu.Visibility = Visibility.Collapsed;
+            ButtonCloseMenu.Visibility = Visibility.Visible;
         }
-        private void btnAuthorize_Click(object sender, RoutedEventArgs e)
+
+        private void ButtonCloseMenu_Click(object sender, RoutedEventArgs e)
         {
-            Task<HttpClient> sesion= authenticate("User1","Password1");            
-            //var user = sesion.
-     //       MessageBox.Show();
-
+            ButtonOpenMenu.Visibility = Visibility.Visible;
+            ButtonCloseMenu.Visibility = Visibility.Collapsed;
         }
-
-        public async void register(string firstName, string lastName, string password,string username)
-        {
-            //HttpClient client = new HttpClient();
-            //client.BaseAddress = uri;
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            try
-            {
-                var dude = new  UserDto()
-                {
-                    Id = 69911,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    Password = password,
-                    Username = username
-                };
-                var response = await client.PostAsJsonAsync("/Users/register", dude);
-                if (response.IsSuccessStatusCode)  
-                {  
-                    MessageBox.Show("Register Successfully");  
-                }  
-                else  
-                {  
-                    MessageBox.Show("Register Failed...");  
-                } 
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
-        public async void roomMaker(int id,int Aid,string name,int[] users)
-        {            
-            //client.BaseAddress = uri;
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            try
-            {
-                var club = new  RoomDto()
-                {
-                    roomId = id,
-                    roomAdminId = Aid,
-                    roomName = name,
-                    users = users
-                };
-                var response = await client.PostAsJsonAsync("/Rooms/register", club);
-                if (response.IsSuccessStatusCode)  
-                {  
-                    MessageBox.Show("Register Successfully");  
-                }  
-                else  
-                {  
-                    MessageBox.Show("Register Failed...");  
-                } 
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
-
-        //nenaudojamas
-        public async Task<HttpClient> authenticate(string username, string password)
-        {
-            //HttpClient client = new HttpClient();
-            //client.BaseAddress = uri;
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var dude = new UserDto()
-            {
-                Username = username,
-                Password = password
-            };
-            var response = await client.PostAsJsonAsync("/Users/authenticate",dude);
-            if (response.IsSuccessStatusCode)  
-            {  
-                var user = response.Content.ReadAsAsync<User>().Result;
-                
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + user.token);
-                var res = await client.GetAsync("/Users/1");
-                var auhf = res.Content.ReadAsAsync<object>().Result;
-                MessageBox.Show(auhf.ToString());
-                return client;
-            }  
-            else  
-            {  
-                MessageBox.Show("Login Failed...");  
-            }
-            return null;
-        }
-
-        //public class User
-        //{
-        //    public string id { get; set; }
-        //    public  string username { get; set; }
-        //    public  string firstName { get; set; }
-        //    public string lastName { get; set; }
-        //    public  string token { get; set; }
-        //}
-
-        //private void BtnLogin_Click(object sender, RoutedEventArgs e)
-        //{
-        //    this.Close();
-        //}
-
-
     }
 }
