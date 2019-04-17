@@ -31,7 +31,7 @@
             <BeginStoryboard Storyboard="{StaticResource MenuClose}"/>
         </EventTrigger>
     </Window.Triggers>
-    
+
     <Grid Background="LightGray">
         <Grid Height="60" VerticalAlignment="Top" Background="#FF5C99D6">
             <TextBlock Text="Slackers" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22"/>
@@ -92,5 +92,7 @@
                 </ListView>
             </StackPanel>
         </Grid>
+        <!-- Cia page frame -->
+        <Frame x:Name="frame" Source="/Forms/RoomsPage.xaml" Height="500" Width="1000" HorizontalAlignment="Right" VerticalAlignment="Bottom" NavigationUIVisibility="Hidden" />
     </Grid>
 </Window>
