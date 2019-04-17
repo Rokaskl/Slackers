@@ -22,22 +22,22 @@ export class ProfilePage extends React.Component {
     </div>
     <div className="container">
       <div className="photo-container">
-        <img src="../images/avatar.png" alt />
+      <img src="../images/avatar.png" alt="Circle Image" className="rounded-circle" />
       </div>
-      <h3 className="title">Ryan Scheinder</h3>
-      <p className="category">Photographer</p>
+      <h3 className="title">Rokas Kliucinskas</h3>
+      <p className="category">Full-Stack DEV</p>
       <div className="content">
         <div className="social-description">
-          <h2>26</h2>
-          <p>Comments</p>
+          <h2>2</h2>
+          <p>Rooms Created</p>
         </div>
         <div className="social-description">
-          <h2>26</h2>
-          <p>Comments</p>
+          <h2>7</h2>
+          <p>Rooms user</p>
         </div>
         <div className="social-description">
-          <h2>48</h2>
-          <p>Bookmarks</p>
+          <h2>485</h2>
+          <p>Total work hours</p>
         </div>
       </div>
     </div>
@@ -54,74 +54,9 @@ export class ProfilePage extends React.Component {
         </a>
       </div>
       <h3 className="title">About me</h3>
-      <h5 className="description">An artist of considerable range, Ryan — the name taken by Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and records all of his own music, giving it a warm, intimate feel with a solid groove structure. An artist of considerable range.</h5>
+      <h5 className="description">Full stack developer from Lithuania, Kaunas. </h5>
       <div className="row">
         <div className="col-md-6 ml-auto mr-auto">
-          <h4 className="title text-center">My Portfolio</h4>
-          <div className="nav-align-center">
-            <ul className="nav nav-pills nav-pills-primary nav-pills-just-icons" role="tablist">
-              <li className="nav-item">
-                <a className="nav-link" data-toggle="tab" href="#profile" role="tablist">
-                  <i className="now-ui-icons design_image" />
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link active" data-toggle="tab" href="#home" role="tablist">
-                  <i className="now-ui-icons location_world" />
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" data-toggle="tab" href="#messages" role="tablist">
-                  <i className="now-ui-icons sport_user-run" />
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        {/* Tab panes */}
-        <div className="tab-content gallery">
-          <div className="tab-pane active" id="home" role="tabpanel">
-            <div className="col-md-10 ml-auto mr-auto">
-              <div className="row collections">
-                <div className="col-md-6">
-                  <img src="../assets/img/bg1.jpg" alt className="img-raised" />
-                  <img src="../assets/img/bg3.jpg" alt className="img-raised" />
-                </div>
-                <div className="col-md-6">
-                  <img src="../assets/img/bg8.jpg" alt className="img-raised" />
-                  <img src="../assets/img/bg7.jpg" alt className="img-raised" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="tab-pane" id="profile" role="tabpanel">
-            <div className="col-md-10 ml-auto mr-auto">
-              <div className="row collections">
-                <div className="col-md-6">
-                  <img src="../assets/img/bg6.jpg" className="img-raised" />
-                  <img src="../assets/img/bg11.jpg" alt className="img-raised" />
-                </div>
-                <div className="col-md-6">
-                  <img src="../assets/img/bg7.jpg" alt className="img-raised" />
-                  <img src="../assets/img/bg8.jpg" alt className="img-raised" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="tab-pane" id="messages" role="tabpanel">
-            <div className="col-md-10 ml-auto mr-auto">
-              <div className="row collections">
-                <div className="col-md-6">
-                  <img src="../assets/img/bg3.jpg" alt className="img-raised" />
-                  <img src="../assets/img/bg8.jpg" alt className="img-raised" />
-                </div>
-                <div className="col-md-6">
-                  <img src="../assets/img/bg7.jpg" alt className="img-raised" />
-                  <img src="../assets/img/bg6.jpg" className="img-raised" />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
