@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -22,8 +23,8 @@ namespace WpfApp1
     {
         private HttpClient client;
         private Uri url;
-        private string token;
-        //private User user;
+        //private string token;
+        private User user;
 
         public Utils()
         {
@@ -43,20 +44,41 @@ namespace WpfApp1
             get => url;
         }
 
-        public string Token
+        //public string Token
+        //{
+        //    get => token;
+        //    set
+        //    {
+        //        this.token = value;
+        //        this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value);
+        //    }
+        //}
+
+        public User User
         {
-            get => token;
+            get => user;
             set
             {
-                this.token = value;
-                this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value);
+                user = value;
+                this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value.token);
+                Task.Run(() => Ping());
             }
         }
 
-        //public User User
-        //{
-        //    get => user;
-        //}
+        private async void Ping()
+        {
+            int time = 0;
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            while (true)
+            {
+                if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
+                {
+                    await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
+                    time = (int)stopWatch.Elapsed.TotalSeconds;
+                }
+            }
+        }
     }
 
     public class User

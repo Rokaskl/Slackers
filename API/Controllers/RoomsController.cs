@@ -144,6 +144,9 @@ namespace WebApi.Controllers
                     
                 }
                 tempRoom.usersById.Add(UserId, "A");//reikes padaryti kad uzkrautu paskutini userio statusa.
+                //
+                App.Inst.Add(UserId, RoomId);
+                //
                 App.Inst.tempRooms.Add(tempRoom);
                 //raise room modified event?
             }
@@ -171,6 +174,7 @@ namespace WebApi.Controllers
             else
             {
                 tempRoom.usersById.Remove(UserId);
+                App.Inst.Remove(UserId);
                 if (tempRoom.usersById.Count == 0)
                 {
                     App.Inst.tempRooms.Remove(tempRoom);
@@ -194,7 +198,7 @@ namespace WebApi.Controllers
             //    t.usersById.Add((i + 1) + 3 * (i - 1), "A");
             //    t.usersById.Add((i + 2) + 3 * (i - 1), "A");
             //}
-            
+            //Patikrinti ar useris vis dar roome prisijunges.
             var o = App.Inst.tempRooms.FirstOrDefault(x => x.roomId == RoomId)?.usersById.Select(y => new {key = _userService.GetAll().FirstOrDefault(z => z.Id == y.Key), value = y.Value });
             return Ok(o);//prideti userio statusa
         }

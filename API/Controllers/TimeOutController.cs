@@ -1,0 +1,100 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using System.IdentityModel.Tokens.Jwt;
+using WebApi.Helpers;
+using Microsoft.Extensions.Options;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using WebApi.Services;
+using WebApi.Dtos;
+using WebApi.Entities;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
+
+namespace WebApi.Controllers
+{
+    [Route("[controller]")]
+    [ApiController]
+    [Authorize]
+    public class TimeOutController : ControllerBase
+    {
+        public TimeOutController()
+        {
+
+        }
+
+        //jei useris nepabumpinamas 30sec, jis atjungiamas.
+        [Route("ping/{id:int}")]
+        public IActionResult Ping(int id)
+        {
+            UserInfo user = App.Inst.users.FirstOrDefault(x => x.id == id);
+            if (user == null)
+            {
+                return Content("You got kicked!");
+            }
+            user.time = 0;
+            return Ok();
+        }
+
+    }
+
+    public class TimeOutControl
+    {
+        public TimeOutControl() { }
+
+        public void Start()
+        {
+            Task.Run(() => Checker());
+        }
+
+        public void Checker()
+        {
+            int time = 0;
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            while (true)
+            {
+                if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
+                {
+                    IncreaseIndex();
+                    CheckForLogOut();
+                    time = (int)stopWatch.Elapsed.TotalSeconds;
+                }
+            }
+        }
+
+        public static void CheckForLogOut()
+        {
+            foreach(var user in App.Inst.users.Where(x => x.time > 2))
+            {
+                App.Inst.tempRooms.FirstOrDefault(x => x.roomId == user.RoomId)?.usersById.Remove(user.id);
+            }
+
+            App.Inst.users.RemoveAll(x => x.time > 2);
+        }
+
+        public static void IncreaseIndex()
+        {
+            App.Inst.users.ForEach(x => 
+            {
+                if (x.time < 0)
+                {
+                    x.time = 1;
+                }
+                else
+                {
+                    x.time++;
+                }
+            });
+        }
+    }
+
+
+}
