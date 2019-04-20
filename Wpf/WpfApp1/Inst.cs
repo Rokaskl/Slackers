@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using WpfApp1.Forms;
 
 namespace WpfApp1
 {
@@ -70,7 +71,11 @@ namespace WpfApp1
             {
                 if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
                 {
-                    await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
+                    var response = await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomsPage());//got kicked
+                    }
                     time = (int)stopWatch.Elapsed.TotalSeconds;
                 }
             }

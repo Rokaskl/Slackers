@@ -32,6 +32,16 @@ namespace WpfApp1.Pages
             InitializeComponent();
             client = Inst.Utils.HttpClient;
             //this.MembersListView.DisplayMemberPath = "username";
+            (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
+            {
+                //Header = "Id",
+                DisplayMemberBinding = new Binding("username")
+            });
+            (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
+            {
+                //Header = "Name",
+                DisplayMemberBinding = new Binding("status")
+            });
             FillMembers();//pirma karta uzkrauna iskarto.
             Task.Run(() => DisplayMembers());//toliau naujina info kas 10secs.
         }
@@ -96,14 +106,18 @@ namespace WpfApp1.Pages
             {
                 if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
                 {
-                    FillMembers();
+                    if (!FillMembers().Result)
+                    {
+                        break;
+                    }
                     time = (int)stopWatch.Elapsed.TotalSeconds;
                 }
             }
         }
 
-        private async void FillMembers()
+        private async Task<bool> FillMembers()
         {
+            bool end = true;
             try
             {
                 var response = await client.GetAsync($"/Rooms/group/{this.room.roomId}");
@@ -113,18 +127,61 @@ namespace WpfApp1.Pages
                     {
                         List<Dictionary<string, string>> respListDict = new List<Dictionary<string, string>>();
                         List<Newtonsoft.Json.Linq.JObject> resp = response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>().Result;
-                        resp.ForEach(x =>
+                        if (resp == null)
                         {
-                            Dictionary<string, string> respDict = new Dictionary<string, string>();
-                            foreach (var key in x.GetValue("key").ToObject<Dictionary<string, string>>())
+                            Inst.Utils.MainWindow.frame.Navigate(new RoomsPage());
+                            end = false;
+                        }
+                        else
+                        {
+                            resp.ForEach(x =>
                             {
-                                respDict.Add(key.Key, key.Value);
-                            }
-                            respDict.Add("status", x.GetValue("value").ToObject<KeyValuePair<string, string>>().Value);
-                            respListDict.Add(respDict);
-                        });
-                        this.MembersListView.ItemsSource = respListDict;
-                        
+                                Dictionary<string, string> respDict = new Dictionary<string, string>();
+                                foreach (var key in x.GetValue("key").ToObject<Dictionary<string, string>>())
+                                {
+                                    respDict.Add(key.Key, key.Value);
+                                }
+                                respDict.Add("status", x.GetValue("value").ToObject<string>());
+                                respListDict.Add(respDict);
+                            });
+                            this.MembersListView.Items.Clear();
+
+                            //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn());
+                            //this.MembersGrid.
+                            //DependencyProperty dp = DependencyProperty.Register("username", typeof(string), typeof(Dictionary<string, string>));
+                            respListDict.ForEach(x =>
+                            {
+                            //Brush b = Brushes.Gray;
+                            string status = string.Empty;
+                                switch (x["status"])
+                                {
+                                    case "A":
+                                        {
+                                        //b = Brushes.Green;
+                                        status = "Active";
+                                            break;
+                                        }
+                                    case "B":
+                                        {
+                                        //b = Brushes.Yellow;
+                                        status = "Away";
+                                            break;
+                                        }
+                                    case "C":
+                                        {
+                                        //b = Brushes.Red;
+                                        status = "Don't disturb!";
+                                            break;
+                                        }
+                                    default: break;
+                                }
+                            //ListViewItem lvi = new ListViewItem() { /*Content = "username",*/ Background = b };
+                            //lvi.SetValue(dp, x);
+                            this.MembersListView.Items.Add(new { username = x["username"], status = status });
+                            });
+                            //this.MembersListView.ItemsSource = respListDict;
+                            //ChangeStatuses(respListDict);
+                        }
                     }));
                     //this.MembersListView
                 }
@@ -138,6 +195,25 @@ namespace WpfApp1.Pages
             {
                 Console.WriteLine(ex.ToString());
             }
+            return end;
+        }
+
+        private void ChangeStatuses(List<Dictionary<string, string>> members)
+        {
+            //this.MembersListView.
+            //nuspalvinti ar kazkaip kitaip pavaizduoti ListView'e statusus useriu.
+            foreach (ListViewItem item in this.MembersListView.Items)
+            {
+                //switch (item)
+                //    {
+                //    case 
+                //}
+                if (true)
+                {
+
+                }
+            }
+            
         }
 
         private void BtnLogoutRoom_Click(object sender, RoutedEventArgs e)
