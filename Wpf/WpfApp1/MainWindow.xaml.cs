@@ -32,6 +32,7 @@ namespace WpfApp1
         public MainWindow()
         {
             Inst.CreateInstance();
+            Inst.Utils.MainWindow = this;
             client = Inst.Utils.HttpClient;
             LoginForm loginForm = new LoginForm();
             if (!(loginForm.ShowDialog() ?? false))

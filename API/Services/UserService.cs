@@ -33,6 +33,10 @@ namespace WebApi.Services
                 return null;
 
             var user = _context.Users.SingleOrDefault(x => x.Username == username);
+            if (user == null)
+            {
+                return null;
+            }
             List<int> rooms = ConvertToInts(user.roomsBytes);
             UserDto _user = new UserDto(user.Id,user.FirstName,user.LastName,user.Username,rooms);
             // check if username exists

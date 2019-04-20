@@ -21,6 +21,7 @@ using WebApi.Dtos;
 using Newtonsoft.Json;
 using WpfApp1.Forms;
 using System.Globalization;
+using WpfApp1.Pages;
 
 namespace WpfApp1.Forms
 {
@@ -35,6 +36,21 @@ namespace WpfApp1.Forms
             client = Inst.Utils.HttpClient;
             ShowRooms();
             InitializeComponent();
+
+            adminRooms.SelectionMode = SelectionMode.Single;
+            adminRooms.SelectionChanged += AdminRooms_SelectionChanged;
+        }
+
+        private void AdminRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //MessageBox.Show((e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString());
+            btnLoginRoom.Content = "Login " + (e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString();
+        }
+
+        
+        private void BtnLoginRoom_Click(object sender, RoutedEventArgs e)
+        {
+            LoginRoom(adminRooms.SelectedItem as Dictionary<string, object>);
         }
 
         private void BtnRegisterRoom_Click(object sender, RoutedEventArgs e)
@@ -80,6 +96,28 @@ namespace WpfApp1.Forms
                 else
                 {
                     MessageBox.Show("Register Failed...");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private async void LoginRoom(Dictionary<string, object> room)
+        {
+            try
+            {
+                var response = await client.GetAsync($"/Rooms/login_group/{room["roomId"]}");
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show($"Joined {room["roomName"]}");
+                    Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
+                }
+                else
+                {
+                    MessageBox.Show("Joining failed...");
                 }
 
             }

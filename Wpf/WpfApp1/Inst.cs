@@ -23,8 +23,8 @@ namespace WpfApp1
     {
         private HttpClient client;
         private Uri url;
-        //private string token;
         private User user;
+        private MainWindow mainWindow;
 
         public Utils()
         {
@@ -44,16 +44,6 @@ namespace WpfApp1
             get => url;
         }
 
-        //public string Token
-        //{
-        //    get => token;
-        //    set
-        //    {
-        //        this.token = value;
-        //        this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value);
-        //    }
-        //}
-
         public User User
         {
             get => user;
@@ -63,6 +53,12 @@ namespace WpfApp1
                 this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value.token);
                 Task.Run(() => Ping());
             }
+        }
+
+        public MainWindow MainWindow
+        {
+            get => mainWindow;
+            set => mainWindow = value;
         }
 
         private async void Ping()

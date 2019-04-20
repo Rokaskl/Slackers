@@ -129,6 +129,9 @@ namespace WebApi.Controllers
                 return Content("Room with that ID does not exist!");
             }
             //patikrinti ar useris priklauso roomui
+            //
+            //
+            //
             int UserId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
             TempRoom tempRoom;//sukuriamas specialus objektas roomu stebejimui ir valdymui sesijos metu.
             if (App.Inst.tempRooms.Any(x => x.usersById.Any(y => y.Key == UserId)))//jei useris priklauso jau kazkuriam roomui, reikia jam neleisti prisijungti arba atjungti reiketu pries prijungiant. Kolkas nieko nedarysiu.
@@ -141,13 +144,13 @@ namespace WebApi.Controllers
                 if (tempRoom == null)
                 {
                     tempRoom = new TempRoom(RoomId);
-                    
+                    App.Inst.tempRooms.Add(tempRoom);
                 }
                 tempRoom.usersById.Add(UserId, "A");//reikes padaryti kad uzkrautu paskutini userio statusa.
                 //
                 App.Inst.Add(UserId, RoomId);
                 //
-                App.Inst.tempRooms.Add(tempRoom);
+                
                 //raise room modified event?
             }
             else
