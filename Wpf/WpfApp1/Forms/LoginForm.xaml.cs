@@ -58,6 +58,7 @@ namespace WpfApp1.Forms
                 {
                     var user = response.Content.ReadAsAsync<User>().Result;
                     Inst.Utils.User = new User() { id = user.id, firstName = user.firstName, lastName = user.lastName, token = user.token, username = user.username };
+                    Inst.Utils.MainWindow.firstNameTextBlock.Text = user.firstName;
                     this.DialogResult = true;
                     this.Close();
                     return true;

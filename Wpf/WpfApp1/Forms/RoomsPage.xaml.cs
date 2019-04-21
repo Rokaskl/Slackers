@@ -57,13 +57,15 @@ namespace WpfApp1.Forms
         private void AdminRooms_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             //MessageBox.Show(((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString());
-            Window info = new Window();
-            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical };
-            panel.Children.Add(new Label() { Content = "Guid" });
-            panel.Children.Add(new TextBox() { Text = ((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString() });
-            info.Content = panel;
-            info.ShowDialog();
-
+            if ((sender as ListView).SelectedItem != null)
+            {
+                Window info = new Window();
+                StackPanel panel = new StackPanel { Orientation = Orientation.Vertical };
+                panel.Children.Add(new Label() { Content = "Guid" });
+                panel.Children.Add(new TextBox() { Text = ((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString() });
+                info.Content = panel;
+                info.ShowDialog();
+            }
         }
 
         private void AdminRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -73,7 +75,10 @@ namespace WpfApp1.Forms
             SelectedRoom = new Dictionary<string, string>();
             foreach (var x in (e.AddedItems[0] as Dictionary<string, object>))
             {
-                SelectedRoom.Add(x.Key, x.Value.ToString());
+                if (x.Value?.ToString() != null)
+                {
+                    SelectedRoom.Add(x.Key, x.Value.ToString());
+                }   
             }
         }
 

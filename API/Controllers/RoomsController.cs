@@ -217,6 +217,20 @@ namespace WebApi.Controllers
             return Ok(o);//prideti userio statusa
         }
 
-
+        [Route("status/{roomId:int}/{status:alpha}")]
+        public IActionResult UserStatusChange(int roomId, string status)
+        {
+            //regex match
+            int UserId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            TempRoom room = App.Inst.tempRooms.Find(x => x.roomId == roomId);
+            if (room != null)
+            {
+                if (room.usersById.Remove(UserId))
+                {
+                    room.usersById.Add(UserId, status);
+                }
+            }
+            return Ok();
+        }
     }
 }

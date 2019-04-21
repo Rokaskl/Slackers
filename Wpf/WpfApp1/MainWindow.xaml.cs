@@ -31,6 +31,7 @@ namespace WpfApp1
         private HttpClient client;
         public MainWindow()
         {
+            InitializeComponent();
             Inst.CreateInstance();
             Inst.Utils.MainWindow = this;
             client = Inst.Utils.HttpClient;
@@ -42,7 +43,7 @@ namespace WpfApp1
                 this.Close();
                 return;
             }
-            InitializeComponent();
+            
             frame.NavigationService.Navigate(new RoomsPage());
         }
         private void ButtonOpenMenu_Click(object sender, RoutedEventArgs e)
