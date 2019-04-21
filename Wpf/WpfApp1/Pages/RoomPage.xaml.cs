@@ -48,10 +48,15 @@ namespace WpfApp1.Pages
 
         private void btnStartStop_Click(object sender, RoutedEventArgs e)
         {
-            if (true)
+            if ((e.OriginalSource as Button).Content == "Start!")
             {
                 StartTimer();
+                //(e.OriginalSource as Button).Content = "Stop!";
+            }
+            else
+            {
                 StopTimer();
+                //(e.OriginalSource as Button).Content = "Start!";
             }
         }
 
@@ -63,16 +68,20 @@ namespace WpfApp1.Pages
                 if (response.IsSuccessStatusCode)
                 {
                     //start timer
+                    //return true;
+                    this.btnStartStop.Content = "Stop!";
                 }
                 else
                 {
                     MessageBox.Show("Something went wrong!");
+                    //return false;
                 }
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                //return false;
             }
         }
 
@@ -84,16 +93,20 @@ namespace WpfApp1.Pages
                 if (response.IsSuccessStatusCode)
                 {
                     //start timer
+                    //return true;
+                    this.btnStartStop.Content = "Start!";
                 }
                 else
                 {
                     MessageBox.Show("Something went wrong!");
+                    //return false;
                 }
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                //return false;
             }
         }
 
@@ -137,9 +150,12 @@ namespace WpfApp1.Pages
                             resp.ForEach(x =>
                             {
                                 Dictionary<string, string> respDict = new Dictionary<string, string>();
-                                foreach (var key in x.GetValue("key").ToObject<Dictionary<string, string>>())
+                                foreach (var key in x.GetValue("key").ToObject<Dictionary<string, object>>())
                                 {
-                                    respDict.Add(key.Key, key.Value);
+                                    if (key.Value?.ToString() != null)
+                                    {
+                                        respDict.Add(key.Key, key.Value.ToString());
+                                    }   
                                 }
                                 respDict.Add("status", x.GetValue("value").ToObject<string>());
                                 respListDict.Add(respDict);
@@ -196,24 +212,6 @@ namespace WpfApp1.Pages
                 Console.WriteLine(ex.ToString());
             }
             return end;
-        }
-
-        private void ChangeStatuses(List<Dictionary<string, string>> members)
-        {
-            //this.MembersListView.
-            //nuspalvinti ar kazkaip kitaip pavaizduoti ListView'e statusus useriu.
-            foreach (ListViewItem item in this.MembersListView.Items)
-            {
-                //switch (item)
-                //    {
-                //    case 
-                //}
-                if (true)
-                {
-
-                }
-            }
-            
         }
 
         private void BtnLogoutRoom_Click(object sender, RoutedEventArgs e)

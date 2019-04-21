@@ -67,14 +67,25 @@ namespace WebApi.Controllers
             }
         }
 
+        //// GET: Rooms/user_get_rooms
+        //[HttpGet("user_get_rooms")]
+        //public IActionResult UsersGetRooms(JObject list)
+        //{
+        //    List<int> rooms = (list.Value<JArray>("rooms")).ToObject<List<int>>();
+        //    string idString = Request.HttpContext.User.Identity.Name;//ima requesterio id
+        //    var _rooms = _roomService.GetRoomsUsers(rooms,idString);//ima tik tuos roomus kuriuose jis registruotas
+        //    return Ok(_rooms);//gražina roomus su roomId roomAdminId roomName users
+        //}
+
         // GET: Rooms/user_get_rooms
         [HttpGet("user_get_rooms")]
-        public IActionResult UsersGetRooms(JObject list)
+        public IActionResult UsersGetRooms()
         {
-            List<int> rooms = (list.Value<JArray>("rooms")).ToObject<List<int>>();
-            string idString = Request.HttpContext.User.Identity.Name;//ima requesterio id
-            var _rooms = _roomService.GetRoomsUsers(rooms,idString);//ima tik tuos roomus kuriuose jis registruotas
-            return Ok(_rooms);//gražina roomus su roomId roomAdminId roomName users
+            
+            string id = Request.HttpContext.User.Identity.Name;
+            //var _rooms = _roomService.GetRoomsUsers(rooms, idString);//ima tik tuos roomus kuriuose jis registruotas
+            var rooms = _roomService.GetAllRooms().Where(x => x.users != null && x.users.Contains(Int32.Parse(id))).Select(y => new { guid = y.guid, roomAdminId = y.roomAdminId, roomId = y.roomId, roomName = y.roomName});
+            return Ok(rooms);
         }
 
         // GET: Rooms/admin_get_rooms

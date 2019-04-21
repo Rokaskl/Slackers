@@ -31,6 +31,8 @@ namespace WpfApp1.Forms
     public partial class RoomsPage : Page
     {
         private HttpClient client;
+        private Dictionary<string, string> SelectedRoom;
+
         public RoomsPage()
         {
             client = Inst.Utils.HttpClient;
@@ -38,19 +40,48 @@ namespace WpfApp1.Forms
             InitializeComponent();
 
             adminRooms.SelectionMode = SelectionMode.Single;
+            userRooms.SelectionMode = SelectionMode.Single;
             adminRooms.SelectionChanged += AdminRooms_SelectionChanged;
+            userRooms.SelectionChanged += UserRooms_SelectionChanged;
+            //adminRooms.MouseDown += AdminRooms_MouseDown;
+            adminRooms.MouseRightButtonUp += AdminRooms_MouseRightButtonUp;
+            //adminRooms.Items.
+        }
+
+        private void UserRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            btnLoginRoom.Content = "Login " + (e.AddedItems[0] as Dictionary<string, string>)["roomName"].ToString();
+            SelectedRoom = (e.AddedItems[0] as Dictionary<string, string>);
+        }
+
+        private void AdminRooms_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            //MessageBox.Show(((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString());
+            Window info = new Window();
+            StackPanel panel = new StackPanel { Orientation = Orientation.Vertical };
+            panel.Children.Add(new Label() { Content = "Guid" });
+            panel.Children.Add(new TextBox() { Text = ((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString() });
+            info.Content = panel;
+            info.ShowDialog();
+
         }
 
         private void AdminRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //MessageBox.Show((e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString());
             btnLoginRoom.Content = "Login " + (e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString();
+            SelectedRoom = new Dictionary<string, string>();
+            foreach (var x in (e.AddedItems[0] as Dictionary<string, object>))
+            {
+                SelectedRoom.Add(x.Key, x.Value.ToString());
+            }
         }
 
         
         private void BtnLoginRoom_Click(object sender, RoutedEventArgs e)
         {
-            LoginRoom(adminRooms.SelectedItem as Dictionary<string, object>);
+            //LoginRoom(adminRooms.SelectedItem as Dictionary<string, object>);
+            LoginRoom();
         }
 
         private void BtnRegisterRoom_Click(object sender, RoutedEventArgs e)
@@ -69,9 +100,9 @@ namespace WpfApp1.Forms
                 List<Dictionary<string, object>> adminR = res.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result;
                 adminRooms.ItemsSource = adminR;
 
-                /*var res2 = await client.GetAsync("Rooms/user_get_rooms");
+                var res2 = await client.GetAsync("Rooms/user_get_rooms");
                 List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;
-                userRooms.ItemsSource = userR;*/
+                userRooms.ItemsSource = userR;
             }
             catch (Exception ex)
             {
@@ -105,8 +136,9 @@ namespace WpfApp1.Forms
             }
         }
 
-        private async void LoginRoom(Dictionary<string, object> room)
+        private async void LoginRoom()
         {
+            Dictionary<string, string> room = SelectedRoom;
             try
             {
                 var response = await client.GetAsync($"/Rooms/login_group/{room["roomId"]}");
@@ -125,6 +157,35 @@ namespace WpfApp1.Forms
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+        private void BtnJoinRoom_Click(object sender, RoutedEventArgs e)
+        {
+            JoinRoom(this.guidText.Text);
+        }
+
+        private async void JoinRoom(string guid)
+        {
+            try
+            {
+                var response = await client.PutAsJsonAsync($"/Rooms/join_group", new { guid = guid });
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show($"successfuly became a member");
+                    //Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
+                    ShowRooms();
+                }
+                else
+                {
+                    MessageBox.Show("Joining failed...");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
         }
     }
 }
