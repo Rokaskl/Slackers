@@ -25,29 +25,28 @@ class RoomsPage extends React.Component {
                 {rooms.loading && <em>Loading rooms...</em>}
                 {rooms.error && <span className="text-danger">ERROR: {rooms.error}</span>}
                 {rooms.items &&
-                        <div className="row">
-                        
-                        <div className="card text-center">
+                   <div >
+                        <div class="card-columns">
                         {rooms.items.map((room, index) =>
                             <div key={room.roomId}>
+                             <div className="card" style={{width: '20rem'}}>
                                 {RoomCard({room})}
-                                <div className="card-footer">
+                            
                                 {   
                                     room.deleting ? <em> - Deleting...</em>
                                     : room.deleteError ? <span className="text-danger"> - ERROR: {room.deleteError}</span>
                                     :   <span> 
                                          <a href="/room" className="btn btn-secondary" role="button" aria-pressed="true">Room Info</a>
-                                         <button type="button" className="btn btn-danger" onClick={this.handleDeleteroom(room.roomId)}>Delete</button>
+                                         <button type="button" className="btn btn-primary" onClick={this.handleDeleteroom(room.roomId)}>Delete</button>
                                         
                                         </span>
-                                        
                                 }
                                 </div>
-                            </div>
+                             </div>
+                            
                         )}
                    </div>
-                  
-                </div>
+                   </div>
         
                 }
 

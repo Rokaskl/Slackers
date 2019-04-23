@@ -45,8 +45,9 @@ function ButtonsOrProfile(props)
       else
       {
         var style = {
-          color: 'blue',
+          color: 'white',
           padding: "5px",
+          fontWeight: "550"
         };
     
         return(

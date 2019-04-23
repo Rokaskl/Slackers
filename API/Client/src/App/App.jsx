@@ -34,9 +34,9 @@ class App extends React.Component {
         
        
         return (
-
-          <div>
+            <div>
             <NavigationBar/>
+            <div className="container-fluid">
                     <div>
                         {alert.message &&
                             <div className={`alert ${alert.type}`}>{alert.message}</div>
@@ -57,9 +57,10 @@ class App extends React.Component {
                     </div>
 
 
+              
+              </div>
               <StickyFooter/>
               </div>
-  
         );
     }
 }
