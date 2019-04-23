@@ -64,20 +64,27 @@ namespace WpfApp1
 
         private async void Ping()
         {
-            int time = 0;
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-            while (true)
+            try
             {
-                if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
+                int time = 0;
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+                while (true)
                 {
-                    var response = await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
-                    if (!response.IsSuccessStatusCode)
+                    if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
                     {
-                        Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomsPage());//got kicked
+                        var response = await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomsPage());//got kicked
+                        }
+                        time = (int)stopWatch.Elapsed.TotalSeconds;
                     }
-                    time = (int)stopWatch.Elapsed.TotalSeconds;
                 }
+            }
+            catch(Exception exception)
+            {
+                return;
             }
         }
     }

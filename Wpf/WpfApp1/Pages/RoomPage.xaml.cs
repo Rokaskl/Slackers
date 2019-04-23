@@ -16,6 +16,7 @@ using System.Net.Http;
 using WebApi.Dtos;
 using WpfApp1.Forms;
 using System.Diagnostics;
+using WpfApp1.TimerControl;
 
 namespace WpfApp1.Pages
 {
@@ -24,14 +25,19 @@ namespace WpfApp1.Pages
     /// </summary>
     public partial class RoomPage : Page
     {
-        HttpClient client;
-        RoomDto room;
+        private HttpClient client;
+        private RoomDto room;
+        private Timer timer;
+
         public RoomPage(RoomDto room)
         {
+            timer = new Timer();
             this.room = room;
-            InitializeComponent();
             client = Inst.Utils.HttpClient;
-            //this.MembersListView.DisplayMemberPath = "username";
+           
+            InitializeComponent();
+            ConfigureTimer();
+
             (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             {
                 //Header = "Id",
@@ -42,13 +48,78 @@ namespace WpfApp1.Pages
                 //Header = "Name",
                 DisplayMemberBinding = new Binding("status")
             });
+            InitCmbStatus();
             FillMembers();//pirma karta uzkrauna iskarto.
             Task.Run(() => DisplayMembers());//toliau naujina info kas 10secs.
         }
 
+        private void InitCmbStatus()
+        {
+            this.cmbStatus.Items.Add("Active");
+            this.cmbStatus.Items.Add("Away");
+            this.cmbStatus.Items.Add("Don't disturb");
+            this.cmbStatus.SelectedItem = "Active";
+            this.cmbStatus.SelectionChanged += CmbStatus_SelectionChanged;
+        }
+
+        private void CmbStatus_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ChangeStatus(e.AddedItems[0].ToString());
+        }
+
+        private async void ChangeStatus(string status)
+        {
+            try
+            {
+                switch (status)
+                {
+                    case "Active":
+                        {
+                            DisplaySelectedStatus(await client.GetAsync($"/Rooms/status/{this.room.roomId}/A"), "Active");
+                            break;
+                        }
+                    case "Away":
+                        {
+                            DisplaySelectedStatus(await client.GetAsync($"/Rooms/status/{this.room.roomId}/B"), "Away");
+                            break;
+                        }
+                    case "Don't disturb":
+                        {
+                            DisplaySelectedStatus(await client.GetAsync($"/Rooms/status/{this.room.roomId}/C"), "Don't disturb");
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+                void DisplaySelectedStatus(HttpResponseMessage response, string item)
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        this.cmbStatus.SelectedItem = item;
+                    }
+                } 
+            }
+            catch (Exception exception)
+            {
+
+            }
+        }
+
+        private void ConfigureTimer()
+        {
+            //< Label Content = "Label" HorizontalAlignment = "Left" Margin = "656,330,0,0" VerticalAlignment = "Top" Width = "95" />
+            timer.HorizontalAlignment = HorizontalAlignment.Left;
+            timer.Margin = new Thickness(656, 330, 0, 0);
+            timer.VerticalAlignment = VerticalAlignment.Top;
+            timer.Width = 95;
+            this.pageGrid.Children.Add(timer);
+        }
+
         private void btnStartStop_Click(object sender, RoutedEventArgs e)
         {
-            if ((e.OriginalSource as Button).Content == "Start!")
+            if ((e.OriginalSource as Button).Content.ToString() == "Start!")
             {
                 StartTimer();
                 //(e.OriginalSource as Button).Content = "Stop!";
@@ -64,24 +135,21 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var response = await client.GetAsync($"/TimeTracker/Start/{Inst.Utils.User.id}");
+                var response = await client.GetAsync($"/TimeTracker/mark/{room.roomId}/1");
                 if (response.IsSuccessStatusCode)
                 {
-                    //start timer
-                    //return true;
+                    this.timer.Start();
                     this.btnStartStop.Content = "Stop!";
                 }
                 else
                 {
                     MessageBox.Show("Something went wrong!");
-                    //return false;
                 }
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                //return false;
             }
         }
 
@@ -89,11 +157,10 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var response = await client.GetAsync($"/TimeTracker/Stop/{Inst.Utils.User.id}");
+                var response = await client.GetAsync($"/TimeTracker/mark/{room.roomId}/0");
                 if (response.IsSuccessStatusCode)
                 {
-                    //start timer
-                    //return true;
+                    this.timer.Stop();
                     this.btnStartStop.Content = "Start!";
                 }
                 else

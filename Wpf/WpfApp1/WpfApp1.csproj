@@ -93,6 +93,7 @@
       <DependentUpon>RoomPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="RoomDto.cs" />
+    <Compile Include="TimerControl\Timer.cs" />
     <Compile Include="UserDto.cs" />
     <Page Include="Forms\LoginForm.xaml">
       <SubType>Designer</SubType>

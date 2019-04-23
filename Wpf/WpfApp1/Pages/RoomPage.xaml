@@ -8,7 +8,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="RoomPage">
 
-    <Grid>
+    <Grid Name ="pageGrid">
         <Button x:Name="btnLogoutRoom" Content="Logout" HorizontalAlignment="Left" Margin="676,38,0,0" VerticalAlignment="Top" Width="75" Click="BtnLogoutRoom_Click"/>
         <Button x:Name="btnStartStop" Content="Start!" HorizontalAlignment="Left" Margin="656,374,0,0" VerticalAlignment="Top" Width="95" RenderTransformOrigin="0.336,-0.495" Height="41" Click="btnStartStop_Click"/>
         <ListView x:Name="MembersListView" HorizontalAlignment="Left" Height="377" Margin="36,38,0,0" VerticalAlignment="Top" Width="588">
@@ -19,6 +19,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
+        <ComboBox x:Name="cmbStatus" HorizontalAlignment="Left" Margin="656,114,0,0" VerticalAlignment="Top" Width="120"/>
+        <!--<TextBlock Text="{Binding ElementName=cmbStatus, Path=SelectedItem}"/>-->
     </Grid>
 </Page>

@@ -166,6 +166,10 @@ namespace WpfApp1.Forms
 
         private void BtnJoinRoom_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(this.guidText.Text))
+            {
+                return;
+            }
             JoinRoom(this.guidText.Text);
         }
 

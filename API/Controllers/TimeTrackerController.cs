@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 
 namespace WebApi.Controllers
 {
-    [Route("Tracker")]
+    [Route("[controller]")]
     [ApiController]
     public class TimeTrackerController : ControllerBase
     {
@@ -53,6 +53,27 @@ namespace WebApi.Controllers
             {
                 return Content("Failure!");
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("mark/{roomId:int}/{ac:int}")]
+        //[HttpGet]
+        public IActionResult MarkTime(int roomId, int ac)//0 - Stop; 1 - Start.
+        {
+            int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            if (ac == 1)
+            {
+                //Create new Start mark.
+            }
+            else
+            {
+                if (ac == 0)
+                {
+                    //Create new Stop mark.
+                }
+            }
+
+            return Ok("bs");
         }
     }
 }
