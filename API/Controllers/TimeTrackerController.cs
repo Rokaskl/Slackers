@@ -26,49 +26,87 @@ namespace WebApi.Controllers
         private IMapper _mapper;
         private IRoomService _roomService;
         private IUserService _userService;
+        private ITimeMarkService _timeMarkService;
 
-        public TimeTrackerController(IRoomService roomService, IMapper mapper, IUserService userService)
+        public TimeTrackerController(IRoomService roomService, IMapper mapper, IUserService userService, ITimeMarkService timeMarkService)
         {
             _roomService = roomService;
             _mapper = mapper;
             _userService = userService;
+            _timeMarkService = timeMarkService;
         }
 
         [AllowAnonymous]//Pratestuoti
         [Route("time/{from}/{to}/{RoomId:int}/{UserId:int}")]
         public IActionResult GetTime(string from, string to, int RoomId, int UserId)
         {
-            DateTime dateFrom = DateTime.Parse(from);
-            DateTime dateTo = DateTime.Parse(to);
-            int AdminId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
-            //App.Inst.tempRooms.FirstOrDefault(x => x.roomId == RoomId);
-            if(_roomService.GetAllRooms().FirstOrDefault(x => x.roomId == RoomId).roomAdminId == AdminId)
+            try
             {
-                return Ok(new
+                DateTime dateFrom = DateTime.Parse(from);
+                DateTime dateTo = DateTime.Parse(to);
+                if (dateFrom == dateTo)
                 {
-                    Time = new TimeSpan(5, 20, 30)
-                });
+                    return BadRequest("to - from = 0");
+                }
+                int AdminId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+                TimeSpan[] days = new TimeSpan[dateTo.Subtract(dateFrom).Days + 1];
+                //App.Inst.tempRooms.FirstOrDefault(x => x.roomId == RoomId);
+                if (_roomService.GetAllRooms().FirstOrDefault(x => x.roomId == RoomId)?.roomAdminId == AdminId)
+                {
+                    //atliekami skaiciavimai...
+                    List<TimeMarkDto> info = _timeMarkService.GetAllTimeMarks();
+                    TimeMarkDto[] markArray = info.Where(x => x.RoomId == RoomId && x.UserId == UserId).OrderBy(z => z.Time).ToArray();
+                    for (int i = 0; i < markArray.Length; i+=2)
+                    {
+                        if (!(markArray[i].Time > dateTo && markArray[i + 1].Time < dateFrom))//reikia tikrinti sita pora
+                        {
+                            if (markArray[i].Action == true && markArray[i + 1].Action == false)//si pora gera, t.y. pradzioj start, paskui stop
+                            {
+                                DateTime fromD;
+                                DateTime toD;
+                                if (markArray[i].Time < dateFrom)
+                                {
+                                    //skaiciuoti tos dienos laika nuo dateFrom
+                                    fromD = dateFrom;
+                                }
+                                else
+                                {
+                                    //skaiciuoti tos dienos laika nuo markArray[i].Time
+                                    fromD = markArray[i].Time;
+                                }
+                                if (markArray[i + 1].Time > dateTo)
+                                {
+                                    //skaiciuoti tos dienos laika iki dateTo
+                                    toD = dateTo;
+                                }
+                                else
+                                {
+                                    //skaiciuoti tos dienos laika iki markArray[i + 1].Time
+                                    toD = markArray[i + 1].Time;
+                                }
+                                TimeSpan timeSpan = toD.Subtract(fromD);
+                                days[fromD.Subtract(dateFrom).Days] = days[fromD.Subtract(dateFrom).Days] + timeSpan;
+                            }
+                        }
+                    }
+                }
+
+                return Ok(days);
             }
-            else
+            catch (Exception exception)
             {
-                return Content("Failure!");
+                return BadRequest(exception.Message);
             }
         }
 
         [Route("mark/{roomId:int}/{ac:int}")]
-        public IActionResult MarkTime(int roomId, int ac)//0 - Stop; 1 - Start.
+        public IActionResult MarkTime(int roomId, int ac)//0 - Stop(false); 1 - Start(true).
         {
             int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
-            if (ac == 1)
+            if (ac == 1 || ac == 0)
             {
-                //Create new Start mark.
-            }
-            else
-            {
-                if (ac == 0)
-                {
-                    //Create new Stop mark.
-                }
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now });
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now.AddDays(1) });//for testing purposes
             }
 
             return Ok();

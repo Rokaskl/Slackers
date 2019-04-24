@@ -18,6 +18,11 @@ namespace WebApi
         {
             Inst = new Inst();
         }
+
+        //public static TimeSpan GetTimeOfDay(DateTime day)
+        //{
+
+        //}
         
     }
 

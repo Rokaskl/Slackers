@@ -306,7 +306,10 @@ namespace WpfApp1.Pages
                 var response = await client.GetAsync($"/Rooms/logout_group/{room.roomId}");
                 if (response.IsSuccessStatusCode)
                 {
-                    StopTimer();
+                    if (this.timer.IsRunning)
+                    {
+                        StopTimer();
+                    }
                     Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomsPage());
                 }
                 else

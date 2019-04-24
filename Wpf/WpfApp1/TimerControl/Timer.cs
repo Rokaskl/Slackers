@@ -15,6 +15,7 @@ namespace WpfApp1.TimerControl
         private DispatcherTimer timer;
         private DateTime start;
         private DateTime stop;
+        private bool running;
         //private TimeSpan timeSpan;
        
         public Timer()
@@ -38,11 +39,17 @@ namespace WpfApp1.TimerControl
             get => sw.Elapsed;
         }
 
+        public bool IsRunning
+        {
+            get => running;
+        }
+
         public void Start()
         {
             start = DateTime.Now;
             timer.Start();
             sw.Start();
+            this.running = true;
         }
 
         public void Stop()
@@ -50,6 +57,7 @@ namespace WpfApp1.TimerControl
             stop = DateTime.Now;
             timer.Stop();
             sw.Stop();
+            this.running = false;
         }
 
         public void Reset()
