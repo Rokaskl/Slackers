@@ -159,7 +159,7 @@ namespace WebApi.Controllers
                 }
                 tempRoom.usersById.Add(UserId, "A");//reikes padaryti kad uzkrautu paskutini userio statusa.
                 //
-                App.Inst.Add(UserId, RoomId);
+                //App.Inst.Add(UserId, RoomId);
                 //
                 
                 //raise room modified event?

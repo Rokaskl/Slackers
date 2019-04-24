@@ -37,7 +37,7 @@ namespace WebApi.Controllers
             UserInfo user = App.Inst.users.FirstOrDefault(x => x.id == id);
             if (user == null)
             {
-                return Content("You got kicked!");
+                return Content("not found online");
             }
             user.time = 0;
             return Ok();
@@ -74,7 +74,8 @@ namespace WebApi.Controllers
         {
             foreach(var user in App.Inst.users.Where(x => x.time > 2))
             {
-                App.Inst.tempRooms.FirstOrDefault(x => x.roomId == user.RoomId)?.usersById.Remove(user.id);
+                App.Inst.tempRooms.FirstOrDefault(x => x.usersById.Keys.Contains(user.id))?.usersById.Remove(user.id);
+                //App.Inst.loggedin.Remove(user.id);
             }
 
             App.Inst.users.RemoveAll(x => x.time > 2);

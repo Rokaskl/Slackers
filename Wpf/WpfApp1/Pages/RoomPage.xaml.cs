@@ -17,6 +17,7 @@ using WebApi.Dtos;
 using WpfApp1.Forms;
 using System.Diagnostics;
 using WpfApp1.TimerControl;
+using System.Reflection;
 
 namespace WpfApp1.Pages
 {
@@ -41,12 +42,14 @@ namespace WpfApp1.Pages
             (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             {
                 //Header = "Id",
-                DisplayMemberBinding = new Binding("username")
+                DisplayMemberBinding = new Binding("username"),
+                Width = 100 
             });
             (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             {
                 //Header = "Name",
-                DisplayMemberBinding = new Binding("status")
+                DisplayMemberBinding = new Binding("status"),
+                Width = 100
             });
             InitCmbStatus();
             FillMembers();//pirma karta uzkrauna iskarto.
@@ -98,6 +101,16 @@ namespace WpfApp1.Pages
                     if (response.IsSuccessStatusCode)
                     {
                         this.cmbStatus.SelectedItem = item;
+                        foreach(var x in this.MembersListView.Items)
+                        {
+                            if (x.GetType().GetProperty("username").GetValue(x).ToString() == Inst.Utils.User.username)
+                            {
+                                int index = this.MembersListView.Items.IndexOf(x);
+                                this.MembersListView.Items.Remove(x);
+                                this.MembersListView.Items.Insert(index, new { username = Inst.Utils.User.username, status = item});
+                                break;
+                            }
+                        }
                     }
                 } 
             }

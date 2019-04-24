@@ -55,9 +55,7 @@ namespace WebApi.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpGet("mark/{roomId:int}/{ac:int}")]
-        //[HttpGet]
+        [Route("mark/{roomId:int}/{ac:int}")]
         public IActionResult MarkTime(int roomId, int ac)//0 - Stop; 1 - Start.
         {
             int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
@@ -73,7 +71,7 @@ namespace WebApi.Controllers
                 }
             }
 
-            return Ok("bs");
+            return Ok();
         }
     }
 }

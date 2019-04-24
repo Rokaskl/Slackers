@@ -66,8 +66,11 @@ namespace WebApi.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
+            //prideda sekmingai prisijungusi vartotoja prie serverio loggedin useriu saraso.
+            //App.Inst.loggedin.Add(user.Id);
+            App.Inst.Add(user.Id);
             // return basic user info (without password) and token to store client side
-             return Ok(new {
+            return Ok(new {
                 Id = user.Id,
                 Username = user.Username,
                 FirstName = user.FirstName,

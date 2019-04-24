@@ -37,6 +37,13 @@ namespace WebApi.Services
             {
                 return null;
             }
+
+            //check if user is already logged in.
+            if (App.Inst.users.Any(x => x.id == user.Id))
+            {
+                return null;
+            }
+
             List<int> rooms = ConvertToInts(user.roomsBytes);
             UserDto _user = new UserDto(user.Id,user.FirstName,user.LastName,user.Username,rooms);
             // check if username exists
