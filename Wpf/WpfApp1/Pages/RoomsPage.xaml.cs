@@ -16,7 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-//using Json.Net;
 using WebApi.Dtos;
 using Newtonsoft.Json;
 using WpfApp1.Forms;
@@ -56,7 +55,6 @@ namespace WpfApp1.Forms
 
         private void AdminRooms_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //MessageBox.Show(((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString());
             if ((sender as ListView).SelectedItem != null)
             {
                 Window info = new Window();
@@ -70,7 +68,6 @@ namespace WpfApp1.Forms
 
         private void AdminRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //MessageBox.Show((e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString());
             btnLoginRoom.Content = "Login " + (e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString();
             SelectedRoom = new Dictionary<string, string>();
             foreach (var x in (e.AddedItems[0] as Dictionary<string, object>))
@@ -78,14 +75,13 @@ namespace WpfApp1.Forms
                 if (x.Value?.ToString() != null)
                 {
                     SelectedRoom.Add(x.Key, x.Value.ToString());
-                }   
+                }
             }
         }
 
-        
+
         private void BtnLoginRoom_Click(object sender, RoutedEventArgs e)
         {
-            //LoginRoom(adminRooms.SelectedItem as Dictionary<string, object>);
             LoginRoom();
         }
 
@@ -181,7 +177,6 @@ namespace WpfApp1.Forms
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show($"successfuly became a member");
-                    //Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
                     ShowRooms();
                 }
                 else

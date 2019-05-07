@@ -93,6 +93,6 @@
             </StackPanel>
         </Grid>
         <!-- Cia page frame -->
-        <Frame x:Name="frame" Source="/Forms/RoomsPage.xaml" Height="500" Width="1000" HorizontalAlignment="Right" VerticalAlignment="Bottom" NavigationUIVisibility="Hidden" />
+        <Frame x:Name="frame" Source="/Pages/RoomsPage.xaml" Height="500" Width="1000" HorizontalAlignment="Right" VerticalAlignment="Bottom" NavigationUIVisibility="Hidden" />
     </Grid>
 </Window>
