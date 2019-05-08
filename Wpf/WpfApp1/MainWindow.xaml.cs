@@ -37,14 +37,13 @@ namespace WpfApp1
             LoginForm loginForm = new LoginForm();
             if (!(loginForm.ShowDialog() ?? false))
             {
-                //Application.Exit
-                //Environment.Exit
                 this.Close();
                 return;
             }
             
             frame.NavigationService.Navigate(new RoomsPage());
         }
+
         private void ButtonOpenMenu_Click(object sender, RoutedEventArgs e)
         {
             ButtonOpenMenu.Visibility = Visibility.Collapsed;

@@ -12,7 +12,7 @@
         <TextBox Name="Username"/>
         <Label Content="Password"/>
         <PasswordBox Name="Password"/>
-        <Button Name="btnLogin" Content="Login" Margin="60 10" Click="btnLogin_Click"/>
+        <Button Name="btnLogin" Content="Login" Margin="60 10" Click="btnLogin_Click" IsDefault="True"/>
         <TextBlock>
             <Hyperlink NavigateUri="http://localhost:4000" RequestNavigate="Hyperlink_RequestNavigate">
                 Not registered?

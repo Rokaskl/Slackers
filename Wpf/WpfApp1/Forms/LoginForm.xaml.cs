@@ -75,6 +75,7 @@ namespace WpfApp1.Forms
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return false;
             }
         }

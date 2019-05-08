@@ -116,7 +116,7 @@ namespace WpfApp1.Pages
             }
             catch (Exception exception)
             {
-
+                Console.WriteLine(exception.ToString());
             }
         }
 

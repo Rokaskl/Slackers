@@ -84,6 +84,7 @@ namespace WpfApp1
             }
             catch(Exception exception)
             {
+                Console.WriteLine(exception.ToString());
                 return;
             }
         }

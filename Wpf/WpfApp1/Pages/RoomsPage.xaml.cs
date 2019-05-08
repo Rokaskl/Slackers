@@ -92,15 +92,19 @@ namespace WpfApp1.Forms
             else
                 MessageBox.Show("Theres no room name");
         }
-
+        /// <summary>
+        /// Shows rooms lists
+        /// </summary>
         private async void ShowRooms()
         {
             try
             {
+                //Admin rooms
                 var res = await client.GetAsync("Rooms/admin_get_rooms");
                 List<Dictionary<string, object>> adminR = res.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result;
                 adminRooms.ItemsSource = adminR;
 
+                //User rooms
                 var res2 = await client.GetAsync("Rooms/user_get_rooms");
                 List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;
                 userRooms.ItemsSource = userR;
@@ -110,7 +114,10 @@ namespace WpfApp1.Forms
                 Console.WriteLine(ex.ToString());
             }
         }
-
+        /// <summary>
+        /// Register new room
+        /// </summary>
+        /// <param name="name">room name</param>
         private async void RegisterRoom(String name)
         {
             try
@@ -136,7 +143,9 @@ namespace WpfApp1.Forms
                 Console.WriteLine(ex.ToString());
             }
         }
-
+        /// <summary>
+        /// Logins to room
+        /// </summary>
         private async void LoginRoom()
         {
             Dictionary<string, string> room = SelectedRoom;
@@ -168,7 +177,10 @@ namespace WpfApp1.Forms
             }
             JoinRoom(this.guidText.Text);
         }
-
+        /// <summary>
+        /// Method that makes user to join room
+        /// </summary>
+        /// <param name="guid">room invitation code</param>
         private async void JoinRoom(string guid)
         {
             try
