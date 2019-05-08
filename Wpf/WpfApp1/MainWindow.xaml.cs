@@ -16,7 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-//using Json.Net;
 using WebApi.Dtos;
 using Newtonsoft.Json;
 using WpfApp1.Forms;
@@ -38,8 +37,6 @@ namespace WpfApp1
             LoginForm loginForm = new LoginForm();
             if (!(loginForm.ShowDialog() ?? false))
             {
-                //Application.Exit
-                //Environment.Exit
                 this.Close();
                 return;
             }            
@@ -48,6 +45,5 @@ namespace WpfApp1
            
 
         }
-
     }
 }

@@ -1,5 +1,8 @@
 namespace WebApi.Dtos
 {
+    /// <summary>
+    /// User data class
+    /// </summary>
     public class UserDto
     {
         public int Id { get; set; }

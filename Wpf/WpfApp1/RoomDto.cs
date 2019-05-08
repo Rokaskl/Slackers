@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace WebApi.Dtos
 {
+    /// <summary>
+    /// Room data class
+    /// </summary>
     public class RoomDto
     {
         public int roomId { get; set; }

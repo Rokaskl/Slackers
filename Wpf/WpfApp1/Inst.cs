@@ -77,6 +77,7 @@ namespace WpfApp1
                         if (!response.IsSuccessStatusCode)
                         {
                             Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomsPage());//got kicked
+
                         }
                         time = (int)stopWatch.Elapsed.TotalSeconds;
                     }
@@ -84,6 +85,7 @@ namespace WpfApp1
             }
             catch(Exception exception)
             {
+                Console.WriteLine(exception.ToString());
                 return;
             }
         }

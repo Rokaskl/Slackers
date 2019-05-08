@@ -85,7 +85,6 @@ namespace WebApi.Controllers
             string id = Request.HttpContext.User.Identity.Name;
             //var _rooms = _roomService.GetRoomsUsers(rooms, idString);//ima tik tuos roomus kuriuose jis registruotas
             var rooms = _roomService.GetAllRooms().Where(x => x.users != null && x.users.Contains(Int32.Parse(id))).Select(y => new { guid = y.guid, roomAdminId = y.roomAdminId, roomId = y.roomId, roomName = y.roomName});
-            //rooms['guid']=null;
             return Ok(rooms);
         }
 

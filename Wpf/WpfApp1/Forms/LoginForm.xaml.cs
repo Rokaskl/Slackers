@@ -28,6 +28,7 @@ namespace WpfApp1.Forms
         public LoginForm()
         {
             InitializeComponent();
+            Username.Focus();
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -74,6 +75,7 @@ namespace WpfApp1.Forms
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return false;
             }
         }
