@@ -19,7 +19,7 @@ function register(room) {
             .then(
                 room => { 
                     dispatch(success());
-                    dispatch(alertActions.success('Registration successful'));
+                    dispatch(alertActions.success('Room Registration successful'));
                 },
                 error => {
                     dispatch(failure(error.toString()));

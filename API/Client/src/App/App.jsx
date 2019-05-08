@@ -34,8 +34,7 @@ class App extends React.Component {
         
        
         return (
-
-          <div>
+            <div>
             <NavigationBar/>
                     <div>
                         {alert.message &&
@@ -57,9 +56,9 @@ class App extends React.Component {
                     </div>
 
 
+              
               <StickyFooter/>
               </div>
-  
         );
     }
 }
