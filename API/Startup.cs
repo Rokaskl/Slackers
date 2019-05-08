@@ -18,7 +18,7 @@ namespace WebApi
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration;    
             App.CreateInst();
         }
 
@@ -28,9 +28,9 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("test"));
-            //  services.AddDbContext<DataContext>(x => x.UseSqlServer
-            //      (@"Data Source=LAPTOP-H6MI9PRQ\SQLEXPRESS;Initial Catalog=UsersDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
+            //services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("test"));
+              services.AddDbContext<DataContext>(x => x.UseSqlServer
+                  (@"Data Source=DESKTOP-76B2UDM\SERVERIS;Initial Catalog=projektas;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
               services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddAutoMapper();
 
@@ -77,6 +77,7 @@ namespace WebApi
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRoomService, RoomService>();
+            services.AddScoped<ITimeMarkService, TimeMarkService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

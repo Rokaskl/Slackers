@@ -3,10 +3,58 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp1"
+        xmlns:local="clr-namespace:WpfApp1.Forms"
         mc:Ignorable="d"
-        Title="Slackers!" Height="270" Width="523">
-    <Grid Margin="0,0,199,194">
-        <Label Content="Logged in!" HorizontalAlignment="Left" Height="64" Margin="212,98,-81,-117" VerticalAlignment="Top" Width="185"/>
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="MainWindow" Foreground="White">
+
+
+    <Grid Background="LightGray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="600*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="150*" />
+        </Grid.ColumnDefinitions>
+        
+        
+        <Grid Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="#FF5C99D6" Margin="0,0"  MaxWidth="120" MinWidth="120"  >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="600*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="Slackers" HorizontalAlignment="Center" VerticalAlignment="Bottom"  FontSize="22"/>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <TextBlock x:Name="firstNameTextBlock" Text="Firstname" HorizontalAlignment="Center" VerticalAlignment="Top"  FontSize="18" RenderTransformOrigin="0.607,1.044" Height="26" Margin="0,10,0,0"/>
+                <materialDesign:PopupBox Margin="8,8,8,0" HorizontalAlignment="Center" VerticalAlignment="Top" PlacementMode="TopAndAlignLeftEdges" StaysOpen="False" RenderTransformOrigin="0.488,0.115" Width="28">
+                    <StackPanel Width="150">
+                        <Button Content="Account"/>
+                        <Button Content="Settings"/>
+                        <Button Content="Help"/>
+                        <Separator/>
+                        <Button Content="Logout"/>
+                    </StackPanel>
+                </materialDesign:PopupBox>
+            </StackPanel>
+        </Grid>
+        <TabControl Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <!--<TabItem Header="Rooms as user">
+                <Frame x:Name="frame" Source="/Forms/RoomsPage.xaml" HorizontalAlignment="Stretch" VerticalAlignment="Center" NavigationUIVisibility="Hidden" />
+            </TabItem>-->
+            <TabItem Header="As admin">
+                <Frame x:Name="frame2" Source="/Forms/Admin.xaml"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden" />
+            </TabItem>
+            <TabItem Header="User">
+                <Frame x:Name="frame1" Source="/Forms/UserPage.xaml" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden" />
+            </TabItem>
+        </TabControl>
+        <!-- Cia page frame -->
+        
     </Grid>
 </Window>

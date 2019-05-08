@@ -24,7 +24,6 @@ namespace WpfApp1.Forms
     public partial class LoginForm : Window
     {
         private HttpClient client = Inst.Utils.HttpClient;
-        private static Uri uri = new Uri("http://localhost:4000");
 
         public LoginForm()
         {
@@ -46,8 +45,6 @@ namespace WpfApp1.Forms
 
         private async Task<bool> Login()
         {
-            //client.BaseAddress = uri;
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             try
             {
                 var credentials = new UserDto()
@@ -60,9 +57,8 @@ namespace WpfApp1.Forms
                 if (response.IsSuccessStatusCode)
                 {
                     var user = response.Content.ReadAsAsync<User>().Result;
-                    //response.Content.
-                    Inst.Utils.Token = user.token;
-                    //Inst.Utils.Token = response.
+                    Inst.Utils.User = new User() { id = user.id, firstName = user.firstName, lastName = user.lastName, token = user.token, username = user.username };
+                    Inst.Utils.MainWindow.firstNameTextBlock.Text = user.firstName;
                     this.DialogResult = true;
                     this.Close();
                     return true;
@@ -71,7 +67,7 @@ namespace WpfApp1.Forms
                 {
                     Username.Text = string.Empty;
                     Password.Password = string.Empty;
-                    MessageBox.Show("Register Failed...");
+                    MessageBox.Show("Login failed...");
                     return false;
                 }
 
@@ -79,7 +75,6 @@ namespace WpfApp1.Forms
             catch (Exception ex)
             {
                 return false;
-                //Console.WriteLine(ex.ToString());
             }
         }
     }

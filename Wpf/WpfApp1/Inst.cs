@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using WpfApp1.Forms;
 
 namespace WpfApp1
 {
@@ -22,8 +24,8 @@ namespace WpfApp1
     {
         private HttpClient client;
         private Uri url;
-        private string token;
-        //private User user;
+        private User user;
+        private MainWindow mainWindow;
 
         public Utils()
         {
@@ -43,20 +45,48 @@ namespace WpfApp1
             get => url;
         }
 
-        public string Token
+        public User User
         {
-            get => token;
+            get => user;
             set
             {
-                this.token = value;
-                this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value);
+                user = value;
+                this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value.token);
+                Task.Run(() => Ping());
             }
         }
 
-        //public User User
-        //{
-        //    get => user;
-        //}
+        public MainWindow MainWindow
+        {
+            get => mainWindow;
+            set => mainWindow = value;
+        }
+
+        private async void Ping()
+        {
+            try
+            {
+                int time = 0;
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+                while (true)
+                {
+                    if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
+                    {
+                        var response = await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomsPage());//got kicked
+                        }
+                        time = (int)stopWatch.Elapsed.TotalSeconds;
+                    }
+                }
+            }
+            catch(Exception exception)
+            {
+                return;
+            }
+        }
     }
 
     public class User

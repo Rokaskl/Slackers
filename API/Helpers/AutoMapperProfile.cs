@@ -12,6 +12,8 @@ namespace WebApi.Helpers
             CreateMap<UserDto, User>();
             CreateMap<Room, RoomDto>();
             CreateMap<RoomDto, Room>();
+            CreateMap<TimeMark, TimeMarkDto>();
+            CreateMap<TimeMarkDto, TimeMark>();
         }
     }
 }

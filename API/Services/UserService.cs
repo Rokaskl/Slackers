@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,10 @@ namespace WebApi.Services
         IEnumerable<UserDto> GetAll();
         User GetById(int id);
         User Create(User user, string password);
+        List<User> GetList(JObject users);
         void Update(User user, string password = null);
         void Delete(int id);
+
     }
 
     public class UserService : IUserService
@@ -33,6 +36,17 @@ namespace WebApi.Services
                 return null;
 
             var user = _context.Users.SingleOrDefault(x => x.Username == username);
+            if (user == null)
+            {
+                return null;
+            }
+
+            //check if user is already logged in.
+            if (App.Inst.users.Any(x => x.id == user.Id))
+            {
+                return null;
+            }
+
             List<int> rooms = ConvertToInts(user.roomsBytes);
             UserDto _user = new UserDto(user.Id,user.FirstName,user.LastName,user.Username,rooms);
             // check if username exists
@@ -60,7 +74,20 @@ namespace WebApi.Services
         {
             return _context.Users.Find(id);
         }
-
+        public List<User> GetList(JObject users)
+        {
+            List<User> _users = new List<User>();
+            List<int> usersId = (users.Value<JArray>("users")).ToObject<List<int>>();
+            foreach (var item in usersId)
+            {
+                User tempUser = GetById(item);
+                tempUser.PasswordHash=null;
+                tempUser.PasswordSalt=null;
+                tempUser.roomsBytes=null;
+                _users.Add(tempUser);
+            }
+            return _users;
+        }
         public User Create(User user, string password)
         {
             // validation
@@ -184,5 +211,7 @@ namespace WebApi.Services
             }
             return _users;
         }
+
+
     }
 }

@@ -13,6 +13,7 @@ using WebApi.Services;
 using WebApi.Dtos;
 using WebApi.Entities;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace WebApi.Controllers
 {
@@ -30,7 +31,7 @@ namespace WebApi.Controllers
             _userService = userService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
-            TestSeed(20); // Kiek randomu sugeneruoti testavimui
+            //TestSeed(20); // Kiek randomu sugeneruoti testavimui
         }
 
         public void TestSeed(int n)
@@ -66,8 +67,11 @@ namespace WebApi.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
+            //prideda sekmingai prisijungusi vartotoja prie serverio loggedin useriu saraso.
+            //App.Inst.loggedin.Add(user.Id);
+            App.Inst.Add(user.Id);
             // return basic user info (without password) and token to store client side
-             return Ok(new {
+            return Ok(new {
                 Id = user.Id,
                 Username = user.Username,
                 FirstName = user.FirstName,
@@ -109,6 +113,12 @@ namespace WebApi.Controllers
             var user =  _userService.GetById(id);
             var userDto = _mapper.Map<UserDto>(user);
             return Ok(userDto);
+        }                     
+        [HttpPost("get_list")]
+        public IActionResult GetList(JObject users)//same kap viršesnio ^^^
+        {
+            List<User> user =  _userService.GetList(users);
+            return Ok(user);
         }
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]UserDto userDto)//gal pakeisti reikės 
