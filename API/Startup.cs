@@ -28,9 +28,9 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            //services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("test"));
-              services.AddDbContext<DataContext>(x => x.UseSqlServer
-                  (@"Data Source=DESKTOP-76B2UDM\SERVERIS;Initial Catalog=projektas;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
+            services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("test"));
+              //services.AddDbContext<DataContext>(x => x.UseSqlServer
+                //  (@"Data Source=DESKTOP-76B2UDM\SERVERIS;Initial Catalog=projektas;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
               services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddAutoMapper();
 
