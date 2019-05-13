@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <TextBox x:Name="guidText" Grid.Column="0" Grid.Row="0" Margin="0,0,0,35" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <Button x:Name="btnJoinRoom" Grid.Column="1" Grid.Row="0" Content="Join as Member" Width="150" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="BtnJoinRoom_Click" Margin="1,35,0,35" Height="Auto" />
+        <Button x:Name="btnJoinRoom" Grid.Column="1" Grid.Row="0" Content="Join as Member" Width="150" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="BtnJoinRoom_Click" Margin="1,35,0,35" Height="Auto" Background="Chocolate"/>
         <ListView x:Name="userRooms" Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ListView.View>
                 <GridView>
@@ -27,7 +27,7 @@
                     <GridViewColumn>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button x:Name="btnLogin" Content="Login" Margin="0" VerticalAlignment="Center" Tag="{Binding [roomId]}" Click="BtnLoginRoom_Click"/>
+                                <Button x:Name="btnLogin" Content="Login" Margin="0" VerticalAlignment="Center" Tag="{Binding [roomId]}" Click="BtnLoginRoom_Click" Background="Chocolate"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

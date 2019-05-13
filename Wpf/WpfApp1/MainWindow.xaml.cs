@@ -31,6 +31,9 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+            
+            this.MinHeight = 400;
+            this.MinWidth = 800;
             Inst.CreateInstance();
             Inst.Utils.MainWindow = this;
             client = Inst.Utils.HttpClient;

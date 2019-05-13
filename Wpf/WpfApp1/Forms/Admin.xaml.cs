@@ -32,7 +32,7 @@ namespace WpfApp1.Forms
     public partial class Admin : Page
     {
         private HttpClient client;
-        private Dictionary<string, string> SelectedRoom;
+        private RoomDto SelectedRoom;
 
         public Admin()
         {
@@ -49,8 +49,8 @@ namespace WpfApp1.Forms
 
         private void UserRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            btnLoginRoom.Content = "Login " + (e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString();
-            SelectedRoom = (e.AddedItems[0] as Dictionary<string, string>);
+            btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
+            SelectedRoom = (e.AddedItems[0] as RoomDto);
         }
 
         private void AdminRooms_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -66,15 +66,9 @@ namespace WpfApp1.Forms
         private void AdminRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //MessageBox.Show((e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString());
-            btnLoginRoom.Content = "Login " + (e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString();
-            SelectedRoom = new Dictionary<string, string>();
-            foreach (var x in (e.AddedItems[0] as Dictionary<string, object>))
-            {
-                if (x.Value?.ToString() != null)
-                {
-                    SelectedRoom.Add(x.Key, x.Value.ToString());
-                }   
-            }
+            btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
+            SelectedRoom = (e.AddedItems[0] as RoomDto);
+            
         }
 
         
@@ -98,7 +92,7 @@ namespace WpfApp1.Forms
             try
             {
                 var res = await client.GetAsync("Rooms/admin_get_rooms");
-                List<Dictionary<string, object>> adminR = res.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result;
+                List<RoomDto> adminR = res.Content.ReadAsAsync<List<RoomDto>>().Result;
                 adminRooms.ItemsSource = adminR;
             }
             catch (Exception ex)
@@ -135,26 +129,25 @@ namespace WpfApp1.Forms
 
         private async void LoginRoom()
         {
-            Dictionary<string, string> room = SelectedRoom;
-           // try
-            //{
-                var response = await client.GetAsync($"/Rooms/login_group/{room["roomId"]}");
-                int[] array = GetArray(room["users"]);
+            RoomDto room = SelectedRoom;
+            try
+            {
+                var response = await client.GetAsync($"/Rooms/login_group/{room.roomId}");
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show($"Joined {room["roomName"]}");
-                    Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Administraktoring(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString(),users = array }));
+                    MessageBox.Show($"Joined {room.roomName}");
+                    Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Administraktoring(room));
                 }
                 else
                 {
                     MessageBox.Show("Joining failed...");
                 }
 
-            //}
-           // catch (Exception ex)
-    //        {
-      //          Console.WriteLine(ex.ToString());
-      //      }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
         private int[] GetArray(string array)
         {            

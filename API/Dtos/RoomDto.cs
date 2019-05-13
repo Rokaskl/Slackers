@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.Entities;
 
 namespace WebApi.Dtos
 {
@@ -25,7 +26,13 @@ namespace WebApi.Dtos
         {
 
         }
-
+        public RoomDto(Room room)
+        {
+            this.guid=room.guid;
+            this.roomAdminId=room.roomAdminId;
+            this.roomId=room.roomId;
+            this.roomName=room.roomName;
+        }
         public RoomDto(int roomId, int roomAdminId, string roomName, string guid, List<int> users)
         {
             this.roomId = roomId;

@@ -96,12 +96,20 @@ namespace WebApi.Controllers
             var _rooms = _roomService.GetRoomsAdmin(idString);//ima tik tuos rūmus kuriuose jis adminas
             return Ok(_rooms);//gražina roomus su roomId roomAdminId roomName guid users
         }
-
+        // PUT: Rooms/kick_user
+        [HttpPut("kick_user")]
+        public IActionResult KickUser(JObject data)
+        {
+            int roomId = data.Value<int>("roomId");
+            int userToKick = data.Value<int>("userId");
+            int admin = Int32.Parse(Request.HttpContext.User.Identity.Name);
+            _roomService.KickUser(roomId,userToKick,admin);
+            return Ok();
+        }
         // PUT: Rooms/join_group
         [HttpPut("join_group")]
         public IActionResult JoinGroup(JObject guid)
         {
-
             try//
             {
             string _guid = guid.Value<string>("guid");

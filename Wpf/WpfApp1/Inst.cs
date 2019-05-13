@@ -52,7 +52,7 @@ namespace WpfApp1
             {
                 user = value;
                 this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value.token);
-                Task.Run(() => Ping());
+                Task.Run(() => PingR());
             }
         }
 
@@ -64,6 +64,7 @@ namespace WpfApp1
 
         private async void Ping()
         {
+            
             try
             {
                 int time = 0;
@@ -82,6 +83,25 @@ namespace WpfApp1
                         time = (int)stopWatch.Elapsed.TotalSeconds;
                     }
                 }
+            }
+            catch(Exception exception)
+            {
+                Console.WriteLine(exception.ToString());
+                return;
+            }
+        }
+        private async void PingR()
+        {            
+            try
+            {
+                await Task.Delay(10000);
+                var response = await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomsPage());//got kicked
+
+                }
+                PingR();
             }
             catch(Exception exception)
             {

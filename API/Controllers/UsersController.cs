@@ -117,7 +117,10 @@ namespace WebApi.Controllers
         [HttpPost("get_list")]
         public IActionResult GetList(JObject users)//same kap viršesnio ^^^
         {
-            List<User> user =  _userService.GetList(users);
+            List<int> ids = users.Value<JArray>("ids").ToObject<List<int>>();
+            
+            //List<int> IDS= ids.AsParallel().ToList<int>();
+            List<User> user =  _userService.GetList(ids );
             return Ok(user);
         }
         [HttpPut("{id}")]

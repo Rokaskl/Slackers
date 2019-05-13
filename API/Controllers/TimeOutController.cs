@@ -51,7 +51,7 @@ namespace WebApi.Controllers
 
         public void Start()
         {
-            Task.Run(() => Checker());
+            Task.Run(() => CheckerR());
         }
 
         public void Checker()
@@ -69,6 +69,14 @@ namespace WebApi.Controllers
                 }
             }
         }
+        public async void CheckerR()
+        {
+            await Task.Delay(10000);
+            IncreaseIndex();
+            CheckForLogOut();
+            CheckerR();
+        }
+        
 
         public static void CheckForLogOut()
         {

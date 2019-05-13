@@ -16,6 +16,7 @@ namespace WebApi.Services
         Room JoinGroup(int id,string uid);
         List<RoomDto> GetRoomsUsers(List<int> ids,string idString);
         List<RoomDto> GetRoomsAdmin(string idStrings);
+        void KickUser(int roomId,int userId,int roomAdminId);
     }
     public class RoomService : IRoomService
     {
@@ -84,7 +85,19 @@ namespace WebApi.Services
             _context.SaveChanges();
             }
         }
-        
+        public void KickUser(int roomId, int userId,int roomAdminId)
+        {
+            Room room = _context.Rooms.Find(roomId);
+            if (room.roomAdminId!=roomAdminId)
+            {
+                throw new AppException("Not admin of this room");
+            }
+            List<int> temp = ConvertToInts(room.usersBytes);              
+            temp.Remove(userId);
+            room.usersBytes  = ConvertToBytes(temp);
+            _context.Rooms.Update(room);
+            _context.SaveChanges();
+        }
         public IEnumerable<RoomDto> GetAllRooms()
         {
             var rooms = _context.Rooms;

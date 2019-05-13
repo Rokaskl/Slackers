@@ -14,7 +14,7 @@ namespace WebApi.Services
         IEnumerable<UserDto> GetAll();
         User GetById(int id);
         User Create(User user, string password);
-        List<User> GetList(JObject users);
+        List<User> GetList(List<int> users);
         void Update(User user, string password = null);
         void Delete(int id);
 
@@ -74,11 +74,10 @@ namespace WebApi.Services
         {
             return _context.Users.Find(id);
         }
-        public List<User> GetList(JObject users)
+        public List<User> GetList(List<int> users)
         {
             List<User> _users = new List<User>();
-            List<int> usersId = (users.Value<JArray>("users")).ToObject<List<int>>();
-            foreach (var item in usersId)
+            foreach (var item in users)
             {
                 User tempUser = GetById(item);
                 tempUser.PasswordHash=null;
