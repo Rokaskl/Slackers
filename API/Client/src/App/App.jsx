@@ -24,15 +24,8 @@ class App extends React.Component {
             dispatch(alertActions.clear());
         });
     }
-   
-    
-  
-
     render() {
         const { alert, authentication } = this.props;
-        
-        
-       
         return (
             <div>
             <NavigationBar/>
@@ -46,17 +39,12 @@ class App extends React.Component {
                                 <Route path="/login" component={LoginPage} />
                                 <Route path="/register" component={RegisterPage} />
                                 <Route path="/about" component={AboutPage} />
-                                <Route path= "/room" component={RoomPage} />
-                                <Route path="/profilePage" component={ProfilePage} />
                                 <Route path="/rooms" component={RoomsPage} onEnter={requireAuth} />
-                                 
-
+                                <Route path= "/room/:roomId" exact component = {RoomPage} />
+                                <Route path="/profilePage" component={ProfilePage} />
                             </div>
                         </Router>
                     </div>
-
-
-              
               <StickyFooter/>
               </div>
         );

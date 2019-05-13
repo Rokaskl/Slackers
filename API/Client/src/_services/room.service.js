@@ -30,13 +30,13 @@ function getById(id) {
 function register(room) {
     const requestOptions = {
         method: 'POST',
-        headers: authHeader(),
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify(room)
 
        
     };
-    console.log(requestOptions.body)
-    return fetch(`${config.apiUrl}/rooms/register`, requestOptions).then(handleResponse);
+    console.log(requestOptions.body) 
+    return fetch(`${config.apiUrl}/Rooms/register`, requestOptions).then(handleResponse);
 }
 
 
