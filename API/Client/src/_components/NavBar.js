@@ -7,7 +7,7 @@ class NavigationBar extends React.Component{
       const { authentication  } = this.props;
       
         return (
-        <dev>
+        <div>
           <nav className="navbar sticky-top navbar-dark bg-primary">
               <Navbar.Brand href="#home">Slackers</Navbar.Brand>
                 <Nav className="mr-auto">
@@ -18,7 +18,7 @@ class NavigationBar extends React.Component{
                 </Nav>
                 <ButtonsOrProfile authentication={this.props.authentication}/>
             </nav>
-          </dev>
+          </div>
         );
     }
     
@@ -51,7 +51,7 @@ function ButtonsOrProfile(props)
         };
     
         return(
-          <form class="form-inline">
+          <form className="form-inline">
           Signed in as:  
           <div style={style}>{'  '}{props.authentication.user.username}</div>  
           <a className="avatar" href="./profilePage">
