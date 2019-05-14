@@ -58,8 +58,8 @@ namespace WpfApp1.Forms
             //MessageBox.Show(((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString());
             if ((sender as ListView).SelectedItem != null)
             {
-                Clipboard.SetText(((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString());
-                MessageBox.Show(String.Format("Guid copied to clipboard",((sender as ListView).SelectedItem as Dictionary<string, object>)["guid"].ToString()));
+                Clipboard.SetText(((sender as ListView).SelectedItem as RoomDto).guid);
+                MessageBox.Show(String.Format("Guid copied to clipboard",((sender as ListView).SelectedItem as RoomDto).guid));
             }
         }
 
@@ -135,7 +135,7 @@ namespace WpfApp1.Forms
                 var response = await client.GetAsync($"/Rooms/login_group/{room.roomId}");
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show($"Joined {room.roomName}");
+                    //MessageBox.Show($"Joined {room.roomName}");
                     Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Administraktoring(room));
                 }
                 else

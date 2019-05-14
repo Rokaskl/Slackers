@@ -10,15 +10,18 @@
     <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200*"/>
-            <ColumnDefinition Width="200*" />
-
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" />
+            
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100*" />
-            <RowDefinition Height="100*" />
+            <RowDefinition Height="25" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button x:Name="btnLoginToRoom" Grid.Column="0" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click" Background="Chocolate"/>
+        
+        <Label x:Name="GUID" Grid.Column="0" Grid.Row="0" Content=" "/>
+        <Button x:Name="btnLoginToRoom" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click"/>
         <ListView x:Name="stats" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1">
             <ListView.View>
                 <GridView>
@@ -28,7 +31,7 @@
             </ListView.View>
         </ListView>
 
-        <ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="0" Margin="0,0,0,0">
+        <ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Room users"

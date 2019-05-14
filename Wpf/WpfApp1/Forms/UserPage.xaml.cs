@@ -31,7 +31,7 @@ namespace WpfApp1.Forms
     public partial class UserPage : Page
     {
         private HttpClient client;
-        private Dictionary<string, string> SelectedRoom;
+        //private Dictionary<string, string> SelectedRoom;
         public UserPage()
         {         
             client = Inst.Utils.HttpClient;
@@ -78,7 +78,7 @@ namespace WpfApp1.Forms
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show($"Joined {room["roomName"]}");
-                    Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Convert.ToInt32(room["roomId"]), roomName = room["roomName"].ToString() }));
+                    Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Convert.ToInt32(room["roomId"]), roomName = room["roomName"].ToString() },"user"));
                 }
                 else
                 {

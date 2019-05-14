@@ -40,7 +40,7 @@ namespace WpfApp1.Forms
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             string nick = Username.Text;
-            string pw = Password.Password;
+            string pw = Password.Password;//WTH
             Task<bool> x = Login();
         }
 
@@ -58,7 +58,7 @@ namespace WpfApp1.Forms
                 if (response.IsSuccessStatusCode)
                 {
                     var user = response.Content.ReadAsAsync<User>().Result;
-                    Inst.Utils.User = new User() { id = user.id, firstName = user.firstName, lastName = user.lastName, token = user.token, username = user.username };
+                    Inst.Utils.User = new User() { id = user.id, firstName = user.firstName, lastName = user.lastName, token = user.token, username = user.username };//WTF kam, kodėl
                     Inst.Utils.MainWindow.firstNameTextBlock.Text = user.firstName;
                     this.DialogResult = true;
                     this.Close();

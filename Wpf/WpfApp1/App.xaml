@@ -11,6 +11,21 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Indigo.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+            <Style x:Name="StyliukasButtons" TargetType="Button">
+                <Setter Property="Background" Value="#B45F04"></Setter>
+                <Setter Property="Foreground" Value="White"></Setter>                
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="5" Background="#B45F04">
+                            <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>        
+         
     </Application.Resources>
+    
 </Application>

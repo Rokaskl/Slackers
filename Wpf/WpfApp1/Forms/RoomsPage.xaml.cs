@@ -150,7 +150,7 @@ namespace WpfApp1.Forms
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show($"Joined {room["roomName"]}");
-                    Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
+                   // Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
                 }
                 else
                 {

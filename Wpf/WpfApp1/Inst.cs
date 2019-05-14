@@ -63,8 +63,7 @@ namespace WpfApp1
         }
 
         private async void Ping()
-        {
-            
+        {            
             try
             {
                 int time = 0;

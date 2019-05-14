@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:WpfApp1.Forms"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="MainWindow" Foreground="White">
+        Title="MainWindow" Foreground="White"
+        >
+
+
 
 
     <Grid Background="LightGray">
@@ -18,9 +21,9 @@
             <ColumnDefinition Width="120" />
             <ColumnDefinition Width="150*" />
         </Grid.ColumnDefinitions>
-        
-        
-        <Grid Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Chocolate" Margin="0,0"  MaxWidth="120" MinWidth="120"  >
+
+
+        <Grid Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Stretch"  Margin="0,0"  MaxWidth="120" MinWidth="120"  Background="#B45F04">
             <Grid.RowDefinitions>
                 <RowDefinition Height="600*"/>
             </Grid.RowDefinitions>
@@ -38,7 +41,7 @@
                         <Button Content="Settings"/>
                         <Button Content="Help"/>
                         <Separator/>
-                        <Button Content="Logout"/>
+                        <Button Content="Logout" Click="Logout_Click"/>
                     </StackPanel>
                 </materialDesign:PopupBox>
             </StackPanel>
@@ -54,7 +57,6 @@
                 <Frame x:Name="frame1" Source="/Forms/UserPage.xaml" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden" />
             </TabItem>
         </TabControl>
-        <!-- Cia page frame -->
-        
+
     </Grid>
 </Window>

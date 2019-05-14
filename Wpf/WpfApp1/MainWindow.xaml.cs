@@ -44,9 +44,25 @@ namespace WpfApp1
                 return;
             }            
             frame2.NavigationService.Navigate(new Admin());
-            frame1.NavigationService.Navigate(new UserPage());
-           
+            frame1.NavigationService.Navigate(new UserPage());           
 
+        }
+
+        private void Logout_Click(object sender, RoutedEventArgs e)//testuot
+        {         
+            this.Hide();
+            Inst.CreateInstance();
+            Inst.Utils.MainWindow = this;
+            client = Inst.Utils.HttpClient;
+            LoginForm loginForm = new LoginForm();
+            if (!(loginForm.ShowDialog() ?? false))
+            {
+                this.Close();
+                return;
+            }            
+            frame2.NavigationService.Navigate(new Admin());
+            frame1.NavigationService.Navigate(new UserPage());     
+            this.ShowDialog();
         }
     }
 }

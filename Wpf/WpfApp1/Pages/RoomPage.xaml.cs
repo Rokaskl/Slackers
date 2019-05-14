@@ -28,10 +28,12 @@ namespace WpfApp1.Pages
     {
         private HttpClient client;
         private RoomDto room;
+        private string prevWindow;
         private Timer timer;
 
-        public RoomPage(RoomDto room)
+        public RoomPage(RoomDto room,string prev)
         {
+            this.prevWindow = prev;
             timer = new Timer();
             this.room = room;
             client = Inst.Utils.HttpClient;
@@ -311,6 +313,11 @@ namespace WpfApp1.Pages
                     {
                         StopTimer();
                     }
+                    if (prevWindow=="admin")
+                    {                        
+                    Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Admin());
+                    }
+                    else
                     Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new UserPage());
                 }
                 else

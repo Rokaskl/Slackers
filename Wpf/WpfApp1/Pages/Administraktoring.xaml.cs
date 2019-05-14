@@ -31,8 +31,8 @@ namespace WpfApp1.Pages
             this.room = room;
             client = Inst.Utils.HttpClient;
             ListUsers();
-
             InitializeComponent();
+            this.GUID.Content = room.guid;
             this.MinHeight = 400;
             this.MinWidth = 800;
         }
@@ -113,7 +113,7 @@ namespace WpfApp1.Pages
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new RoomPage(room));
+            Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new RoomPage(room,"admin"));
         }
     }
 }
