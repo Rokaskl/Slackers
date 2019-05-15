@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -39,6 +40,11 @@ namespace WpfApp1.Pages
             client = Inst.Utils.HttpClient;
            
             InitializeComponent();
+            this.KeyDown += RoomPage_KeyDown;
+
+            this.NoteListView.SelectionMode = SelectionMode.Single;
+            this.NoteListView.MouseLeftButtonUp += NoteListView_MouseLeftButtonUp;
+
             ConfigureTimer();
 
             (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
@@ -53,9 +59,43 @@ namespace WpfApp1.Pages
                 DisplayMemberBinding = new Binding("status"),
                 Width = 100
             });
+            
             InitCmbStatus();
             FillMembers();//pirma karta uzkrauna iskarto.
+            FillNotes();
             Task.Run(() => DisplayMembers());//toliau naujina info kas 10secs.
+        }
+
+        private void NoteListView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ListViewItem lv = (ListViewItem)NoteListView.ItemContainerGenerator.ContainerFromItem((sender as ListView).SelectedItem);
+            if (lv != null)
+            {
+                if (popuptemp.popup != null)
+                {
+                    popuptemp.popup.IsOpen = false;
+                }
+                popuptemp = PopupEdit((sender as ListView).SelectedItem as Note);
+                popuptemp.popup.IsOpen = true;
+            }
+            
+            
+        }
+
+        private void RoomPage_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F5)//Refresh notes list
+            {
+                FillNotes();
+            }
+            if (e.Key == Key.Delete)
+            {
+                DeleteNote();
+            }
+            if (e.Key == Key.Escape)
+            {
+                PopupsClose();
+            }
         }
 
         private void InitCmbStatus()
@@ -125,7 +165,6 @@ namespace WpfApp1.Pages
 
         private void ConfigureTimer()
         {
-            //< Label Content = "Label" HorizontalAlignment = "Left" Margin = "656,330,0,0" VerticalAlignment = "Top" Width = "95" />
             timer.HorizontalAlignment = HorizontalAlignment.Left;
             timer.Margin = new Thickness(656, 330, 0, 0);
             timer.VerticalAlignment = VerticalAlignment.Top;
@@ -331,6 +370,215 @@ namespace WpfApp1.Pages
                 Console.WriteLine(ex.ToString());
             }
             
+        }
+
+        private async void FillNotes()
+        {
+            PopupsClose();
+
+            try
+            {
+                var response = await client.GetAsync($"/Notes/{room.roomId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    //notelist.ItemsSource = response;
+                    //List<Dictionary<string, string>> info = response.Content.ReadAsAsync<Newtonsoft.Json.Linq.JArray>().Result.ToObject(typeof(List<Dictionary<string, string>>));
+                    List<Note> info = response.Content.ReadAsAsync<List<Note>>().Result;
+                    NoteListView.ItemsSource = info;
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong! Could not update Notes list");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private async void SubmitNote()
+        {
+            if (string.IsNullOrWhiteSpace(popupnew.body.Text))
+            {
+                return;
+            }
+
+            Dictionary<string, string> info = new Dictionary<string, string>() { { "roomId", this.room.roomId.ToString() }, {"message", popupnew.body.Text }, { "header", popupnew.header.Text} };
+            
+
+            try
+            {
+                var response = await client.PostAsJsonAsync<Dictionary<string, string>>($"/Notes/submit", info);
+                if (response.IsSuccessStatusCode)
+                {
+                    FillNotes();
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong! Could not submit Note");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private async void ModifyNote(Note note)
+        {
+            try
+            {
+                var response = await client.PostAsJsonAsync<Note>($"/Notes/modify", note);
+                if (response.IsSuccessStatusCode)
+                {
+                    FillNotes();
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong! Could not submit Note");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private void DeleteNote()
+        {
+            if (this.NoteListView.SelectedItem != null)
+            {
+                Note note = this.NoteListView.SelectedItem as Note;
+                if(MessageBox.Show($"Delete Note (ID:{note.Id}) ?", "Warning!", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
+                {
+                    SubmitDelete(this.room.roomId, note.Id);
+                }
+            }
+            
+        }
+
+        private async void SubmitDelete(int roomId, int noteId)
+        {
+            try
+            {
+                var response = await client.GetAsync($"/Notes/delete/{roomId}/{noteId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    FillNotes();
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong! Could not delete Note");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private void Btn_addnote_Click(object sender, RoutedEventArgs e)
+        {
+            if (popupnew.popup == null)
+            {
+                popupnew = PopupEdit();
+            }
+            popupnew.popup.IsOpen = true;
+        }
+
+        private MyPopup popupnew;
+        private MyPopup popuptemp;
+
+        struct MyPopup
+        {
+            public Note note;
+            public Popup popup;
+            public TextBox header;
+            public TextBox body;
+        };
+
+        private MyPopup PopupEdit(Note note = null)
+        {
+            string pheader = string.Empty;
+            string pmessage = string.Empty;
+
+            if (note != null)
+            {
+                pheader = note.Header;
+                pmessage = note.Message;
+            }
+            
+            Popup popup = new Popup();
+            popup.AllowsTransparency = true;
+            popup.Height = 400;
+            popup.Width = 500;
+            popup.Placement = PlacementMode.Mouse;
+            StackPanel panel = new StackPanel();
+            TextBox textbox = new TextBox();
+            textbox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            textbox.TextWrapping = TextWrapping.Wrap;
+            popup.Child = panel;
+            TextBox header = new TextBox() { Text = string.IsNullOrWhiteSpace(pheader) ? "Header" : pheader, Background = Brushes.Aqua };
+            panel.Children.Add(header);
+            panel.Children.Add(textbox);
+            
+            if (note == null)
+            {
+                Button btnSubmit = new Button() { Content = "Submit" };
+                btnSubmit.Click += (s, e) => {
+                    if (MessageBox.Show("Submit?", "", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Cancel) == MessageBoxResult.Yes)
+                    {
+                        SubmitNote();
+                    }
+                };
+                panel.Children.Add(btnSubmit);
+            }
+            else
+            {
+                Button btnModify = new Button() { Content = "Modify" };
+                btnModify.Click += (s, e) => {
+                    if (MessageBox.Show("Modify?", "", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Cancel) == MessageBoxResult.Yes)
+                    {
+                        note.Header = popuptemp.header.Text;
+                        note.Message = popuptemp.body.Text;
+                        ModifyNote(note);
+                    }
+                };
+                panel.Children.Add(btnModify);
+            }
+
+            textbox.Height = 350;
+            textbox.Width = 500;
+            textbox.Background = Brushes.AliceBlue;
+            textbox.VerticalContentAlignment = VerticalAlignment.Top;
+            textbox.AcceptsReturn = true;
+            textbox.AcceptsTab = true;
+            popup.PopupAnimation = PopupAnimation.Fade;
+            popup.Visibility = System.Windows.Visibility.Visible;
+            popup.KeyDown += Popup_KeyDown;
+            textbox.Text = string.IsNullOrWhiteSpace(pmessage) ? string.Empty : pmessage;
+            return new MyPopup() { popup = popup, body = textbox, header = header, note = note};
+        }
+
+        private void Popup_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                (sender as Popup).IsOpen = false;
+            }
+        }
+
+        private void PopupsClose()
+        {
+            if (popupnew.popup != null)
+                popupnew.popup.IsOpen = false;
+            if (popuptemp.popup != null)
+                popuptemp.popup.IsOpen = false;
         }
     }
 }

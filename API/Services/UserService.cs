@@ -10,7 +10,7 @@ namespace WebApi.Services
 {
     public interface IUserService
     {
-        UserDto Authenticate(string username, string password);
+        UserDto Authenticate(string username, string password, bool web);
         IEnumerable<UserDto> GetAll();
         User GetById(int id);
         User Create(User user, string password);
@@ -30,7 +30,7 @@ namespace WebApi.Services
         }
         
 
-        public UserDto Authenticate(string username, string password)
+        public UserDto Authenticate(string username, string password, bool web = false)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return null;
@@ -42,7 +42,7 @@ namespace WebApi.Services
             }
 
             //check if user is already logged in.
-            if (App.Inst.users.Any(x => x.id == user.Id))
+            if (!web && App.Inst.users.Any(x => x.id == user.Id))
             {
                 return null;
             }

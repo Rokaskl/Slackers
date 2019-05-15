@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using WpfApp1.Forms;
 
 namespace WpfApp1
@@ -117,5 +118,19 @@ namespace WpfApp1
         public string firstName { get; set; }
         public string lastName { get; set; }
         public string token { get; set; }
+    }
+    public class Note
+    {
+        public int Id { get; set; }
+        public int RoomId { get; set; }
+        public int CreatorId { get; set; }
+        public string Message { get; set; }
+        public int Status { get; set; }
+        public string Header { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format($"{Id} - {Header}");
+        }
     }
 }

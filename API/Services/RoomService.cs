@@ -69,9 +69,10 @@ namespace WebApi.Services
         {
             Room temp = _context.Rooms.Find(id);
             List<int> _users = ConvertToInts(temp.usersBytes);
-            if (!_users.Contains(requesterId))
+            if (requesterId != temp.roomAdminId && !_users.Contains(requesterId))
             {
-                throw new AppException("User do not belong to room");
+                //throw new AppException("User do not belong to room");
+                return null;
             }
             return new RoomDto(temp.roomId,temp.roomAdminId,temp.roomName,_users);
         }

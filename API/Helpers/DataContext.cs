@@ -11,5 +11,6 @@ namespace WebApi.Helpers
         { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<TimeMark> TimeMarks { get; set; }
+        public DbSet<Note> Notes { get; set; }
     }
 }

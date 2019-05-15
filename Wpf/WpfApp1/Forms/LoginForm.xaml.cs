@@ -28,7 +28,16 @@ namespace WpfApp1.Forms
         public LoginForm()
         {
             InitializeComponent();
+            this.KeyDown += LoginForm_KeyDown;
             Username.Focus();
+        }
+
+        private void LoginForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                btnLogin.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -37,11 +46,12 @@ namespace WpfApp1.Forms
             e.Handled = true;
         }
 
-        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        private void btnLogin_Click(object sender, RoutedEventArgs e)//suveikia du kartus kartais.
         {
             string nick = Username.Text;
             string pw = Password.Password;//WTH
             Task<bool> x = Login();
+            e.Handled = true;
         }
 
         private async Task<bool> Login()
@@ -53,7 +63,7 @@ namespace WpfApp1.Forms
                     Username = Username.Text,
                     Password = Password.Password
                 };
-                var response = await client.PostAsJsonAsync("/Users/authenticate", credentials);
+                var response = await client.PostAsJsonAsync("/Users/authenticate/0", credentials);
                 
                 if (response.IsSuccessStatusCode)
                 {
