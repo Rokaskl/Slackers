@@ -37,7 +37,6 @@ namespace WpfApp1.Forms
             client = Inst.Utils.HttpClient;
             ShowRooms();
             InitializeComponent();
-
             
             userRooms.SelectionMode = SelectionMode.Single;
         }
