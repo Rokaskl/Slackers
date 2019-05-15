@@ -59,6 +59,7 @@ namespace WpfApp1.Forms
             string nick = Username.Text;
             string pw = Password.Password;
             Task<bool> x = Login();
+            //e.Handled = true;
         }
 
         private async Task<bool> Login()
