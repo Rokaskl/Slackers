@@ -30,6 +30,13 @@ namespace WpfApp1.Forms
             InitializeComponent();
             this.KeyDown += LoginForm_KeyDown;
             Username.Focus();
+            Username.GotFocus += txtGotFocus;
+            Password.GotFocus += txtGotFocus;
+        }
+
+        private void txtGotFocus(object sender, RoutedEventArgs e)
+        {
+            lb_error.Visibility = Visibility.Hidden;
         }
 
         private void LoginForm_KeyDown(object sender, KeyEventArgs e)
@@ -37,6 +44,7 @@ namespace WpfApp1.Forms
             if (e.Key == Key.Enter)
             {
                 btnLogin.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                e.Handled = true;
             }
         }
 
@@ -51,7 +59,7 @@ namespace WpfApp1.Forms
             string nick = Username.Text;
             string pw = Password.Password;//WTH
             Task<bool> x = Login();
-            e.Handled = true;
+            //e.Handled = true;
         }
 
         private async Task<bool> Login()
@@ -78,7 +86,7 @@ namespace WpfApp1.Forms
                 {
                     Username.Text = string.Empty;
                     Password.Password = string.Empty;
-                    MessageBox.Show("Login failed...");
+                    lb_error.Visibility = Visibility.Visible;
                     return false;
                 }
 
