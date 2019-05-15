@@ -36,8 +36,8 @@ namespace WebApi.Controllers
             _timeMarkService = timeMarkService;
         }
 
-        [AllowAnonymous]//Pratestuoti
-        [Route("time/{from}/{to}/{RoomId:int}/{UserId:int}")]
+        //[AllowAnonymous]//Pratestuoti
+        //[Route("time/{from}/{to}/{RoomId:int}/{UserId:int}")]
         public IActionResult GetTime(string from, string to, int RoomId, int UserId)
         {
             try
@@ -99,14 +99,119 @@ namespace WebApi.Controllers
             }
         }
 
+        //[AllowAnonymous]//Pratestuoti --NENAUDOJAMAS
+        [Route("timeuser/{from}/{to}/{RoomId:int}/{UserId:int}/{format:int}")]
+        public IActionResult GetTimeSpanUser(string from, string to, int RoomId, int UserId, int format)
+        {
+            DateTime datefrom = DateTime.Parse(from);
+            DateTime dateto = DateTime.Parse(to);
+            List<TimeSpan> spans = new List<TimeSpan>();
+
+            try
+            {
+                while (datefrom < dateto)
+                {
+                    //span.Add(_timeMarkService.GetTimeMarkDay(RoomId, UserId, datefrom.Year, datefrom.Month, datefrom.Day));
+                    datefrom.AddDays(1);
+                }
+            }
+            catch (Exception exception)
+            {
+
+            }
+            return Content("");
+        }
+
+        [AllowAnonymous]
+        [Route("timeroom/{from}/{to}/{RoomId:int}/{format:int}")]
+        public IActionResult GetTimeSpanRoom(string from, string to, int RoomId, int format)
+        {
+            DateTime datefrom = DateTime.Parse(from);
+            DateTime dateto = DateTime.Parse(to);
+            List<TimeSpan> spans = new List<TimeSpan>();
+            RoomDto room = _roomService.GetAllRooms().FirstOrDefault(x => x.roomId == RoomId);
+            if (room == null)
+            {
+                return BadRequest("room doesnt exist");
+            }
+            List<int> users = new List<int>();
+            if (room.users != null)
+            {
+                users.AddRange(room.users.Select(x => x));
+            }
+            users.Add(room.roomAdminId);
+            Dictionary<int, List<TimeSpan>> info = new Dictionary<int, List<TimeSpan>>();
+            for (int i = 0; i < users.Count; i++)
+            {
+                info.Add(users[i], new List<TimeSpan>());
+            }
+
+            try
+            {
+                while (datefrom < dateto)
+                {
+                    foreach (int userId in users)
+                    {
+                        TimeSpan calculated = _timeMarkService.GetTimeMarkDay(RoomId, userId, datefrom.Year, datefrom.Month, datefrom.Day);
+                        info[userId].Add(calculated);// = info[userId].Add(calculated);
+                    }
+
+                    datefrom = datefrom.AddDays(1);
+                }
+
+                switch (format){
+                    case 0:
+                        {
+                            Dictionary<int, int> data = new Dictionary<int, int>();
+                            foreach(KeyValuePair<int, List<TimeSpan>> pair in info)
+                            {
+                                data.Add(pair.Key, (int)Math.Round(pair.Value.Sum(x => x.TotalMinutes), 0));
+                            }
+                            return Ok(data);
+                        }
+                    case 1:
+                        {
+                            List<Dictionary<string, string>> data = new List<Dictionary<string, string>>();
+                            foreach (KeyValuePair<int, List<TimeSpan>> pair in info)
+                            {
+                                Dictionary<string, string> info_dic = new Dictionary<string, string>();
+                                info_dic.Add("Id", pair.Key.ToString());
+                                info_dic.Add("Times", string.Join(',', pair.Value.Select(x => (int)Math.Round(x.TotalMinutes, 0))));
+                                data.Add(info_dic);
+                            }
+                            return Ok(data);
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+                
+            }
+            catch (Exception exception)
+            {
+                
+            }
+            return BadRequest();
+        }
+
+        [AllowAnonymous]
         [Route("mark/{roomId:int}/{ac:int}")]
         public IActionResult MarkTime(int roomId, int ac)//0 - Stop(false); 1 - Start(true).
         {
-            int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            //int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            int userId = 1;
             if (ac == 1 || ac == 0)
             {
-                _timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now });
-                _timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now.AddDays(1) });//for testing purposes
+                //_timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now });
+
+
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 12, 12, 10, 10) });//for testing purposes
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = false, RoomId = roomId, Time = new DateTime(2019, 05, 15, 12, 10, 10) });//for testing purposes
+
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 15, 13, 0, 0) });//for testing purposes
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = false, RoomId = roomId, Time = new DateTime(2019, 05, 15, 14, 20, 10) });//for testing purposes
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 15, 15, 0, 0) });//for testing purposes
             }
 
             return Ok();

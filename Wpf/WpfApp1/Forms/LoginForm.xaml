@@ -7,17 +7,14 @@
         xmlns:local="clr-namespace:WpfApp1.Forms"
         mc:Ignorable="d"
         Title="Login" Height="319" Width="300">
-    <StackPanel Margin="20">
-        <Label Content="Slackers" Foreground="Black" FontSize="25" HorizontalAlignment="Center"/>
+    <StackPanel Margin="20,20,20,7">
+        <Label Content="Slackers" Foreground="Black" FontSize="25" HorizontalAlignment="Center" Margin="78,0"/>
+        <Label x:Name="lb_error" Content="Login failed!" Visibility="Hidden" Foreground="Red" Margin="0,0,0,0" HorizontalAlignment="Center"/>
         <Label Content="Username"/>
-        <TextBox Name="Username"/>
+        <TextBox x:Name="Username"/>
         <Label Content="Password"/>
-        <PasswordBox Name="Password"/>
-        <Button Name="btnLogin" Content="Login" Margin="15" Click="btnLogin_Click" IsDefault="True" Height="30" Width="150"/>
-        <TextBlock>
-            <Hyperlink NavigateUri="http://localhost:4000" RequestNavigate="Hyperlink_RequestNavigate">
-                Not registered?
-            </Hyperlink>
-        </TextBlock>
+        <PasswordBox x:Name="Password"/>
+        <Button x:Name="btnLogin" Content="Login" Margin="15" Click="btnLogin_Click" IsDefault="True" Height="30" Width="150"/>
+        <TextBlock><Hyperlink NavigateUri="http://localhost:4000" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Not registered?"/></Hyperlink></TextBlock>
     </StackPanel>
 </Window>
