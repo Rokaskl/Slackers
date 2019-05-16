@@ -142,6 +142,13 @@ namespace WebApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [Route("logout")]
+        public IActionResult Logout()
+        {
+            int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            App.Inst.Remove(requesterId);
+            return Ok();
+        }
 
         [HttpDelete]
         public IActionResult Delete()

@@ -49,8 +49,8 @@ namespace WpfApp1.Forms
 
         private void UserRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
-            SelectedRoom = (e.AddedItems[0] as RoomDto);
+            //btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
+            //SelectedRoom = (e.AddedItems[0] as RoomDto);
         }
 
         private void AdminRooms_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -66,7 +66,7 @@ namespace WpfApp1.Forms
         private void AdminRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //MessageBox.Show((e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString());
-            btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
+            //btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
             SelectedRoom = (e.AddedItems[0] as RoomDto);
             
         }
@@ -149,11 +149,6 @@ namespace WpfApp1.Forms
                 Console.WriteLine(ex.ToString());
             }
         }
-        private int[] GetArray(string array)
-        {            
-            List<int> temp = new List<int>();
-            return temp.ToArray();
-        }
         private async void JoinRoom(string guid)
         {
             try
@@ -176,6 +171,72 @@ namespace WpfApp1.Forms
                 Console.WriteLine(ex.ToString());
             }
 
+        }
+
+        private void LoginAsAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            int roomId = (int)((Button)sender).Tag;
+            SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
+            LoginRoom();
+        }
+        
+        private void RemoveRoom_Click(object sender, RoutedEventArgs e)
+        {
+            int roomId = (int)((Button)sender).Tag;
+            SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
+            
+            Window confirm = new Window();
+            confirm.Title = "Delete room";
+            confirm.Width = 250;
+            confirm.Height = 250;
+            
+
+            StackPanel pan = new StackPanel{ Orientation = Orientation.Vertical};
+            StackPanel pan2 = new StackPanel{Orientation = Orientation.Horizontal};
+            
+            Button ok = new Button();
+            ok.Margin = new Thickness(10,15,15,10);
+            ok.Content = "Yes";
+            ok.Width = 50;
+            ok.Click += (s,ev)=>
+            {
+                //DeleteRoom();
+                confirm.Close();
+            };
+            
+            Button cancer = new Button();
+            cancer.Content = "No";            
+            cancer.Margin = new Thickness(10,15,15,10);
+            cancer.Width = 50;
+            cancer.Click += (s,ev) =>
+            {
+                confirm.Close();
+            };
+            
+            pan2.Children.Add(ok);
+            pan2.Children.Add(cancer);
+                        
+            pan.VerticalAlignment = VerticalAlignment.Center;
+            pan.HorizontalAlignment = HorizontalAlignment.Center;
+            Label lab = new Label();
+            lab.Content = $"Are you sure?\nDelete {SelectedRoom.roomName.Replace(" ",string.Empty)} room?";
+            lab.HorizontalAlignment = HorizontalAlignment.Center;
+            pan.Children.Add(lab);
+            pan.Children.Add(pan2);
+
+            confirm.Content = pan;
+            confirm.ShowDialog();
+        }
+        private async void DeleteRoom()
+        {
+            var res = await client.DeleteAsync($"Rooms/{SelectedRoom.roomId}");
+            if (res.IsSuccessStatusCode)
+            {
+                MessageBox.Show($"Room {SelectedRoom.roomName} successful deleted");
+                adminRooms.Items.Remove(SelectedRoom);
+            }
+            else
+                MessageBox.Show("Delete failed");
         }
     }
 }

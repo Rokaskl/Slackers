@@ -19,8 +19,11 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <Label x:Name="GUID" Grid.Column="0" Grid.Row="0" Content=" "/>
+        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
+            <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0"/>
+            <Button x:Name="Back" Content="Back" Click="Back_Click"></Button>
+            <Button x:Name="Copyguid" Content="Copy guid to clipboard" Click="Copy_guid_Click"></Button>            
+        </StackPanel>
         <Button x:Name="btnLoginToRoom" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click"/>
         <ListView x:Name="stats" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1">
             <ListView.View>
@@ -34,8 +37,7 @@
         <ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Room users"
-                                DisplayMemberBinding="{Binding username}" />
+                    <GridViewColumn Header="Room users" DisplayMemberBinding="{Binding username}" />
                     <GridViewColumn>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

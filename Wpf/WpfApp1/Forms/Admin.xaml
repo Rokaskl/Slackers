@@ -21,12 +21,22 @@
         
         <TextBox x:Name="roomNameText" Grid.Column="0" Grid.Row="0" Margin="0,0,0,35" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <Button x:Name="btnRegisterRoom" Grid.Column="1" Grid.Row="0" Content="Register room" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnRegisterRoom_Click" Margin="1,34,0,35" Height="Auto" />
-        <Button x:Name="btnLoginRoom" Grid.Column="1" Grid.Row="1" Content="Login" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnLoginRoom_Click" Margin="0,0,0,0" Height="40" />
+        <!--<Button x:Name="btnLoginRoom" Grid.Column="1" Grid.Row="1" Content="Login" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnLoginRoom_Click" Margin="0,0,0,0" Height="40" />-->
         <ListView x:Name="adminRooms" Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Your rooms as admin"
-                                DisplayMemberBinding="{Binding roomName}"/>
+                <GridView >
+                    <GridViewColumn Header="Your rooms as admin" 
+                                DisplayMemberBinding="{Binding roomName}" />
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="LoginAsAdmin" Content="Login" Click="LoginAsAdmin_Click" Tag="{Binding roomId}" Width="50" Margin="2,2,2,2"></Button>
+                                    <Button x:Name="RemoveRoom" Content="Delete" Click="RemoveRoom_Click" Tag="{Binding roomId}" Width="50" Margin="2,2,2,2"></Button>
+                                </StackPanel>
+                              </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn> 
                 </GridView>
             </ListView.View>
         </ListView>

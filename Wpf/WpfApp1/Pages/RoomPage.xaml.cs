@@ -63,7 +63,7 @@ namespace WpfApp1.Pages
             InitCmbStatus();
             FillMembers();//pirma karta uzkrauna iskarto.
             FillNotes();
-            Task.Run(() => DisplayMembers());//toliau naujina info kas 10secs.
+            Task.Run(() => DisplayMembersR());//toliau naujina info kas 10secs.
         }
 
         private void NoteListView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -249,7 +249,17 @@ namespace WpfApp1.Pages
                 }
             }
         }
-
+        private async void DisplayMembersR()
+        {
+            while (true)
+            {
+                    await Task.Delay(10000);
+                    if (!FillMembers().Result)
+                    {
+                        break;
+                    }                    
+            }
+        }
         private async Task<bool> FillMembers()
         {
             bool end = true;

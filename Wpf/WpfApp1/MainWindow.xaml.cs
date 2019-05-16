@@ -51,11 +51,12 @@ namespace WpfApp1
 
         private void MainWindow_Closed(object sender, EventArgs e)
         {
-            //Kai mainwindow yra uzdaromas - reikia i api nusiusti atsijungimo uzklausa.
+            //Task<bool> x = Logout();//Kai mainwindow yra uzdaromas - reikia i api nusiusti atsijungimo uzklausa.
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)//testuot - nesamone kazkokia sitas metodas
         {  
+            Task<bool> x = Logout();
             this.Hide();
             Inst.CreateInstance();
             Inst.Utils.MainWindow = this;
@@ -69,6 +70,20 @@ namespace WpfApp1
             frame2.NavigationService.Navigate(new Admin());
             frame1.NavigationService.Navigate(new UserPage());     
             this.ShowDialog();
+        }
+        private async Task<bool> Logout()
+        {
+            var response = await client.GetAsync("Users/logout");
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+             Task<bool> x = Logout();
         }
     }
 }

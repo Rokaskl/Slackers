@@ -32,9 +32,32 @@ namespace WpfApp1.Pages
             client = Inst.Utils.HttpClient;
             ListUsers();
             InitializeComponent();
-            this.GUID.Content = room.guid;
+            this.Name.Content = room.roomName.Replace(" ",string.Empty);
+            this.Name.FontSize = 14;
+            Random ran = new Random();
+            UNICORNS(ran);
             this.MinHeight = 400;
             this.MinWidth = 800;
+        }
+        private async void UNICORNS(Random ran)
+        {
+            Color color = new Color();
+            while (true)
+            {            
+            await Task.Delay(50);
+            color.R = Convert.ToByte(ran.Next(225));
+            color.G =Convert.ToByte(ran.Next(225));
+            color.B = Convert.ToByte(ran.Next(225));
+            color.ScA = 1;
+            Brush brush = new SolidColorBrush(color);
+            
+            Brush b = Brushes.Red;
+             
+            
+            this.Name.Foreground = brush;
+
+            }
+            
         }
         private void kickFromRoom_Click(object sender, RoutedEventArgs e)
         {
@@ -114,6 +137,16 @@ namespace WpfApp1.Pages
         private void Login_Click(object sender, RoutedEventArgs e)
         {
             Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new RoomPage(room,"admin"));
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Forms.Admin());
+        }
+        private void Copy_guid_Click(object sender,RoutedEventArgs e)
+        {
+            Clipboard.SetText(room.guid);
+            MessageBox.Show("Guid copyed to clipboard");
         }
     }
 }
