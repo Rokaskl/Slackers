@@ -32,7 +32,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <Button x:Name="LoginAsAdmin" Content="Login" Click="LoginAsAdmin_Click" Tag="{Binding roomId}" Width="50" Margin="2,2,2,2"></Button>
-                                    <Button x:Name="RemoveRoom" Content="Delete" Click="RemoveRoom_Click" Tag="{Binding roomId}" Width="50" Margin="2,2,2,2"></Button>
+                                    <Button x:Name="RemoveRoom" Content="Delete" Click="RemoveRoom_Click" Tag="{Binding roomId}" Width="50" Margin="2,2,2,2" Style="{StaticResource bad}"></Button>
                                 </StackPanel>
                               </DataTemplate>
                         </GridViewColumn.CellTemplate>

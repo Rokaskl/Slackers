@@ -32,6 +32,7 @@ namespace WpfApp1.Pages
         private string prevWindow;
         private Timer timer;
 
+        public RoomPage(){}
         public RoomPage(RoomDto room,string prev)
         {
             this.prevWindow = prev;
@@ -50,12 +51,13 @@ namespace WpfApp1.Pages
             (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             {
                 //Header = "Id",
+                Header = "Username",
                 DisplayMemberBinding = new Binding("username"),
                 Width = 100 
             });
             (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             {
-                //Header = "Name",
+                Header = "Status",
                 DisplayMemberBinding = new Binding("status"),
                 Width = 100
             });
@@ -165,11 +167,14 @@ namespace WpfApp1.Pages
 
         private void ConfigureTimer()
         {
+            
             timer.HorizontalAlignment = HorizontalAlignment.Left;
-            timer.Margin = new Thickness(656, 330, 0, 0);
+            timer.Margin = new Thickness(0, 0, 0, 0);
             timer.VerticalAlignment = VerticalAlignment.Top;
             timer.Width = 95;
-            this.pageGrid.Children.Add(timer);
+            timer.FlowDirection = FlowDirection.LeftToRight;
+            this.botomStack.Children.Add(timer);
+            
         }
 
         private void btnStartStop_Click(object sender, RoutedEventArgs e)
@@ -361,13 +366,19 @@ namespace WpfApp1.Pages
                     if (this.timer.IsRunning)
                     {
                         StopTimer();
-                    }
+                    }                    
+                    Inst.Utils.MainWindow.room.Visibility = Visibility.Hidden;                    
+                    enableButton();
+                    Inst.Utils.MainWindow.frame1.Refresh();
+                    Inst.Utils.MainWindow.frame2.Refresh();
                     if (prevWindow=="admin")
-                    {                        
-                    Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Admin());
+                    {                           
+                    Inst.Utils.MainWindow.tabs.SelectedIndex = 0;
+                    //Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Admin());
                     }
-                    else
-                    Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new UserPage());
+                    else                        
+                    Inst.Utils.MainWindow.tabs.SelectedIndex = 1;
+                    //Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new UserPage());
                 }
                 else
                 {
@@ -380,6 +391,14 @@ namespace WpfApp1.Pages
                 Console.WriteLine(ex.ToString());
             }
             
+        }
+        private void enableButton()
+        {
+            Style style = new Style();
+            style.TargetType = typeof(Button);            
+            style.BasedOn = (Style)App.Current.FindResource("enable");
+            style.Setters.Add(new Setter(Button.IsEnabledProperty,true));
+            App.Current.Resources["enable"] = style;
         }
 
         private async void FillNotes()
@@ -524,6 +543,7 @@ namespace WpfApp1.Pages
             }
             
             Popup popup = new Popup();
+            popup.StaysOpen = false;
             popup.AllowsTransparency = true;
             popup.Height = 400;
             popup.Width = 500;

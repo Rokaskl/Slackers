@@ -68,15 +68,18 @@
             </Grid>
             
         </Grid>
-        <TabControl Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TabControl x:Name="tabs" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <!--<TabItem Header="Rooms as user">
                 <Frame x:Name="frame" Source="/Forms/RoomsPage.xaml" HorizontalAlignment="Stretch" VerticalAlignment="Center" NavigationUIVisibility="Hidden" />
             </TabItem>-->
-            <TabItem Header="As admin">
+            <TabItem x:Name="Admin" TabIndex="0" Header="Administrator">
                 <Frame x:Name="frame2" Source="/Forms/Admin.xaml"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden" />
             </TabItem>
-            <TabItem Header="User">
+            <TabItem x:Name="User" TabIndex="1" Header="User">
                 <Frame x:Name="frame1" Source="/Forms/UserPage.xaml" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden" />
+            </TabItem>
+            <TabItem x:Name="room" TabIndex="2" Header="Room" Visibility="Hidden">
+                <Frame x:Name="roomPage" Source="/Pages/RoomPage.xaml" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden"/>
             </TabItem>
         </TabControl>
 

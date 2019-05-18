@@ -77,7 +77,10 @@ namespace WpfApp1.Forms
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show($"Joined {room["roomName"]}");
-                    Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Convert.ToInt32(room["roomId"]), roomName = room["roomName"].ToString() },"user"));
+                    Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Convert.ToInt32(room["roomId"]), roomName = room["roomName"].ToString() },"user"));
+                    Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
+                    Inst.Utils.MainWindow.tabs.SelectedIndex = 2;  
+                    disableButton();
                 }
                 else
                 {
@@ -90,7 +93,14 @@ namespace WpfApp1.Forms
                 Console.WriteLine(ex.ToString());
             }
         }
-
+        private void disableButton()
+        {
+            Style style = new Style();
+            style.TargetType = typeof(Button);
+            style.BasedOn = (Style)App.Current.FindResource("enable");
+            style.Setters.Add(new Setter(Button.IsEnabledProperty,false));
+            App.Current.Resources["enable"] = style;
+        }
         private void BtnJoinRoom_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(this.guidText.Text))

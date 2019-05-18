@@ -132,8 +132,16 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteRoom(int id)
         {
+            try
+            {
             int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
             _roomService.Delete(id,requesterId);//tik roomo adminas gali ištrinti roomą
+            
+            }
+            catch (Exception ex)
+            {
+
+            }
             return Ok();
         }
 
@@ -195,6 +203,7 @@ namespace WebApi.Controllers
             }
             else
             {
+                //App.Inst.tempRooms.Where(x=>x.roomId==RoomId&&x.usersById.ContainsKey(UserId));
                 tempRoom.usersById.Remove(UserId);
                 App.Inst.Remove(UserId);
                 if (tempRoom.usersById.Count == 0)

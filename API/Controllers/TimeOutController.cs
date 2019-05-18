@@ -71,10 +71,12 @@ namespace WebApi.Controllers
         }
         public async void CheckerR()
         {
+            while (true)
+            {
             await Task.Delay(10000);
             IncreaseIndex();
             CheckForLogOut();
-            CheckerR();
+            }            
         }
         
 
