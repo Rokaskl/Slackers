@@ -2,19 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WebApi.Dtos;
+using System.Windows.Controls.DataVisualization.Charting;
 
 namespace WpfApp1.Pages
 {
@@ -31,14 +24,20 @@ namespace WpfApp1.Pages
         {
             this.room = room;
             client = Inst.Utils.HttpClient;
+
+            InitializeComponent();            
             ListUsers();
-            InitializeComponent();
+
             this.Name.Content = room.roomName.Replace(" ",string.Empty);
             this.Name.FontSize = 14;
+
+            ShowUsersTimes(DateTime.Today.AddDays((int)DateTime.Today.DayOfWeek-1),DateTime.Today);
+            fromDate.SelectedDate= DateTime.Today.AddDays((int)DateTime.Today.DayOfWeek-1);
+            toDate.SelectedDate = DateTime.Today;
+
             //Random ran = new Random();
             //UNICORNS(ran);
-            this.MinHeight = 400;
-            this.MinWidth = 800;
+
         }
         private async void UNICORNS(Random ran)
         {
@@ -62,9 +61,29 @@ namespace WpfApp1.Pages
             }
             
         }
+        private async void ShowUsersTimes(DateTime from,DateTime to)//Testuot
+        {
+            string uri = $"TimeTracker/timeroom/{from}/{to.AddDays(1)}/{room.roomId}/{0}";
+            var resp = await client.GetAsync(uri);
+            if (resp.IsSuccessStatusCode&&roomUsers.ItemsSource!=null)
+            {
+                Dictionary<int, int> stats = resp.Content.ReadAsAsync<Dictionary<int, int>>().Result;
+                List<KeyValuePair<string, int>> _stats = new List<KeyValuePair<string, int>>();
+
+                //_stats.Add(new KeyValuePair<string, int>("TinkisVinkis", 69));
+                //_stats.Add(new KeyValuePair<string, int>("Dipsis", 42));
+                //_stats.Add(new KeyValuePair<string, int>("Lialia", 0));
+                //_stats.Add(new KeyValuePair<string, int>("Pou", 68));
+
+                roomUsers.ItemsSource.Cast<User>().ToList<User>().ForEach(x => _stats.Add(new KeyValuePair<string, int>(x.username, (stats.Where(y => y.Key == Int32.Parse(x.id)).Count() != 0) ? stats.Where(y => y.Key == Int32.Parse(x.id)).First().Value : 0)));
+
+                ((BarSeries)chaha.Series[0]).ItemsSource = _stats.ToArray();
+            }
+            else MessageBox.Show("Failed to get users stats\nOr no users in room");
+        }
         private void kickFromRoom_Click(object sender, RoutedEventArgs e)
         {
-            int kickingUserId = (int)((Button)sender).Tag;
+            int kickingUserId = Int32.Parse((string)((Button)sender).Tag);
             Window confirm = new Window();
             confirm.Title = "Kick user";
             confirm.Width = 250;
@@ -77,7 +96,7 @@ namespace WpfApp1.Pages
             Button ok = new Button();
             ok.Margin = new Thickness(10,15,15,10);
             ok.Content = "Yes";
-            ok.Width = 30;
+            ok.Width = 50;
             ok.Click += (s,ev)=>
             {
                 Kick(kickingUserId);
@@ -86,7 +105,7 @@ namespace WpfApp1.Pages
             
             Button cancer = new Button();
             cancer.Content = "No";            
-            cancer.Width = 30;
+            cancer.Width = 50;
             cancer.Margin = new Thickness(10,15,15,10);
             cancer.Click += (s,ev) =>
             {
@@ -118,8 +137,8 @@ namespace WpfApp1.Pages
             var res = await client.PutAsJsonAsync("Rooms/kick_user",data);
                 if (res.IsSuccessStatusCode)
                 {
-                    List<UserDto> tempUsers = roomUsers.ItemsSource.Cast<UserDto>().ToList<UserDto>();
-                    tempUsers.Remove(tempUsers.Where(x=>x.Id==user).First());
+                    List<User> tempUsers = roomUsers.ItemsSource.Cast<User>().ToList<User>();
+                    tempUsers.Remove(tempUsers.Where(x=>Int32.Parse(x.id)==user).First());
                     roomUsers.ItemsSource = tempUsers;
                 }
             }
@@ -134,7 +153,7 @@ namespace WpfApp1.Pages
             {
                 var usersIds = new {ids= room.users.ToList()};
                 var res = await client.PostAsJsonAsync("Users/get_list",usersIds);
-                List<UserDto> adminR = res.Content.ReadAsAsync<List<UserDto>>().Result;
+                List<User> adminR = res.Content.ReadAsAsync<List<User>>().Result;
                 
                 roomUsers.ItemsSource = adminR;
             }
@@ -189,6 +208,16 @@ namespace WpfApp1.Pages
         {
             Clipboard.SetText(room.guid);
             MessageBox.Show("Guid copyed to clipboard");
+        }
+
+        private void GetStats_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.fromDate.SelectedDate!=null&&this.toDate.SelectedDate!=null)
+            {
+                DateTime from = this.fromDate.SelectedDate.Value;
+                DateTime to = this.toDate.SelectedDate.Value;
+                ShowUsersTimes(from,to);
+            }
         }
     }
 }

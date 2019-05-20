@@ -205,7 +205,8 @@ namespace WpfApp1.Forms
             };
             
             Button cancer = new Button();
-            cancer.Content = "No";            
+            cancer.Content = "No";   
+            cancer.Style = (Style)App.Current.Resources["bad"];
             cancer.Margin = new Thickness(10,15,15,10);
             cancer.Width = 50;
             cancer.Click += (s,ev) =>

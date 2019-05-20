@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:DVS="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
       xmlns:local="clr-namespace:WpfApp1.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -17,7 +18,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
+            <!--<RowDefinition Height="*" />-->
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
             <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0" Width="100"/>
@@ -25,23 +26,38 @@
             <Button x:Name="Copyguid" Content="Copy guid to clipboard" Click="Copy_guid_Click" Width="150"></Button>            
         </StackPanel>
         <Button x:Name="btnLogin" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click" Style="{DynamicResource enable}"/>
-        <ListView x:Name="stats" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Statistics"
-                               />
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
 
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <DVS:Chart Name="chaha" Title="Users activity" Background="#E8FCE9" Foreground="Black" Grid.Column="0" Grid.Row="0" BorderThickness="0.5" Margin="0,2,5,2">
+                <DVS:Chart.Series>
+                    <DVS:BarSeries Title="Spend time" 
+                               IndependentValueBinding="{Binding Path=Key}"
+                               DependentValueBinding="{Binding Path=Value}">
+
+                    </DVS:BarSeries>
+                </DVS:Chart.Series>
+            </DVS:Chart>
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <DatePicker Name="fromDate" Margin="10"></DatePicker>
+                <DatePicker Name="toDate" Margin="10"></DatePicker>
+                <Button Name="getStats" Content="Get stats" Click="GetStats_Click" Width="80" Margin="10"></Button>
+            </StackPanel>
+        </Grid>
         <ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Room users" DisplayMemberBinding="{Binding Username}" />
+                    <GridViewColumn Header="Room users" DisplayMemberBinding="{Binding username}" />
                     <GridViewColumn Width="50">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button x:Name="btnKick" Content="Kick" Margin="0" VerticalAlignment="Center"  Click="kickFromRoom_Click" Tag="{Binding Id}" Style="{StaticResource bad}" Width="35"/>
+                                <Button x:Name="btnKick" Content="Kick" Margin="0" VerticalAlignment="Center"  Click="kickFromRoom_Click" Tag="{Binding id}" Style="{StaticResource bad}" Width="35"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

@@ -24,7 +24,7 @@
         </Grid.ColumnDefinitions>
 
 
-        <Grid Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Stretch"  MaxWidth="120" MinWidth="120"  Background="#B45F04">
+        <Grid Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Stretch"  MaxWidth="120" MinWidth="120"  Background="#ffb236">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
@@ -52,7 +52,7 @@
                         <ColumnDefinition Width="24" />
                     </Grid.ColumnDefinitions>
                     <Viewbox Grid.Column="0" Grid.Row="0" Stretch="Uniform" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="96">
-                        <TextBlock x:Name="firstNameTextBlock" Text="Firstname" />
+                        <TextBlock x:Name="firstNameTextBlock" Text="Firstname" Margin="2"/>
                     </Viewbox>
                     
                     <materialDesign:PopupBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" PlacementMode="TopAndAlignRightEdges" StaysOpen="False">

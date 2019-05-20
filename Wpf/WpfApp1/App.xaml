@@ -12,12 +12,12 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Indigo.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <Style x:Name="StyliukasButtons" TargetType="Button">
-                <Setter Property="Background" Value="#B45F04"></Setter>
+                <Setter Property="Background" Value="#ffb236"></Setter>
                 <Setter Property="Foreground" Value="White"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#B45F04">
+                            <Border CornerRadius="5" Background="#ffb236">
                                 <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
                             </Border>
                         </ControlTemplate>
@@ -26,12 +26,12 @@
             </Style>
             <Style x:Key="enable" TargetType="Button">
                 <Setter Property="IsEnabled" Value="True"></Setter>
-                <Setter Property="Background" Value="#B45F04"></Setter>
+                <Setter Property="Background" Value="#ffb236"></Setter>
                 <Setter Property="Foreground" Value="White"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#B45F04">
+                            <Border CornerRadius="5" Background="#ffb236">
                                 <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
                             </Border>
                         </ControlTemplate>
@@ -39,13 +39,13 @@
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="false">
-                        <Setter Property="Foreground" Value="Wheat"></Setter>
-                        <Setter Property="Background" Value="#8A0808"></Setter>
-                        <Setter Property="BorderBrush" Value="Red"></Setter>
+                        <Setter Property="Foreground" Value="Black"></Setter>
+                        <Setter Property="Background" Value="#fa7a50"></Setter>
+                        <Setter Property="BorderBrush" Value="#fa7a50"></Setter>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="Button">
-                                    <Border CornerRadius="5" Background="#B22424">
+                                    <Border CornerRadius="5" Background="#fa7a50">
                                         <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
                                     </Border>
                                 </ControlTemplate>
@@ -56,13 +56,13 @@
                 </Style.Triggers>
             </Style>
             <Style x:Key="bad" TargetType="Button">
-                <Setter Property="Background" Value="#B22424"></Setter>
+                <Setter Property="Background" Value="#fa7a50"></Setter>
                 <Setter Property="Margin" Value="2,2,2,2"></Setter>
-                <Setter Property="Foreground" Value="Wheat"></Setter>
+                <Setter Property="Foreground" Value="Black"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#B22424">
+                            <Border CornerRadius="5" Background="#fa7a50">
                                 <ContentPresenter Margin="2,2,2,2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
                             </Border>
                         </ControlTemplate>

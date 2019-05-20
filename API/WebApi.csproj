@@ -4,8 +4,11 @@
     <UserSecretsId>e22268ee-9855-495d-97df-5ddc3f34cc59</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Entities\Role.cs" />
     <Compile Remove="Migrations\20190309175916_InitialCreate.cs" />
     <Compile Remove="Migrations\20190309175916_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\nitialCreate.cs" />
+    <Compile Remove="Migrations\nitialCreate.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.0.0" />
