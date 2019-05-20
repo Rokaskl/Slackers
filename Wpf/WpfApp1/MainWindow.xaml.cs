@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using WebApi.Dtos;
 using Newtonsoft.Json;
 using WpfApp1.Forms;
+using WpfApp1.Pages;
 
 namespace WpfApp1
 {
@@ -57,7 +58,11 @@ namespace WpfApp1
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)//testuot - nesamone kazkokia sitas metodas
-        {  
+        {
+            if (Inst.Utils.RoomPage != null)
+            {
+                (Inst.Utils.RoomPage as RoomPage).Logout();
+            }
             Task<bool> x = Logout();
             this.Hide();
             Inst.CreateInstance();

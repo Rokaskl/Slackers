@@ -35,6 +35,7 @@ namespace WpfApp1.Pages
         public RoomPage(){}
         public RoomPage(RoomDto room,string prev)
         {
+            Inst.Utils.RoomPage = this;
             this.prevWindow = prev;
             timer = new Timer();
             this.room = room;
@@ -356,6 +357,12 @@ namespace WpfApp1.Pages
             LogoutFromRoom();
         }
 
+        public bool Logout()
+        {
+            LogoutFromRoom();
+            return true;
+        }
+
         private async void LogoutFromRoom()
         {
             try
@@ -379,6 +386,7 @@ namespace WpfApp1.Pages
                     else                        
                     Inst.Utils.MainWindow.tabs.SelectedIndex = 1;
                     //Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new UserPage());
+                    Inst.Utils.RoomPage = null;
                 }
                 else
                 {

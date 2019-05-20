@@ -84,7 +84,8 @@ namespace WebApi.Services
             {
                 from = new DateTime();
                 to = new DateTime();
-                if (!(marks[i].Time/*Start*/ > nextdaydate || !( !(marks.Count < i + 1) || marks[i + 1].Time/*Stop*/ < date)))
+                if((marks[i].Time < nextdaydate && marks.Count == i + 1) || (marks[i].Time < nextdaydate && marks[i + 1].Time > date))
+                //if (!(marks[i].Time/*Start*/ > nextdaydate || !( !(marks.Count < i + 1) || marks[i + 1].Time/*Stop*/ < date)))
                 {
                     
                     if (marks[i].Action == true)

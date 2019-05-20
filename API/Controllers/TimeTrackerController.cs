@@ -197,19 +197,19 @@ namespace WebApi.Controllers
         [Route("mark/{roomId:int}/{ac:int}")]
         public IActionResult MarkTime(int roomId, int ac)//0 - Stop(false); 1 - Start(true).
         {
-            int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
-            
+            //int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            int userId = 1;
             if (ac == 1 || ac == 0)
             {
-                _timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now });
+                //_timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now });
 
                 //Palikta testavimo tikslams. Cia yra pati sudetingiausia situacija laiku pasiskirstymo.
-                //_timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 12, 12, 10, 10) });//for testing purposes
-                //_timeMarkService.Create(new TimeMark { UserId = userId, Action = false, RoomId = roomId, Time = new DateTime(2019, 05, 15, 12, 10, 10) });//for testing purposes
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 12, 12, 10, 10) });//for testing purposes
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = false, RoomId = roomId, Time = new DateTime(2019, 05, 15, 12, 10, 10) });//for testing purposes
 
-                //_timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 15, 13, 0, 0) });//for testing purposes
-                //_timeMarkService.Create(new TimeMark { UserId = userId, Action = false, RoomId = roomId, Time = new DateTime(2019, 05, 15, 14, 20, 10) });//for testing purposes
-                //_timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 15, 15, 0, 0) });//for testing purposes
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 15, 13, 0, 0) });//for testing purposes
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = false, RoomId = roomId, Time = new DateTime(2019, 05, 15, 14, 20, 10) });//for testing purposes
+                _timeMarkService.Create(new TimeMark { UserId = userId, Action = true, RoomId = roomId, Time = new DateTime(2019, 05, 15, 15, 0, 0) });//for testing purposes
             }
 
             return Ok();

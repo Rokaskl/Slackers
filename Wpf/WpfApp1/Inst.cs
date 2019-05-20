@@ -27,12 +27,14 @@ namespace WpfApp1
         private Uri url;
         private User user;
         private MainWindow mainWindow;
+        private Page roomPage;
 
         public Utils()
         {
             this.client = new HttpClient();
             this.url = new Uri("http://localhost:4000");
             client.BaseAddress = this.url;
+            roomPage = null;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -61,6 +63,12 @@ namespace WpfApp1
         {
             get => mainWindow;
             set => mainWindow = value;
+        }
+
+        public Page RoomPage
+        {
+            get => roomPage;
+            set => roomPage = value;
         }
 
         private async void Ping()
