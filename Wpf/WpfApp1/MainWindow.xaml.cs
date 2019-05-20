@@ -28,6 +28,7 @@ namespace WpfApp1
     public partial class MainWindow : Window
     {
         private HttpClient client;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -45,8 +46,9 @@ namespace WpfApp1
             }
             this.Closed += MainWindow_Closed;//prisisubscribinama po to, kai logino forma jau nebegali isjungti mainformos
             frame2.NavigationService.Navigate(new Admin());
-            frame1.NavigationService.Navigate(new UserPage());           
-
+            frame1.NavigationService.Navigate(new UserPage());   
+            roomPage.NavigationService.Navigate(new Pages.RoomPage());
+            
         }
 
         private void MainWindow_Closed(object sender, EventArgs e)
@@ -68,19 +70,30 @@ namespace WpfApp1
                 return;
             }            
             frame2.NavigationService.Navigate(new Admin());
-            frame1.NavigationService.Navigate(new UserPage());     
+            frame1.NavigationService.Navigate(new UserPage());               
+            roomPage.NavigationService.Navigate(new Pages.RoomPage());
             this.ShowDialog();
         }
         private async Task<bool> Logout()
-        {
+        {           
+            Inst.Utils.MainWindow.room.Visibility = Visibility.Hidden;
+            enableButton();
+            Inst.Utils.MainWindow.tabs.SelectedIndex = 0;
             var response = await client.GetAsync("Users/logout");
             if (response.IsSuccessStatusCode)
             {
                 return true;
             }
             return false;
+        }    
+        private void enableButton()
+        {
+            Style style = new Style();
+            style.TargetType = typeof(Button);            
+            style.BasedOn = (Style)App.Current.FindResource("enable");
+            style.Setters.Add(new Setter(Button.IsEnabledProperty,true));
+            App.Current.Resources["enable"] = style;
         }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
              Task<bool> x = Logout();

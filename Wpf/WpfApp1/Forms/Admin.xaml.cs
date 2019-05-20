@@ -135,7 +135,7 @@ namespace WpfApp1.Forms
                 var response = await client.GetAsync($"/Rooms/login_group/{room.roomId}");
                 if (response.IsSuccessStatusCode)
                 {
-                    //MessageBox.Show($"Joined {room.roomName}");
+                    MessageBox.Show($"Joined {room.roomName}");
                     Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Administraktoring(room));
                 }
                 else
@@ -156,7 +156,7 @@ namespace WpfApp1.Forms
                 var response = await client.PutAsJsonAsync($"/Rooms/join_group", new { guid = guid });
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show($"successfuly became a member");
+                    //MessageBox.Show($"successfuly became a member");
                     //Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
                     ShowRooms();
                 }
@@ -200,7 +200,7 @@ namespace WpfApp1.Forms
             ok.Width = 50;
             ok.Click += (s,ev)=>
             {
-                //DeleteRoom();
+                DeleteRoom();
                 confirm.Close();
             };
             
@@ -233,7 +233,9 @@ namespace WpfApp1.Forms
             if (res.IsSuccessStatusCode)
             {
                 MessageBox.Show($"Room {SelectedRoom.roomName} successful deleted");
-                adminRooms.Items.Remove(SelectedRoom);
+                List<RoomDto> rooms = adminRooms.Items.Cast<RoomDto>().ToList<RoomDto>();
+                rooms.Remove(SelectedRoom);
+                adminRooms.ItemsSource = rooms;
             }
             else
                 MessageBox.Show("Delete failed");

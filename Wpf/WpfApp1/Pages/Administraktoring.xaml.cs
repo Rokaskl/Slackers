@@ -25,6 +25,7 @@ namespace WpfApp1.Pages
     {
         private HttpClient client;
         private RoomDto room;
+        
 
         public Administraktoring(RoomDto room)
         {
@@ -34,14 +35,15 @@ namespace WpfApp1.Pages
             InitializeComponent();
             this.Name.Content = room.roomName.Replace(" ",string.Empty);
             this.Name.FontSize = 14;
-            Random ran = new Random();
-            UNICORNS(ran);
+            //Random ran = new Random();
+            //UNICORNS(ran);
             this.MinHeight = 400;
             this.MinWidth = 800;
         }
         private async void UNICORNS(Random ran)
         {
             Color color = new Color();
+            List<int> font = new List<int>();font.Add(12);font.Add(15); 
             while (true)
             {            
             await Task.Delay(50);
@@ -55,13 +57,14 @@ namespace WpfApp1.Pages
              
             
             this.Name.Foreground = brush;
-
+            this.Name.FontSize = font[0];
+                font.Reverse();
             }
             
         }
         private void kickFromRoom_Click(object sender, RoutedEventArgs e)
         {
-            int kickingUserId = Int32.Parse((string)((Button)sender).Tag);
+            int kickingUserId = (int)((Button)sender).Tag;
             Window confirm = new Window();
             confirm.Title = "Kick user";
             confirm.Width = 250;
@@ -74,20 +77,23 @@ namespace WpfApp1.Pages
             Button ok = new Button();
             ok.Margin = new Thickness(10,15,15,10);
             ok.Content = "Yes";
+            ok.Width = 30;
             ok.Click += (s,ev)=>
             {
-                //Kick(kickingUserId);
+                Kick(kickingUserId);
                 confirm.Close();
             };
             
             Button cancer = new Button();
             cancer.Content = "No";            
+            cancer.Width = 30;
             cancer.Margin = new Thickness(10,15,15,10);
             cancer.Click += (s,ev) =>
             {
                 confirm.Close();
             };
-            
+            cancer.Style = (Style)App.Current.Resources["bad"];
+
             pan2.Children.Add(ok);
             pan2.Children.Add(cancer);
                         
@@ -112,12 +118,14 @@ namespace WpfApp1.Pages
             var res = await client.PutAsJsonAsync("Rooms/kick_user",data);
                 if (res.IsSuccessStatusCode)
                 {
-                    roomUsers.Items.Remove(user);
+                    List<UserDto> tempUsers = roomUsers.ItemsSource.Cast<UserDto>().ToList<UserDto>();
+                    tempUsers.Remove(tempUsers.Where(x=>x.Id==user).First());
+                    roomUsers.ItemsSource = tempUsers;
                 }
             }
             catch (Exception)
             {
-                throw;
+                MessageBox.Show("Something went wrong");
             }
         }
         private async void ListUsers()
@@ -126,7 +134,8 @@ namespace WpfApp1.Pages
             {
                 var usersIds = new {ids= room.users.ToList()};
                 var res = await client.PostAsJsonAsync("Users/get_list",usersIds);
-                List<User> adminR = res.Content.ReadAsAsync<List<User>>().Result;
+                List<UserDto> adminR = res.Content.ReadAsAsync<List<UserDto>>().Result;
+                
                 roomUsers.ItemsSource = adminR;
             }
             catch (Exception)
@@ -136,9 +145,42 @@ namespace WpfApp1.Pages
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new RoomPage(room,"admin"));
+            LoginRoom(room.roomId);
         }
+        
+        private async void LoginRoom(int roomid)
+        {
+            
+            try
+            {
+                var response = await client.GetAsync($"/Rooms/login_group/{room.roomId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show($"Joined {room.roomName}");
+                    Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(room,"admin"));
+                    Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
+                    Inst.Utils.MainWindow.tabs.SelectedIndex = 2;
+                    disableButton();
+                }
+                else
+                {
+                    MessageBox.Show("Joining failed...");
+                }
 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+        private void disableButton()
+        {
+            Style style = new Style();
+            style.TargetType = typeof(Button);
+            style.BasedOn = (Style)App.Current.FindResource("enable");;
+            style.Setters.Add(new Setter(Button.IsEnabledProperty,false));
+            App.Current.Resources["enable"] = style;
+        }
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Forms.Admin());

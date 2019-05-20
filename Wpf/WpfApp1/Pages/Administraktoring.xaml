@@ -20,11 +20,11 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
-            <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0"/>
-            <Button x:Name="Back" Content="Back" Click="Back_Click"></Button>
-            <Button x:Name="Copyguid" Content="Copy guid to clipboard" Click="Copy_guid_Click"></Button>            
+            <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0" Width="100"/>
+            <Button x:Name="Back" Content="Back" Click="Back_Click" Width="40"></Button>
+            <Button x:Name="Copyguid" Content="Copy guid to clipboard" Click="Copy_guid_Click" Width="150"></Button>            
         </StackPanel>
-        <Button x:Name="btnLoginToRoom" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click"/>
+        <Button x:Name="btnLogin" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click" Style="{DynamicResource enable}"/>
         <ListView x:Name="stats" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1">
             <ListView.View>
                 <GridView>
@@ -37,11 +37,11 @@
         <ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Room users" DisplayMemberBinding="{Binding username}" />
-                    <GridViewColumn>
+                    <GridViewColumn Header="Room users" DisplayMemberBinding="{Binding Username}" />
+                    <GridViewColumn Width="50">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button x:Name="btnKick" Content="Kick" Margin="0" VerticalAlignment="Center"  Click="kickFromRoom_Click" Tag="{Binding id}" Background="Red"/>
+                                <Button x:Name="btnKick" Content="Kick" Margin="0" VerticalAlignment="Center"  Click="kickFromRoom_Click" Tag="{Binding Id}" Style="{StaticResource bad}" Width="35"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
