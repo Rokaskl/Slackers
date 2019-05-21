@@ -46,7 +46,7 @@ namespace WpfApp1
                 return;
             }
             Inst.Utils.CreateTcpServer();
-            this.Closed += MainWindow_Closed;//prisisubscribinama po to, kai logino forma jau nebegali isjungti mainformos
+            this.Closed += MainWindow_Closed;//prisisubscribinama po to, kai logino forma jau nebe gali isjungti mainformos
             frame2.NavigationService.Navigate(new Admin());
             frame1.NavigationService.Navigate(new UserPage());   
             roomPage.NavigationService.Navigate(new Pages.RoomPage());
@@ -105,6 +105,13 @@ namespace WpfApp1
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
              Task<bool> x = Logout();
+        }
+
+        private void Account_Click(object sender, RoutedEventArgs e)
+        {
+            tabs.Visibility = Visibility.Visible;
+            tabs.SelectedIndex = 3;
+            accountPage.NavigationService.Navigate(new AccountPage());
         }
     }
 }

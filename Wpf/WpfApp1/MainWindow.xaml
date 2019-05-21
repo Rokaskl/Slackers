@@ -57,7 +57,7 @@
                     
                     <materialDesign:PopupBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" PlacementMode="TopAndAlignRightEdges" StaysOpen="False">
                         <StackPanel Width="150">
-                            <Button Content="Account"/>
+                            <Button Content="Account" Click="Account_Click" />
                             <Button Content="Settings"/>
                             <Button Content="Help"/>
                             <Separator/>
@@ -80,6 +80,9 @@
             </TabItem>
             <TabItem x:Name="room" TabIndex="2" Header="Room" Visibility="Hidden">
                 <Frame x:Name="roomPage" Source="/Pages/RoomPage.xaml" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden"/>
+            </TabItem>
+            <TabItem x:Name="Account" TabIndex="3" Header="Account" Visibility="Hidden">
+                <Frame x:Name="accountPage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden"/>
             </TabItem>
         </TabControl>
 

@@ -77,7 +77,7 @@ namespace WpfApp1.Forms
                 {
                     var user = response.Content.ReadAsAsync<User>().Result;
                     Inst.Utils.User = new User() { id = user.id, firstName = user.firstName, lastName = user.lastName, token = user.token, username = user.username };//WTF kam, kodėl
-                    Inst.Utils.MainWindow.firstNameTextBlock.Text = user.firstName;
+                    Inst.Utils.MainWindow.firstNameTextBlock.Text = Inst.Utils.User.firstName;
                     this.DialogResult = true;
                     this.Close();
                     return true;

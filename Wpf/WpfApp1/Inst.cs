@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using WpfApp1.Forms;
+using WpfApp1.Pages;
 
 namespace WpfApp1
 {
