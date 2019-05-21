@@ -40,7 +40,7 @@
                 <GridView>
                     <GridViewColumn
                                  DisplayMemberBinding="{Binding Path=Id}"/>
-                    <GridViewColumn>
+                    <GridViewColumn Width="320">
                         <!--<TextBox Text="{Binding Path=Message}" Width="100" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>-->
                         
                         <GridViewColumn.CellTemplate>                            
