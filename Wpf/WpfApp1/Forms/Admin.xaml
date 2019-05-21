@@ -16,14 +16,14 @@
         
         <Grid.RowDefinitions>
             <RowDefinition Height="100" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
             <Button x:Name="btnRefresh" Content="Refresh" Grid.Column="0" Grid.Row="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,35,20,35" Click="BtnRefresh_Click"></Button>
             <Button x:Name="btnRegisterRoom" Grid.Column="1" Grid.Row="0" Content="Register room" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnRegisterRoom_Click" Margin="1,35,0,35" Height="Auto" />
         </StackPanel>
           <!--<Button x:Name="btnLoginRoom" Grid.Column="1" Grid.Row="1" Content="Login" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnLoginRoom_Click" Margin="0,0,0,0" Height="40" />-->
-        <ListView x:Name="RoomsList" Grid.Row="1" Grid.Column="0">
+        <ListView x:Name="RoomsList" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False">
             
         </ListView>
         <!--<ListView x:Name="adminRooms" Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

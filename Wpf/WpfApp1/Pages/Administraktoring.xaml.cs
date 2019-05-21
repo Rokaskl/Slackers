@@ -181,9 +181,13 @@ namespace WpfApp1.Pages
              var data = new{ 
                  roomId = room.roomId,
                  userId = user};   
-            var res = await client.PutAsJsonAsync("Rooms/kick_user",data);
+                var res = await client.PutAsJsonAsync("Rooms/kick_user",data);
                 if (res.IsSuccessStatusCode)
                 {
+                    this.usersList.Items.Clear();
+                    List<int> temp = room.users.ToList<int>();
+                    temp.Remove(user);
+                    room.users = temp.ToArray();
                     ListUsers();
                 }
             }

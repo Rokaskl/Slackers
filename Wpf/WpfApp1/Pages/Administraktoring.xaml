@@ -52,7 +52,7 @@
                 <Button Name="getStats" Content="Get stats" Click="GetStats_Click" Width="80" Margin="10"></Button>
             </StackPanel>
         </Grid>
-        <ListView x:Name="usersList" Grid.Column="1" Grid.Row="1">
+        <ListView x:Name="usersList" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">
             
         </ListView>
         <!--<ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0">
