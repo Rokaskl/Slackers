@@ -80,6 +80,10 @@ namespace WebApi.Controllers
             {
                 if (AdditionalDataExists(additionalData.Ownerid,additionalData.IsUser))
                     {
+                    if (additionalData.PhotoBytes==null)
+                    {
+                        additionalData.PhotoBytes = _context.AdditionalDatas.FirstOrDefault(x=>x.IsUser==additionalData.IsUser&&x.Ownerid==additionalData.Ownerid).PhotoBytes;
+                    }
                     await DeleteAdditionalData(additionalData.Ownerid,additionalData.IsUser);
                     }
                

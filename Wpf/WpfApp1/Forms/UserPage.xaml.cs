@@ -36,9 +36,10 @@ namespace WpfApp1.Forms
         public UserPage()
         {         
             client = Inst.Utils.HttpClient;
-            ShowRooms();
-            InitializeComponent();
+            InitializeComponent(); 
             
+            ShowRooms();
+
             RoomsList.SelectionMode = SelectionMode.Single;
         }
 
@@ -59,6 +60,7 @@ namespace WpfApp1.Forms
         {            
             try
             {
+                RoomsList.Items.Clear();
                 var res2 = await client.GetAsync("Rooms/user_get_rooms");
                 //List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;                
                 List<RoomDto> userR = res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
@@ -88,17 +90,21 @@ namespace WpfApp1.Forms
                     ImageBrush imgBrush = new ImageBrush();
                     if (data!=null)
                     {
-                        using (var memstr = new MemoryStream(data.PhotoBytes))
+                        if (data.PhotoBytes!=null)
                         {
-                            var image = new BitmapImage();
-                            image.BeginInit();
-                            image.CacheOption = BitmapCacheOption.OnLoad;
-                            image.StreamSource = memstr;
-                            image.EndInit();  
-                            imgBrush.ImageSource = image;
+                            using (var memstr = new MemoryStream(data.PhotoBytes))
+                            {
+                                var image = new BitmapImage();
+                                image.BeginInit();
+                                image.CacheOption = BitmapCacheOption.OnLoad;
+                                image.StreamSource = memstr;
+                                image.EndInit();  
+                                imgBrush.ImageSource = image;
+                                roomElipse.Fill = imgBrush;
+                            }
                         }
                     }
-                    roomElipse.Fill = imgBrush;
+                    
                     StackPanel roomPanel = new StackPanel();
                     roomPanel.Orientation = Orientation.Horizontal;
                     roomPanel.Children.Add(roomElipse);

@@ -11,6 +11,9 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Indigo.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Name="elipseFill" TargetType="Ellipse">
+                <Setter Property="Fill" Value="LightGray"></Setter>
+            </Style>
             <Style x:Name="StyliukasButtons" TargetType="Button">
                 <Setter Property="Background" Value="#ffb236"></Setter>
                 <Setter Property="Foreground" Value="White"></Setter>
@@ -23,6 +26,19 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+            </Style>
+            <Style x:Key="edit" TargetType="Button">
+                <Setter Property="Background" Value="#7883D3"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="5" Background="#7883D3">
+                            <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             </Style>
             <Style x:Key="enable" TargetType="Button">
                 <Setter Property="IsEnabled" Value="True"></Setter>

@@ -24,8 +24,8 @@ namespace WpfApp1
     /// </summary>
     public partial class RegisterRoomForm : Window
     {
-        private int userId;
-        private byte[] photo;
+        private int userId = -1;
+        private byte[] photo = null;
         private HttpClient client;
         private int rooomId = -1;
 
@@ -35,13 +35,34 @@ namespace WpfApp1
             client = Inst.Utils.HttpClient;
             InitializeComponent();
         }
+        public RegisterRoomForm(RoomDto room)
+        {       
+            this.userId = 0;
+            this.rooomId = room.roomId;
+            client = Inst.Utils.HttpClient;
+            InitializeComponent();
+            this.RoomName.Text = room.roomName;
+            this.RoomName.IsEnabled = false;
+            this.RoomBio.Document.Blocks.Clear();
+            getAddData(room.roomId);
+            this.create.Content = "Submit edit";
 
+        }
+        public async void getAddData(int roomId)
+        {
+            var resp = await client.GetAsync($"AdditionalDatas/{roomId}/{false}");
+            if (resp.IsSuccessStatusCode)
+            {
+                AdditionalData tempData = resp.Content.ReadAsAsync<AdditionalData>().Result;
+                this.RoomBio.Document.Blocks.Add(new Paragraph(new Run(tempData.Biography)));
+            }
+        }
         private void UploadPicture_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.DefaultExt = ".jpg";
             dialog.Filter = "Text documents (.jpg)|*.jpg";
-            if(dialog.ShowDialog().HasValue)
+            if(dialog.ShowDialog().HasValue&&File.Exists(dialog.FileName))
             {
                 photo = File.ReadAllBytes(dialog.FileName);
                 file.Content = dialog.FileName;
@@ -55,12 +76,15 @@ namespace WpfApp1
         }
         private async void CreateAndUpload()
         {
-            await registerroom(RoomName.Text);
+            if (userId!=0)
+            {
+                await registerroom(RoomName.Text);
+            }            
             await Create();  
         }
         private async Task Create()
         {  
-            if (rooomId!=-1)
+            if (rooomId!=-1||userId==0)
             {
                 string Bio = (new TextRange(RoomBio.Document.ContentStart,RoomBio.Document.ContentEnd)).Text;
                 AdditionalData data = new AdditionalData(rooomId,false,Bio,photo);

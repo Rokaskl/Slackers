@@ -21,11 +21,7 @@
             <!--<RowDefinition Height="*" />-->
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
-            <Ellipse Width="50" Height="50">
-                <Ellipse.Fill>
-                    <ImageBrush x:Name="roomPhooto"></ImageBrush>
-                </Ellipse.Fill>
-            </Ellipse>
+            <Ellipse x:Name="elipsePhoto" Width="50" Height="50"></Ellipse>
             <!--<Image x:Name="roomPhoto"></Image>-->
             <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button x:Name="Back" Content="Back" Click="Back_Click" Width="40" Margin="2,2,2,2"></Button>
@@ -41,11 +37,11 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="50" />
             </Grid.RowDefinitions>
-            <DVS:Chart Name="chaha" Title="Users activity" Background="#E8FCE9" Foreground="Black" Grid.Column="0" Grid.Row="0" BorderThickness="0.5" Margin="0,2,5,2">
+            <DVS:Chart Name="chaha" Title="Users activity" Background="White" Foreground="Black" Grid.Column="0" Grid.Row="0" BorderThickness="0" Margin="0,2,5,2">
                 <DVS:Chart.Series>
-                    <DVS:BarSeries Title="Spend time" 
+                    <DVS:BarSeries Title="Spent minutes" Background="Red" Foreground="Red" AnimationSequence="Simultaneous" 
                                IndependentValueBinding="{Binding Path=Key}"
-                               DependentValueBinding="{Binding Path=Value}">
+                               DependentValueBinding="{Binding Path=Value}" >
 
                     </DVS:BarSeries>
                 </DVS:Chart.Series>

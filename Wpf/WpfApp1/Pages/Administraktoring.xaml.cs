@@ -22,7 +22,7 @@ namespace WpfApp1.Pages
     {
         private HttpClient client;
         private RoomDto room;
-        private List<User> users;
+        private List<User> users = new List<User>();
         
 
         public Administraktoring(RoomDto room)
@@ -84,25 +84,37 @@ namespace WpfApp1.Pages
             if (resp.IsSuccessStatusCode)
             {
                 AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
-                using (var memstr = new MemoryStream(data.PhotoBytes))
+                
+                if (data!=null)
+                {
+                    if (data.PhotoBytes!=null)
                     {
-                    var image = new BitmapImage();
-                    image.BeginInit();
-                    image.CacheOption = BitmapCacheOption.OnLoad; // here
-                    image.StreamSource = memstr;
-                    image.EndInit();
-                    this.roomPhooto.ImageSource = image;            
+                        using (var memstr = new MemoryStream(data.PhotoBytes))
+                        {
+                            var image = new BitmapImage();
+                            image.BeginInit();
+                            image.CacheOption = BitmapCacheOption.OnLoad; // here
+                            image.StreamSource = memstr;
+                            image.EndInit();
+                            ImageBrush imgBrush = new ImageBrush();
+                            imgBrush.ImageSource = image;
+                            this.elipsePhoto.Fill = imgBrush;            
+                        }
                     }
+                }
+
             }
         }
         private async void ShowUsersTimes(DateTime from,DateTime to)//Testuot
         {
             string uri = $"TimeTracker/timeroom/{from}/{to.AddDays(1)}/{room.roomId}/{0}";
             var resp = await client.GetAsync(uri);
-            if (resp.IsSuccessStatusCode&&usersList.HasItems)
+            if (resp.IsSuccessStatusCode)
             {
                 Dictionary<int, int> stats = resp.Content.ReadAsAsync<Dictionary<int, int>>().Result;
                 List<KeyValuePair<string, int>> _stats = new List<KeyValuePair<string, int>>();
+                                                
+                users.Add(Inst.Utils.User);
 
                 //_stats.Add(new KeyValuePair<string, int>("TinkisVinkis", 69));
                 //_stats.Add(new KeyValuePair<string, int>("Dipsis", 42));
@@ -110,6 +122,7 @@ namespace WpfApp1.Pages
                 //_stats.Add(new KeyValuePair<string, int>("Pou", 68));
 
                 users.ForEach(x => _stats.Add(new KeyValuePair<string, int>(x.username, (stats.Where(y => y.Key == Int32.Parse(x.id)).Count() != 0) ? stats.Where(y => y.Key == Int32.Parse(x.id)).First().Value : 0)));
+                users.Remove(Inst.Utils.User);
 
                 ((BarSeries)chaha.Series[0]).ItemsSource = _stats.ToArray();
             }
@@ -210,19 +223,24 @@ namespace WpfApp1.Pages
 
                     AdditionalData data = await GetAddDataUser(Int32.Parse(item.id));
                     ImageBrush imgBrush = new ImageBrush();
+                    roomElipse.Fill = Brushes.LightGray;
                     if (data != null)
                     {
-                        using (var memstr = new MemoryStream(data.PhotoBytes))
+                        if (data.PhotoBytes!=null)
                         {
-                            var image = new BitmapImage();
-                            image.BeginInit();
-                            image.CacheOption = BitmapCacheOption.OnLoad;
-                            image.StreamSource = memstr;
-                            image.EndInit();
-                            imgBrush.ImageSource = image;
-                        }
+                            using (var memstr = new MemoryStream(data.PhotoBytes))
+                            {
+                                var image = new BitmapImage();
+                                image.BeginInit();
+                                image.CacheOption = BitmapCacheOption.OnLoad;
+                                image.StreamSource = memstr;
+                                image.EndInit();
+                                imgBrush.ImageSource = image;
+                                roomElipse.Fill = imgBrush;
+                            }
+                        }                                              
                     }
-                    roomElipse.Fill = imgBrush;
+                    
                     StackPanel roomPanel = new StackPanel();
                     roomPanel.Orientation = Orientation.Horizontal;
                     roomPanel.Children.Add(roomElipse);
