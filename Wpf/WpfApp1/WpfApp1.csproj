@@ -121,6 +121,7 @@
       <DependentUpon>RegisterRoomForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="RoomDto.cs" />
+    <Compile Include="TcpClient.cs" />
     <Compile Include="TimerControl\Timer.cs" />
     <Compile Include="UserDto.cs" />
     <Page Include="Forms\LoginForm.xaml">

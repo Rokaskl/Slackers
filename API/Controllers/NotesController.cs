@@ -57,6 +57,7 @@ namespace WebApi.Controllers
             {
                 return Content("Counld not create note!");
             }
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 0, roomId = Int32.Parse(info_dic["roomId"]) });
             return Ok();
         }
 
@@ -72,6 +73,7 @@ namespace WebApi.Controllers
             {
                 return Content("Counld not create note!");
             }
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 0, roomId = roomId });
             return Ok();
         }
 
@@ -88,6 +90,7 @@ namespace WebApi.Controllers
             {
                 return Content("Counld not create note!");
             }
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 0, roomId = note.RoomId });
             return Ok();
         }
     }

@@ -256,9 +256,10 @@ namespace WpfApp1.Forms
 
         private void LoginAsAdmin_Click(object sender, RoutedEventArgs e)
         {
-            RoomDto roomId = (RoomDto)((Button)sender).Tag;
-            SelectedRoom = roomId;
-            LoginRoom();
+            int roomId = (int)((Button)sender).Tag;
+            SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
+            Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Administraktoring(SelectedRoom));
+            //LoginRoom();
         }
         
         private void RemoveRoom_Click(object sender, RoutedEventArgs e)
