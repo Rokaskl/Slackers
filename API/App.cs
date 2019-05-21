@@ -88,6 +88,10 @@ namespace WebApi
                     this.Server.SendInfo(user.Key, e.change.ToString());
                 }
             }
+            //if (e.change == 3)
+            //{
+            //    this.Server.SendInfo(user.Key, e.change.ToString());
+            //}
         }
 
         public bool Add(int id)

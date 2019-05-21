@@ -135,6 +135,18 @@ namespace WpfApp1
                 return;
             }
         }
+
+        public event EventHandler MembersChanged;
+        //private delegate void MyChangesEventHandler(object sender, ChangesEventArgs e);
+        public virtual void RaiseMembersChangedEvent(object sender, EventArgs e)
+        {
+            EventHandler handler = MembersChanged;
+            handler?.Invoke(this, e);
+            //if (MessageChanged != null)
+            //{
+            //    MessageChanged(this, e);
+            //}
+        }
     }
 
     public class User
@@ -157,6 +169,20 @@ namespace WpfApp1
         public override string ToString()
         {
             return String.Format($"{Id} - {Header}");
+        }
+    }
+    public class ChatLine
+    {
+        public string Id { get; set; }
+        public int RoomId { get; set; }
+        public int CreatorId { get; set; }
+        public DateTime CreateDate { get; set; }
+        public string Text { get; set; }
+        public string Username { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format($"{Username}: {Text}");
         }
     }
 }

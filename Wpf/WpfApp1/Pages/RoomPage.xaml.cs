@@ -43,6 +43,7 @@ namespace WpfApp1.Pages
            
             InitializeComponent();
             this.KeyDown += RoomPage_KeyDown;
+            this.txt_entry.KeyUp += Txt_entry_KeyUp;
 
             this.NoteListView.SelectionMode = SelectionMode.Single;
             this.NoteListView.MouseLeftButtonUp += NoteListView_MouseLeftButtonUp;
@@ -66,7 +67,16 @@ namespace WpfApp1.Pages
             InitCmbStatus();
             FillMembers();//pirma karta uzkrauna iskarto.
             FillNotes();
+            FillChat();
             Task.Run(() => DisplayMembersR());//toliau naujina info kas 10secs.
+        }
+
+        private void Txt_entry_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SubmitEntry();
+            }
         }
 
         private void NoteListView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -420,6 +430,11 @@ namespace WpfApp1.Pages
             FillMembers();
         }
 
+        public void UpdateGroupChat()
+        {
+            FillChat();
+        }
+
         private async void FillNotes()
         {
             PopupsClose();
@@ -628,6 +643,84 @@ namespace WpfApp1.Pages
                 popupnew.popup.IsOpen = false;
             if (popuptemp.popup != null)
                 popuptemp.popup.IsOpen = false;
+        }
+
+        private async void FillChat()
+        {
+            try
+            {
+                var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    Dictionary<ChatLine,ListViewItem> lvitems_dic = new Dictionary<ChatLine, ListViewItem>();
+                    List<ChatLine> data = response.Content.ReadAsAsync<List<ChatLine>>().Result;
+                    chatbox.Items.Clear();
+                    foreach(ChatLine line in data)
+                    {
+                        //object chatline = line["Username"] + ": " + line["Text"];
+                        chatbox.Items.Add(line);
+                        chatbox.UpdateLayout();
+                        chatbox.ScrollIntoView(line);
+                        lvitems_dic.Add(line, (ListViewItem)chatbox.ItemContainerGenerator.ContainerFromItem(line));
+                    }
+                    
+                    foreach (KeyValuePair<ChatLine, ListViewItem> chatline in lvitems_dic)
+                    {
+                        chatline.Value.ToolTip = chatline.Key.CreateDate.ToString("hh:mm:ss yyyy/MM/dd");
+                        if (chatline.Key.CreatorId.ToString() == Inst.Utils.User.id)
+                        {
+                            chatline.Value.Background = Brushes.LightBlue;
+                        }
+                        else
+                        {
+                            chatline.Value.Background = Brushes.LightGray;
+                        }
+                    }
+                    
+                    //chatbox.ItemsSource = data.Select(x => x["Username"] + ": " + x["Text"]);
+                    //ListViewItem lv = (ListViewItem)NoteListView.ItemContainerGenerator.ContainerFromItem((sender as ListView).SelectedItem);
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong! Could not populate chat");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private void Btn_txtenter_Click(object sender, RoutedEventArgs e)
+        {
+            SubmitEntry();
+        }
+
+        private async void SubmitEntry()
+        {
+            if (string.IsNullOrWhiteSpace(txt_entry.Text))
+            {
+                return;
+            }
+
+            try
+            {
+                var response = await client.PostAsJsonAsync<string>($"/ChatLine/create/{this.room.roomId}", txt_entry.Text);
+                if (response.IsSuccessStatusCode)
+                {
+                    txt_entry.Text = string.Empty;
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong! Could not create chat entry");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
     }
 }

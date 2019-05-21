@@ -10,32 +10,25 @@
 
     <Grid Name ="pageGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="50" />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
-        <ListView Grid.Column="0" Grid.Row="0" x:Name="MembersListView" HorizontalAlignment="Stretch" Margin="0,30,10,10" VerticalAlignment="Stretch">
+        <ListView Grid.Column="0" Grid.Row="0" x:Name="MembersListView" HorizontalAlignment="Left" Margin="22,35,478,183" VerticalAlignment="Top" Height="340" Width="550">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="0" DisplayMemberBinding="{Binding [username]}" />
                 </GridView>
             </ListView.View>
         </ListView>
-        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" Margin="0,30,0,0">
-            <ComboBox  x:Name="cmbStatus" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="120"/>
-            <Button  x:Name="btnLogoutRoom" Content="Logout" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Top" Width="75" Click="BtnLogoutRoom_Click"/>
+        <StackPanel x:Name="botomStack" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" FlowDirection="LeftToRight" Width="150" RenderTransformOrigin="-0.212,0.585" Margin="900,500,0,63" VerticalAlignment="Top">
+            <Button x:Name="btnStartStop" Content="Start!" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="60" Height="40" Click="btnStartStop_Click" FlowDirection="LeftToRight"/>
         </StackPanel>
-        <StackPanel x:Name="botomStack" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" FlowDirection="RightToLeft">
-            <Button x:Name="btnStartStop" Content="Start!" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Top" Width="95"  Height="41" Click="btnStartStop_Click" FlowDirection="LeftToRight"/>
-        </StackPanel>
-        <Button Grid.Column="2" Grid.Row="1" x:Name="btn_addnote" Content="Add" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="75" Click="Btn_addnote_Click"/>
-        <ListView Grid.Column="2" Grid.Row="0" x:Name="NoteListView" HorizontalAlignment="Stretch"  Margin="0,30,0,10" VerticalAlignment="Stretch" Grid.ColumnSpan="2" >
+        <Button x:Name="btn_addnote" Content="Add" Margin="700,380,34,0" VerticalAlignment="Top" Click="Btn_addnote_Click" Height="40" Width="60" HorizontalAlignment="Right"/>
+        <ListView Grid.Row="0" x:Name="NoteListView" HorizontalAlignment="Left"  Margin="650,35,34,209" VerticalAlignment="Top" Background="#FFD4F735" Width="600" Height="330" BorderThickness="10" BorderBrush="Black">
             <ListView.View>
                 <GridView>
                     <GridViewColumn
@@ -53,6 +46,32 @@
                 </GridView>
             </ListView.View>
         </ListView>
+        <ListView x:Name="chatbox" Background="#FFAEB881" HorizontalAlignment="Left" VerticalAlignment="bottom" Margin="52,286,274,63" Width="700" Height="230">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel VerticalAlignment="Bottom"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <!--<ListViewItem>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock >
+                            <TextBlock.Text>   
+                                    <MultiBinding StringFormat=".{0}: {1}">
+                                    <Binding Path="Username" />
+                                    <Binding Path="Text" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Text="{Binding LastChangedDate}" HorizontalAlignment="Right"></TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListViewItem>-->
+        </ListView>
+        <TextBox x:Name="txt_entry" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextWrapping="Wrap" Text="" Width="500" Height="40" Background="#FFFBFBBD" BorderBrush="#89000000" Margin="70,395,0,10" VerticalScrollBarVisibility="Auto" AcceptsTab="True"/>
+        <Button x:Name="btn_txtenter" Content="&gt;" HorizontalAlignment="Left" Margin="575,395,0,10" VerticalAlignment="Bottom" Width="40" Click="Btn_txtenter_Click" Height="40"/>
+        <ComboBox  x:Name="cmbStatus" HorizontalAlignment="Left" Margin="22,2,0,0" VerticalAlignment="Top" Width="120"/>
+        <Button  x:Name="btnLogoutRoom" Content="Logout" HorizontalAlignment="Right" Margin="715,5,10,0" VerticalAlignment="Top" Click="BtnLogoutRoom_Click"/>
         <!--<TextBlock Text="{Binding ElementName=cmbStatus, Path=SelectedItem}"/>-->
     </Grid>
 </Page>

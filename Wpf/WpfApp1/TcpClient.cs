@@ -53,6 +53,10 @@ namespace WpfApp1
                     }
                 case 1://group chat
                     {
+                        (Inst.Utils.RoomPage as RoomPage)?.Dispatcher.Invoke(() =>
+                        {
+                            (Inst.Utils.RoomPage as RoomPage)?.UpdateGroupChat();
+                        });
                         break;
                     }
                 case 2://users listview
@@ -62,7 +66,7 @@ namespace WpfApp1
                     }
                 case 3://room members
                     {
-                        
+                        Inst.Utils.RaiseMembersChangedEvent(this, EventArgs.Empty);//neveikia, nes webapi neranda prisijungusiu nariu ar roomu.
                         break;
                     }
                 default:
@@ -75,18 +79,10 @@ namespace WpfApp1
 
         private void ConnectToServer()
         {
-            byte[] buffer = BitConverter.GetBytes(1).Concat(BitConverter.GetBytes(int.Parse(Inst.Utils.User.id))).ToArray();//Encoding.UTF8.GetBytes("1" + Inst.Utils.User.id.ToString());//1 - last edit from wpf, 0 - last edit from webapi
-            //buffer = (BitConverter.GetBytes(1) + BitConverter.GetBytes(int.Parse(Inst.Utils.User.id)));
+            byte[] buffer = BitConverter.GetBytes(1).Concat(BitConverter.GetBytes(int.Parse(Inst.Utils.User.id))).ToArray();//1 - last edit from wpf, 0 - last edit from webapi
             client.GetStream().Write(buffer, 0, buffer.Length);
-            //client.GetStream().Read(buffer, 0, buffer.Length);
 
             Task.Run(() => Start(buffer));
-            //Start();
-            //char[] responsemsg = Encoding.UTF8.GetChars(buffer);
-            //string rmsg = new string(responsemsg);
-            //MessageBox.Show(rmsg);
-            //client.GetStream().Close();
-            //client.Close();
         }
 
         public void Stop()
@@ -101,26 +97,12 @@ namespace WpfApp1
         public void Start(byte[] prevbuffer)
         {
             byte[] prev = prevbuffer;
-            //while (true)
-            //{
-            //    try
-            //    {
-            //        if (client.GetStream().CanRead && client.Available == 16)
-            //        {
-            //            client.GetStream().Read(prev, 0, 16);
-            //            break;
-            //        }
-            //    }
-            //    catch(Exception exception)
-            //    {
 
-            //    }
-            //}
             while (Continue)
             {
                 try
                 {
-                    if (client.GetStream().CanRead && client.Available == 8)
+                    if (client.GetStream().CanRead && client.Available >= 8)
                     {
                         byte[] buffer = new byte[8];
                         client.GetStream().Read(buffer, 0, 8);
