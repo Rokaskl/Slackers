@@ -23,6 +23,7 @@ namespace WpfApp1
 
     public class Utils
     {
+        private bool isLoginEnabled = true;
         private HttpClient client;
         private Uri url;
         private User user;
@@ -57,6 +58,11 @@ namespace WpfApp1
                 this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value.token);
                 Task.Run(() => PingR());
             }
+        }
+        public bool IsLoginEnabled
+        {
+            get => isLoginEnabled;
+            set => isLoginEnabled = value;
         }
 
         public MainWindow MainWindow

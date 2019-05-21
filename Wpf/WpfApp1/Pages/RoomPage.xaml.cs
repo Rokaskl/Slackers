@@ -357,7 +357,7 @@ namespace WpfApp1.Pages
             LogoutFromRoom();
         }
 
-        public bool Logout()
+        public  bool Logout()
         {
             LogoutFromRoom();
             return true;
@@ -402,6 +402,7 @@ namespace WpfApp1.Pages
         }
         private void enableButton()
         {
+            Inst.Utils.IsLoginEnabled = true;
             Style style = new Style();
             style.TargetType = typeof(Button);            
             style.BasedOn = (Style)App.Current.FindResource("enable");

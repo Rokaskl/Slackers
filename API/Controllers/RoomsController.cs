@@ -58,8 +58,8 @@ namespace WebApi.Controllers
             var roomie = _mapper.Map<Room>(room);
             try
             {
-            _roomService.Create(roomie,room.users);//reiks įvesk validaciiją dėl vardų
-            return Ok();//gražina kad sėkmingai registruota
+            var _room = _roomService.Create(roomie,room.users);//reiks įvesk validaciiją dėl vardų
+            return Ok(_room);//gražina kad sėkmingai registruota
             }
             catch (AppException ex)
             {

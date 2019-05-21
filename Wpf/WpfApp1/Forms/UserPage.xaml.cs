@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using WpfApp1.Forms;
 using System.Globalization;
 using WpfApp1.Pages;
+using WebApi.Entities;
 
 namespace WpfApp1.Forms
 {
@@ -38,54 +39,125 @@ namespace WpfApp1.Forms
             ShowRooms();
             InitializeComponent();
             
-            userRooms.SelectionMode = SelectionMode.Single;
+            RoomsList.SelectionMode = SelectionMode.Single;
         }
 
 
 
         
         private void BtnLoginRoom_Click(object sender, RoutedEventArgs e)
-        {  
-            LoginRoom(Int32.Parse((string)((Button)sender).Tag));           
+        {
+            if (Inst.Utils.IsLoginEnabled)
+            {
+                RoomDto temp = ((RoomDto)((Button)sender).Tag);
+                LoginRoom(temp); 
+            }                      
         }
 
 
         private async void ShowRooms()
-        {
+        {            
             try
             {
-
                 var res2 = await client.GetAsync("Rooms/user_get_rooms");
-                List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;
-                userRooms.ItemsSource = userR;
+                //List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;                
+                List<RoomDto> userR = res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
+                foreach (var item in userR)
+                {
+                    
+                    Button btn = new Button();
+                    btn.Content = "Login";
+                    btn.Click +=BtnLoginRoom_Click;
+                    btn.Tag = item;
+                    btn.Margin = new Thickness(2,2,2,2);
+                    btn.HorizontalAlignment = HorizontalAlignment.Center;
+                    btn.VerticalAlignment = VerticalAlignment.Center;                    
+                    btn.Style = (Style)App.Current.Resources["enable"];
+                    
+                    Label name = new Label();
+                    name.Content = item.roomName;
+                    name.Margin = new Thickness(2,2,2,2);
+                    name.VerticalAlignment = VerticalAlignment.Center;
+                    name.HorizontalAlignment = HorizontalAlignment.Center;
+
+                    Ellipse roomElipse = new Ellipse();
+                    roomElipse.Width = 50;
+                    roomElipse.Height = 50;
+
+                    AdditionalData data = await GetAddData(item.roomId);                    
+                    ImageBrush imgBrush = new ImageBrush();
+                    if (data!=null)
+                    {
+                        using (var memstr = new MemoryStream(data.PhotoBytes))
+                        {
+                            var image = new BitmapImage();
+                            image.BeginInit();
+                            image.CacheOption = BitmapCacheOption.OnLoad;
+                            image.StreamSource = memstr;
+                            image.EndInit();  
+                            imgBrush.ImageSource = image;
+                        }
+                    }
+                    roomElipse.Fill = imgBrush;
+                    StackPanel roomPanel = new StackPanel();
+                    roomPanel.Orientation = Orientation.Horizontal;
+                    roomPanel.Children.Add(roomElipse);
+                    roomPanel.Children.Add(name);
+                    roomPanel.Children.Add(btn);
+
+                    RoomsList.Items.Add(roomPanel);
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
         }
-
-
-        private async void LoginRoom(int roomid)
+        private async Task<AdditionalData> GetAddData(int id)
         {
-            List<Dictionary<string,string>> temp = userRooms.Items.Cast<Dictionary<string,string>>().Where(x =>Int32.Parse(x["roomId"])==roomid).ToList<Dictionary<string,string>>();
+            var resp = await client.GetAsync($"AdditionalDatas/{id}/{false}");
+            if (resp.IsSuccessStatusCode)
+            {
+                AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
+                return data;
+            }
+            return null;
+        }
 
-            Dictionary<string, string> room = temp[0];
+        private async void LoginRoom(RoomDto roomid)
+        {
+            //List<Dictionary<string,string>> temp = userRooms.Items.Cast<Dictionary<string,string>>().Where(x =>Int32.Parse(x["roomId"])==roomid).ToList<Dictionary<string,string>>();
+
+            //Dictionary<string, string> room = temp[0];
             try
             {
-                var response = await client.GetAsync($"/Rooms/login_group/{room["roomId"]}");
+                var response = await client.GetAsync($"/Rooms/login_group/{roomid.roomId}");
                 if (response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show($"Joined {room["roomName"]}");
-                    Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Convert.ToInt32(room["roomId"]), roomName = room["roomName"].ToString() },"user"));
+                {                
+                    MessageBox.Show($"Joined {roomid.roomName}");
+                    Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(roomid,"user"));
                     Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
                     Inst.Utils.MainWindow.tabs.SelectedIndex = 2;  
+                    Inst.Utils.IsLoginEnabled = false;
                     disableButton();
                 }
                 else
                 {
                     MessageBox.Show("Joining failed...");
                 }
+                //var response = await client.GetAsync($"/Rooms/login_group/{room["roomId"]}");
+                //if (response.IsSuccessStatusCode)
+                //{
+                //    MessageBox.Show($"Joined {room["roomName"]}");
+                //    Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Convert.ToInt32(room["roomId"]), roomName = room["roomName"].ToString() },"user"));
+                //    Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
+                //    Inst.Utils.MainWindow.tabs.SelectedIndex = 2;  
+                //    disableButton();
+                //}
+                //else
+                //{
+                //    MessageBox.Show("Joining failed...");
+                //}
 
             }
             catch (Exception ex)

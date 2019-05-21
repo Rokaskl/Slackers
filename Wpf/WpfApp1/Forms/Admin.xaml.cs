@@ -23,11 +23,12 @@ using WpfApp1.Forms;
 using System.Globalization;
 using WpfApp1.Pages;
 using Newtonsoft.Json.Linq;
+using WebApi.Entities;
 
 namespace WpfApp1.Forms
 {
     /// <summary>
-    /// Interaction logic for RoomsPage.xaml
+    
     /// </summary>
     public partial class Admin : Page
     {
@@ -40,10 +41,10 @@ namespace WpfApp1.Forms
             ShowRooms();
             InitializeComponent();
 
-            adminRooms.SelectionMode = SelectionMode.Single;
-            adminRooms.SelectionChanged += AdminRooms_SelectionChanged;
-            //adminRooms.MouseDown += AdminRooms_MouseDown;
-            adminRooms.MouseRightButtonUp += AdminRooms_MouseRightButtonUp;
+            //adminRooms.SelectionMode = SelectionMode.Single;
+            //adminRooms.SelectionChanged += AdminRooms_SelectionChanged;
+            ////adminRooms.MouseDown += AdminRooms_MouseDown;
+            //adminRooms.MouseRightButtonUp += AdminRooms_MouseRightButtonUp;
             //adminRooms.Items.
         }
 
@@ -75,57 +76,137 @@ namespace WpfApp1.Forms
         private void BtnLoginRoom_Click(object sender, RoutedEventArgs e)
         {
             //LoginRoom(adminRooms.SelectedItem as Dictionary<string, object>);
+            SelectedRoom = (RoomDto)((Button)sender).Tag;
             LoginRoom();
         }
 
         private void BtnRegisterRoom_Click(object sender, RoutedEventArgs e)
         {
-            if (roomNameText.Text != "")
-                RegisterRoom(roomNameText.Text);
-            else
-                
-                MessageBox.Show("Theres no room name");
-        }
+            new RegisterRoomForm(Int32.Parse(Inst.Utils.User.id)).Show();
 
+            //if (roomNameText.Text != "")
+            //RegisterRoom(roomNameText.Text);
+            //else
+
+            // MessageBox.Show("Theres no room name");
+        }
         private async void ShowRooms()
-        {
+        {            
             try
             {
-                var res = await client.GetAsync("Rooms/admin_get_rooms");
-                List<RoomDto> adminR = res.Content.ReadAsAsync<List<RoomDto>>().Result;
-                adminRooms.ItemsSource = adminR;
+                var res2 = await client.GetAsync("Rooms/admin_get_rooms");
+                //List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;                
+                List<RoomDto> userR = res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
+                foreach (var item in userR)
+                {
+                    
+                    Button btn = new Button();
+                    btn.Content = "Login";
+                    btn.Click += BtnLoginRoom_Click;
+                    btn.Tag = item;
+                    btn.Margin = new Thickness(2,2,2,2);
+                    btn.HorizontalAlignment = HorizontalAlignment.Center;
+                    btn.VerticalAlignment = VerticalAlignment.Center;
+
+                    Button btnDelete = new Button();
+                    btnDelete.Content = "Delete";
+                    btnDelete.Click += RemoveRoom_Click;
+                    btnDelete.Tag = item;
+                    btnDelete.Margin = new Thickness(2,2,2,2);
+                    btnDelete.HorizontalAlignment = HorizontalAlignment.Center;
+                    btnDelete.VerticalAlignment = VerticalAlignment.Center;
+                    btnDelete.Style = (Style)App.Current.Resources["bad"];
+                    
+                    Label name = new Label();
+                    name.Content = item.roomName;
+                    name.Margin = new Thickness(2,2,2,2);
+                    name.VerticalAlignment = VerticalAlignment.Center;
+                    name.HorizontalAlignment = HorizontalAlignment.Center;
+
+                    Ellipse roomElipse = new Ellipse();
+                    roomElipse.Width = 50;
+                    roomElipse.Height = 50;
+
+                    AdditionalData data = await GetAddData(item.roomId);                    
+                    ImageBrush imgBrush = new ImageBrush();
+                    if (data!=null)
+                    {
+                        using (var memstr = new MemoryStream(data.PhotoBytes))
+                        {
+                            var image = new BitmapImage();
+                            image.BeginInit();
+                            image.CacheOption = BitmapCacheOption.OnLoad;
+                            image.StreamSource = memstr;
+                            image.EndInit();  
+                            imgBrush.ImageSource = image;
+                        }
+                    }
+                    roomElipse.Fill = imgBrush;
+                    StackPanel roomPanel = new StackPanel();
+                    roomPanel.Orientation = Orientation.Horizontal;
+                    roomPanel.Children.Add(roomElipse);
+                    roomPanel.Children.Add(name);
+                    roomPanel.Children.Add(btn);
+                    roomPanel.Children.Add(btnDelete);
+
+                    RoomsList.Items.Add(roomPanel);
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
         }
-
-        private async void RegisterRoom(String name)
+        private async Task<AdditionalData> GetAddData(int id)
         {
-            try
+            var resp = await client.GetAsync($"AdditionalDatas/{id}/{false}");
+            if (resp.IsSuccessStatusCode)
             {
-                var club = new RoomDto()
-                {
-                    roomName = name
-                };
-                var response = await client.PostAsJsonAsync("/Rooms/register", club);
-                if (response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Register Successfully");
-                    ShowRooms();
-                }
-                else
-                {
-                    MessageBox.Show("Register Failed...");
-                }
-
+                AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
+                return data;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            return null;
         }
+        //private async void ShowRooms()
+        //{
+        //    try
+        //    {
+        //        var res = await client.GetAsync("Rooms/admin_get_rooms");
+        //        List<RoomDto> adminR = res.Content.ReadAsAsync<List<RoomDto>>().Result;
+        //        adminRooms.ItemsSource = adminR;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.ToString());
+        //    }
+        //}
+
+        //private async void RegisterRoom(String name)
+        //{
+        //    try
+        //    {
+        //       
+        //        //var club = new RoomDto()
+        //        //{
+        //        //    roomName = name
+        //        //};
+        //        //var response = await client.PostAsJsonAsync("/Rooms/register", club);
+        //        //if (response.IsSuccessStatusCode)
+        //        //{
+        //        //    MessageBox.Show("Register Successfully");
+        //        //    ShowRooms();
+        //        //}
+        //        //else
+        //        //{
+        //        //    MessageBox.Show("Register Failed...");
+        //        //}
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.ToString());
+        //    }
+        //}
 
         private async void LoginRoom()
         {
@@ -175,15 +256,15 @@ namespace WpfApp1.Forms
 
         private void LoginAsAdmin_Click(object sender, RoutedEventArgs e)
         {
-            int roomId = (int)((Button)sender).Tag;
-            SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
+            RoomDto roomId = (RoomDto)((Button)sender).Tag;
+            SelectedRoom = roomId;
             LoginRoom();
         }
         
         private void RemoveRoom_Click(object sender, RoutedEventArgs e)
         {
-            int roomId = (int)((Button)sender).Tag;
-            SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
+            RoomDto temp = (RoomDto)((Button)sender).Tag;
+            SelectedRoom = temp;
             
             Window confirm = new Window();
             confirm.Title = "Delete room";
@@ -234,12 +315,20 @@ namespace WpfApp1.Forms
             if (res.IsSuccessStatusCode)
             {
                 MessageBox.Show($"Room {SelectedRoom.roomName} successful deleted");
-                List<RoomDto> rooms = adminRooms.Items.Cast<RoomDto>().ToList<RoomDto>();
-                rooms.Remove(SelectedRoom);
-                adminRooms.ItemsSource = rooms;
+                RoomsList.Items.Clear();
+                ShowRooms();
+                //List<RoomDto> rooms = adminRooms.Items.Cast<RoomDto>().ToList<RoomDto>();
+                //rooms.Remove(SelectedRoom);
+                //adminRooms.ItemsSource = rooms;
             }
             else
                 MessageBox.Show("Delete failed");
+        }
+
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            RoomsList.Items.Clear();
+            ShowRooms();
         }
     }
 }

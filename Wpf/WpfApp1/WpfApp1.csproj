@@ -97,11 +97,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AdditionalData.cs" />
     <Compile Include="Forms\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\RegisterRoom.xaml.cs">
-      <DependentUpon>RegisterRoom.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\RoomsPage.xaml.cs">
       <DependentUpon>RoomsPage.xaml</DependentUpon>
@@ -119,6 +117,9 @@
     <Compile Include="Pages\RoomPage.xaml.cs">
       <DependentUpon>RoomPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RegisterRoomForm.xaml.cs">
+      <DependentUpon>RegisterRoomForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RoomDto.cs" />
     <Compile Include="TimerControl\Timer.cs" />
     <Compile Include="UserDto.cs" />
@@ -127,10 +128,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Forms\Admin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Forms\RegisterRoom.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -159,6 +156,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\RoomPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RegisterRoomForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

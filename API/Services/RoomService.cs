@@ -42,7 +42,7 @@ namespace WebApi.Services
             _context.Rooms.Add(room);
             _context.SaveChanges();
 
-            return room;
+            return _context.Rooms.First(x=>x.roomName==room.roomName&&x.roomAdminId==room.roomAdminId);
         }
         public Room JoinGroup(int id,string guid)
         {

@@ -8,6 +8,10 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using WebApi.Dtos;
 using System.Windows.Controls.DataVisualization.Charting;
+using System.IO;
+using WebApi.Entities;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace WpfApp1.Pages
 {
@@ -18,6 +22,7 @@ namespace WpfApp1.Pages
     {
         private HttpClient client;
         private RoomDto room;
+        private List<User> users;
         
 
         public Administraktoring(RoomDto room)
@@ -31,14 +36,16 @@ namespace WpfApp1.Pages
             this.Name.Content = room.roomName.Replace(" ",string.Empty);
             this.Name.FontSize = 14;
 
-            ShowUsersTimes(DateTime.Today.AddDays((int)DateTime.Today.DayOfWeek-1),DateTime.Today);
-            fromDate.SelectedDate= DateTime.Today.AddDays((int)DateTime.Today.DayOfWeek-1);
+            ShowUsersTimes(DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek),DateTime.Today);
+            fromDate.SelectedDate= DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
             toDate.SelectedDate = DateTime.Today;
+
+            GetAddDataRoom();
 
             //Random ran = new Random();
             //UNICORNS(ran);
 
-        }
+        }        
         private async void UNICORNS(Random ran)
         {
             Color color = new Color();
@@ -61,11 +68,38 @@ namespace WpfApp1.Pages
             }
             
         }
+        private async Task<AdditionalData> GetAddDataUser(int id)
+        {
+            var resp = await client.GetAsync($"AdditionalDatas/{id}/{true}");
+            if (resp.IsSuccessStatusCode)
+            {
+                 return resp.Content.ReadAsAsync<AdditionalData>().Result;
+            }
+            return null;
+        }
+        private async void GetAddDataRoom()
+        {
+            var resp = await client.GetAsync($"AdditionalDatas/{room.roomId}/{false}");
+
+            if (resp.IsSuccessStatusCode)
+            {
+                AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
+                using (var memstr = new MemoryStream(data.PhotoBytes))
+                    {
+                    var image = new BitmapImage();
+                    image.BeginInit();
+                    image.CacheOption = BitmapCacheOption.OnLoad; // here
+                    image.StreamSource = memstr;
+                    image.EndInit();
+                    this.roomPhooto.ImageSource = image;            
+                    }
+            }
+        }
         private async void ShowUsersTimes(DateTime from,DateTime to)//Testuot
         {
             string uri = $"TimeTracker/timeroom/{from}/{to.AddDays(1)}/{room.roomId}/{0}";
             var resp = await client.GetAsync(uri);
-            if (resp.IsSuccessStatusCode&&roomUsers.ItemsSource!=null)
+            if (resp.IsSuccessStatusCode&&usersList.HasItems)
             {
                 Dictionary<int, int> stats = resp.Content.ReadAsAsync<Dictionary<int, int>>().Result;
                 List<KeyValuePair<string, int>> _stats = new List<KeyValuePair<string, int>>();
@@ -75,7 +109,7 @@ namespace WpfApp1.Pages
                 //_stats.Add(new KeyValuePair<string, int>("Lialia", 0));
                 //_stats.Add(new KeyValuePair<string, int>("Pou", 68));
 
-                roomUsers.ItemsSource.Cast<User>().ToList<User>().ForEach(x => _stats.Add(new KeyValuePair<string, int>(x.username, (stats.Where(y => y.Key == Int32.Parse(x.id)).Count() != 0) ? stats.Where(y => y.Key == Int32.Parse(x.id)).First().Value : 0)));
+                users.ForEach(x => _stats.Add(new KeyValuePair<string, int>(x.username, (stats.Where(y => y.Key == Int32.Parse(x.id)).Count() != 0) ? stats.Where(y => y.Key == Int32.Parse(x.id)).First().Value : 0)));
 
                 ((BarSeries)chaha.Series[0]).ItemsSource = _stats.ToArray();
             }
@@ -83,7 +117,7 @@ namespace WpfApp1.Pages
         }
         private void kickFromRoom_Click(object sender, RoutedEventArgs e)
         {
-            int kickingUserId = Int32.Parse((string)((Button)sender).Tag);
+            int kickingUserId = Int32.Parse(((User)((Button)sender).Tag).id);
             Window confirm = new Window();
             confirm.Title = "Kick user";
             confirm.Width = 250;
@@ -137,9 +171,7 @@ namespace WpfApp1.Pages
             var res = await client.PutAsJsonAsync("Rooms/kick_user",data);
                 if (res.IsSuccessStatusCode)
                 {
-                    List<User> tempUsers = roomUsers.ItemsSource.Cast<User>().ToList<User>();
-                    tempUsers.Remove(tempUsers.Where(x=>Int32.Parse(x.id)==user).First());
-                    roomUsers.ItemsSource = tempUsers;
+                    ListUsers();
                 }
             }
             catch (Exception)
@@ -153,14 +185,72 @@ namespace WpfApp1.Pages
             {
                 var usersIds = new {ids= room.users.ToList()};
                 var res = await client.PostAsJsonAsync("Users/get_list",usersIds);
-                List<User> adminR = res.Content.ReadAsAsync<List<User>>().Result;
-                
-                roomUsers.ItemsSource = adminR;
+                users = res.Content.ReadAsAsync<List<User>>().Result;
+                foreach (var item in users)
+                {
+                    AdditionalData temp = await GetAddDataUser(Int32.Parse(item.id));
+                    Button btn = new Button();
+                    btn.Content = "Kick";
+                    btn.Click += kickFromRoom_Click;
+                    btn.Tag = item;
+                    btn.Margin = new Thickness(2, 2, 2, 2);
+                    btn.HorizontalAlignment = HorizontalAlignment.Center;
+                    btn.VerticalAlignment = VerticalAlignment.Center;
+                    btn.Style = (Style)App.Current.Resources["bad"];                    
+
+                    Label name = new Label();
+                    name.Content = item.username;
+                    name.Margin = new Thickness(2, 2, 2, 2);
+                    name.VerticalAlignment = VerticalAlignment.Center;
+                    name.HorizontalAlignment = HorizontalAlignment.Center;
+
+                    Ellipse roomElipse = new Ellipse();
+                    roomElipse.Width = 50;
+                    roomElipse.Height = 50;
+
+                    AdditionalData data = await GetAddDataUser(Int32.Parse(item.id));
+                    ImageBrush imgBrush = new ImageBrush();
+                    if (data != null)
+                    {
+                        using (var memstr = new MemoryStream(data.PhotoBytes))
+                        {
+                            var image = new BitmapImage();
+                            image.BeginInit();
+                            image.CacheOption = BitmapCacheOption.OnLoad;
+                            image.StreamSource = memstr;
+                            image.EndInit();
+                            imgBrush.ImageSource = image;
+                        }
+                    }
+                    roomElipse.Fill = imgBrush;
+                    StackPanel roomPanel = new StackPanel();
+                    roomPanel.Orientation = Orientation.Horizontal;
+                    roomPanel.Children.Add(roomElipse);
+                    roomPanel.Children.Add(name);
+                    roomPanel.Children.Add(btn);
+
+                    usersList.Items.Add(roomPanel);
+                }                
+
             }
             catch (Exception)
             {               
             }
         }
+        //private async void ListUsers()
+        //{
+        //    try
+        //    {
+        //        var usersIds = new {ids= room.users.ToList()};
+        //        var res = await client.PostAsJsonAsync("Users/get_list",usersIds);
+        //        List<User> adminR = res.Content.ReadAsAsync<List<User>>().Result;
+                
+        //        roomUsers.ItemsSource = adminR;
+        //    }
+        //    catch (Exception)
+        //    {               
+        //    }
+        //}
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
@@ -179,6 +269,7 @@ namespace WpfApp1.Pages
                     Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(room,"admin"));
                     Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
                     Inst.Utils.MainWindow.tabs.SelectedIndex = 2;
+                    Inst.Utils.IsLoginEnabled = false;
                     disableButton();
                 }
                 else

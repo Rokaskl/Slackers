@@ -16,14 +16,20 @@
             
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="*" />
             <!--<RowDefinition Height="*" />-->
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
-            <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0" Width="100"/>
-            <Button x:Name="Back" Content="Back" Click="Back_Click" Width="40"></Button>
-            <Button x:Name="Copyguid" Content="Copy guid to clipboard" Click="Copy_guid_Click" Width="150"></Button>            
+            <Ellipse Width="50" Height="50">
+                <Ellipse.Fill>
+                    <ImageBrush x:Name="roomPhooto"></ImageBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <!--<Image x:Name="roomPhoto"></Image>-->
+            <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button x:Name="Back" Content="Back" Click="Back_Click" Width="40" Margin="2,2,2,2"></Button>
+            <Button x:Name="Copyguid" Content="Copy guid to clipboard" Margin="2,2,2,2" Click="Copy_guid_Click" Width="150"></Button>            
         </StackPanel>
         <Button x:Name="btnLogin" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click" Style="{DynamicResource enable}"/>
         <Grid Grid.Row="1" Grid.Column="0">
@@ -50,7 +56,10 @@
                 <Button Name="getStats" Content="Get stats" Click="GetStats_Click" Width="80" Margin="10"></Button>
             </StackPanel>
         </Grid>
-        <ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0">
+        <ListView x:Name="usersList" Grid.Column="1" Grid.Row="1">
+            
+        </ListView>
+        <!--<ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Room users" DisplayMemberBinding="{Binding username}" />
@@ -63,7 +72,7 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
-        </ListView>
+        </ListView>-->
     </Grid>
 </Page>
  
