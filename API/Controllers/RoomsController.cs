@@ -120,7 +120,8 @@ namespace WebApi.Controllers
                 {
                     throw new AppException( "Room not found");
                 }
-            return Ok();
+                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 3, roomId = temp.roomId });
+                return Ok();
             }
             catch(AppException ex)
             {

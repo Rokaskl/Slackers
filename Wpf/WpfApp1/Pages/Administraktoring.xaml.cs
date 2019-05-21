@@ -30,7 +30,8 @@ namespace WpfApp1.Pages
             this.room = room;
             client = Inst.Utils.HttpClient;
 
-            InitializeComponent();            
+            InitializeComponent();
+            Inst.Utils.MembersChanged += Utils_MembersChanged;
             ListUsers();
 
             this.Name.Content = room.roomName.Replace(" ",string.Empty);
@@ -45,7 +46,13 @@ namespace WpfApp1.Pages
             //Random ran = new Random();
             //UNICORNS(ran);
 
-        }        
+        }
+
+        private void Utils_MembersChanged(object sender, EventArgs e)
+        {
+            ListUsers();
+        }
+
         private async void UNICORNS(Random ran)
         {
             Color color = new Color();
