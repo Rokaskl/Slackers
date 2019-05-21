@@ -98,11 +98,6 @@ namespace WpfApp1.Pages
             }
         }
 
-        private void Chatbox_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            
-        }
-
         private void Txt_entry_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -684,55 +679,16 @@ namespace WpfApp1.Pages
                 var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
                 if (response.IsSuccessStatusCode)
                 {
-                    //Dictionary<ChatLine,ListViewItem> lvitems_dic = new Dictionary<ChatLine, ListViewItem>();
                     List<ChatLine> data = response.Content.ReadAsAsync<List<ChatLine>>().Result;
                     chatbox.Items.Clear();
                     
                     foreach (ChatLine line in data.OrderBy(x => x.CreateDate))
                     {
-                        //object chatline = line["Username"] + ": " + line["Text"];
                         chatbox.Items.Add(line);
-                        //lvitems_dic.Add(line, (ListViewItem)chatbox.ItemContainerGenerator.ContainerFromItem(line));
-                        //ListViewItem lv = (ListViewItem)chatbox.ItemContainerGenerator.ContainerFromItem(line);
-                        //if (lv != null)
-                        //{
-                        //    lv.ToolTip = line.CreateDate.ToString("hh:mm:ss yyyy/MM/dd");
-                        //    if (line.CreatorId.ToString() == Inst.Utils.User.id)
-                        //    {
-                        //        lv.Background = Brushes.LightBlue;
-                        //    }
-                        //    else
-                        //    {
-                        //        lv.Background = Brushes.LightGray;
-                        //    }
-                        //}
-                        //else
-                        //{
-
-                        //}
                     }
                     Changed = true;
                     chatbox.ScrollIntoView(data.OrderBy(x => x.CreateDate).LastOrDefault());
                     chatbox.UpdateLayout();
-                    
-
-                    //foreach (KeyValuePair<ChatLine, ListViewItem> chatline in lvitems_dic)
-                    //{
-                    //    chatline.Value.ToolTip = chatline.Key.CreateDate.ToString("hh:mm:ss yyyy/MM/dd");
-                    //    if (chatline.Key.CreatorId.ToString() == Inst.Utils.User.id)
-                    //    {
-                    //        chatline.Value.Background.is
-                    //        chatline.Value.Background = Brushes.LightBlue;
-                    //        chatline.Value.Background.Changed += Background_Changed;
-                    //    }
-                    //    else
-                    //    {
-                    //        chatline.Value.Background = Brushes.LightGray;
-                    //    }
-                    //}
-
-                    //chatbox.ItemsSource = data.Select(x => x["Username"] + ": " + x["Text"]);
-                    //ListViewItem lv = (ListViewItem)NoteListView.ItemContainerGenerator.ContainerFromItem((sender as ListView).SelectedItem);
                 }
                 else
                 {
