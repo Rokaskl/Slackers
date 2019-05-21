@@ -409,6 +409,16 @@ namespace WpfApp1.Pages
             App.Current.Resources["enable"] = style;
         }
 
+        public void UpdateNoteListView()
+        {
+            FillNotes();
+        }
+
+        public void UpdateUsersListView()
+        {
+            FillMembers();
+        }
+
         private async void FillNotes()
         {
             PopupsClose();
@@ -471,7 +481,7 @@ namespace WpfApp1.Pages
                 var response = await client.PostAsJsonAsync<Note>($"/Notes/modify", note);
                 if (response.IsSuccessStatusCode)
                 {
-                    FillNotes();
+                    //FillNotes();
                 }
                 else
                 {

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -28,6 +29,7 @@ namespace WpfApp1
         private User user;
         private MainWindow mainWindow;
         private Page roomPage;
+        private TcpDock tcp_client;
 
         public Utils()
         {
@@ -36,6 +38,16 @@ namespace WpfApp1
             client.BaseAddress = this.url;
             roomPage = null;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        public void CreateTcpServer()
+        {
+            tcp_client = new TcpDock();
+        }
+
+        public void StopTcpServer()
+        {
+            tcp_client.Stop();
         }
 
         public HttpClient HttpClient

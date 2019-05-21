@@ -45,6 +45,7 @@ namespace WpfApp1
                 this.Close();
                 return;
             }
+            Inst.Utils.CreateTcpServer();
             this.Closed += MainWindow_Closed;//prisisubscribinama po to, kai logino forma jau nebegali isjungti mainformos
             frame2.NavigationService.Navigate(new Admin());
             frame1.NavigationService.Navigate(new UserPage());   
@@ -64,6 +65,7 @@ namespace WpfApp1
                 (Inst.Utils.RoomPage as RoomPage).Logout();
             }
             Task<bool> x = Logout();
+            Inst.Utils.StopTcpServer();
             this.Hide();
             Inst.CreateInstance();
             Inst.Utils.MainWindow = this;
@@ -73,7 +75,8 @@ namespace WpfApp1
             {
                 this.Close();
                 return;
-            }            
+            }
+            Inst.Utils.CreateTcpServer();
             frame2.NavigationService.Navigate(new Admin());
             frame1.NavigationService.Navigate(new UserPage());               
             roomPage.NavigationService.Navigate(new Pages.RoomPage());

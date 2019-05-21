@@ -185,6 +185,7 @@ namespace WebApi.Controllers
                 //throw new AppException("User is already logged into that room!");
                 return Content("User is already logged into that room!");
             }
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId });
             return Ok();
         }
 
@@ -212,7 +213,7 @@ namespace WebApi.Controllers
                 }
                 //raise room modified event?
             }
-            
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId });
             return Ok();
         }
 
@@ -247,6 +248,7 @@ namespace WebApi.Controllers
                     room.usersById.Add(UserId, status);
                 }
             }
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = roomId });
             return Ok();
         }
     }

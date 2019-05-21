@@ -177,7 +177,8 @@ namespace WpfApp1.Forms
         {
             int roomId = (int)((Button)sender).Tag;
             SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
-            LoginRoom();
+            Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Administraktoring(SelectedRoom));
+            //LoginRoom();
         }
         
         private void RemoveRoom_Click(object sender, RoutedEventArgs e)
