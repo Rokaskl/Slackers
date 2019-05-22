@@ -19,6 +19,7 @@ using WpfApp1.Forms;
 using System.Diagnostics;
 using WpfApp1.TimerControl;
 using System.Reflection;
+using System.Globalization;
 
 namespace WpfApp1.Pages
 {
@@ -31,6 +32,7 @@ namespace WpfApp1.Pages
         private RoomDto room;
         private string prevWindow;
         private Timer timer;
+        private bool Changed;
 
         public RoomPage(){}
         public RoomPage(RoomDto room,string prev)
@@ -42,6 +44,7 @@ namespace WpfApp1.Pages
             client = Inst.Utils.HttpClient;
            
             InitializeComponent();
+            this.chatbox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
             this.KeyDown += RoomPage_KeyDown;
             this.txt_entry.KeyUp += Txt_entry_KeyUp;
 
@@ -69,6 +72,30 @@ namespace WpfApp1.Pages
             FillNotes();
             FillChat();
             Task.Run(() => DisplayMembersR());//toliau naujina info kas 10secs.
+        }
+
+        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+        {
+            if (Changed && this.chatbox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+            {
+                foreach(ChatLine line in (sender as System.Windows.Controls.ItemContainerGenerator).Items)
+                {
+                    ListViewItem lv = (ListViewItem)chatbox.ItemContainerGenerator.ContainerFromItem(line);
+                    if (lv != null)
+                    {
+                        lv.ToolTip = line.CreateDate.ToString("HH:mm:ss yyyy/MM/dd", CultureInfo.InvariantCulture);
+                        if (line.CreatorId.ToString() == Inst.Utils.User.id)
+                        {
+                            lv.Background = Brushes.LightBlue;
+                        }
+                        else
+                        {
+                            lv.Background = Brushes.LightGray;
+                        }
+                    }
+                }
+                Changed = false;
+            }
         }
 
         private void Txt_entry_KeyUp(object sender, KeyEventArgs e)
@@ -652,33 +679,16 @@ namespace WpfApp1.Pages
                 var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
                 if (response.IsSuccessStatusCode)
                 {
-                    Dictionary<ChatLine,ListViewItem> lvitems_dic = new Dictionary<ChatLine, ListViewItem>();
                     List<ChatLine> data = response.Content.ReadAsAsync<List<ChatLine>>().Result;
                     chatbox.Items.Clear();
-                    foreach(ChatLine line in data)
+                    
+                    foreach (ChatLine line in data.OrderBy(x => x.CreateDate))
                     {
-                        //object chatline = line["Username"] + ": " + line["Text"];
                         chatbox.Items.Add(line);
-                        chatbox.UpdateLayout();
-                        chatbox.ScrollIntoView(line);
-                        lvitems_dic.Add(line, (ListViewItem)chatbox.ItemContainerGenerator.ContainerFromItem(line));
                     }
-                    
-                    foreach (KeyValuePair<ChatLine, ListViewItem> chatline in lvitems_dic)
-                    {
-                        chatline.Value.ToolTip = chatline.Key.CreateDate.ToString("hh:mm:ss yyyy/MM/dd");
-                        if (chatline.Key.CreatorId.ToString() == Inst.Utils.User.id)
-                        {
-                            chatline.Value.Background = Brushes.LightBlue;
-                        }
-                        else
-                        {
-                            chatline.Value.Background = Brushes.LightGray;
-                        }
-                    }
-                    
-                    //chatbox.ItemsSource = data.Select(x => x["Username"] + ": " + x["Text"]);
-                    //ListViewItem lv = (ListViewItem)NoteListView.ItemContainerGenerator.ContainerFromItem((sender as ListView).SelectedItem);
+                    Changed = true;
+                    chatbox.ScrollIntoView(data.OrderBy(x => x.CreateDate).LastOrDefault());
+                    chatbox.UpdateLayout();
                 }
                 else
                 {
@@ -690,6 +700,11 @@ namespace WpfApp1.Pages
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+        private void Background_Changed(object sender, EventArgs e)
+        {
+            (sender as ListViewItem).Background.Changed -= Background_Changed;
         }
 
         private void Btn_txtenter_Click(object sender, RoutedEventArgs e)

@@ -73,7 +73,7 @@ namespace WebApi
 
                 while (true)
                 {
-                    if (client.GetStream().CanRead && client.Available == 8)
+                    if (client.GetStream().CanRead && client.Available >= 8)
                     {
                         byte[] buffer = new byte[client.Available];
                         client.GetStream().Read(buffer, 0, client.Available);

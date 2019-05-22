@@ -207,7 +207,7 @@ namespace WebApi.Controllers
             {
                 //App.Inst.tempRooms.Where(x=>x.roomId==RoomId&&x.usersById.ContainsKey(UserId));
                 tempRoom.usersById.Remove(UserId);
-                App.Inst.Remove(UserId);
+                //App.Inst.Remove(UserId);
                 if (tempRoom.usersById.Count == 0)
                 {
                     App.Inst.tempRooms.Remove(tempRoom);
