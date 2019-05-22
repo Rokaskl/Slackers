@@ -114,7 +114,7 @@ namespace WpfApp1.Pages
         }
         private async void ShowUsersTimes(DateTime from,DateTime to)//Testuot
         {
-            string uri = $"TimeTracker/timeroom/{from}/{to.AddDays(1)}/{room.roomId}/{0}";
+            string uri = $"TimeTracker/timeroom/{from}/{to}/{room.roomId}/{0}";
             var resp = await client.GetAsync(uri);
             if (resp.IsSuccessStatusCode)
             {

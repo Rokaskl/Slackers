@@ -104,7 +104,11 @@ namespace WpfApp1
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-             Task<bool> x = Logout();
+            if (Inst.Utils.RoomPage != null)
+            {
+                (Inst.Utils.RoomPage as RoomPage).Logout();
+            }
+            Task<bool> x = Logout();
         }
 
         private void Account_Click(object sender, RoutedEventArgs e)
