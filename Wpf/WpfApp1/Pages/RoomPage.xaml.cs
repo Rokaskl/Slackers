@@ -614,7 +614,7 @@ namespace WpfApp1.Pages
             textbox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             textbox.TextWrapping = TextWrapping.Wrap;
             popup.Child = panel;
-            TextBox header = new TextBox() { Text = string.IsNullOrWhiteSpace(pheader) ? "Header" : pheader, Background = Brushes.Aqua };
+            TextBox header = new TextBox() { Text = string.IsNullOrWhiteSpace(pheader) ? "Header" : pheader, Background = Brushes.LightGray };
             panel.Children.Add(header);
             panel.Children.Add(textbox);
             
@@ -645,7 +645,7 @@ namespace WpfApp1.Pages
 
             textbox.Height = 350;
             textbox.Width = 500;
-            textbox.Background = Brushes.AliceBlue;
+            textbox.Background = Brushes.White;
             textbox.VerticalContentAlignment = VerticalAlignment.Top;
             textbox.AcceptsReturn = true;
             textbox.AcceptsTab = true;

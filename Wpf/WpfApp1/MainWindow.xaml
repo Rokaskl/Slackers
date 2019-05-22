@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1.Forms"
         mc:Ignorable="d"
+        ResizeMode="CanResize"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="MainWindow" Foreground="White"
         Closing="Window_Closing"
+        
         >
-
-
 
 
     <Grid Background="LightGray" InkCanvas.Left="200">
@@ -30,7 +30,7 @@
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid>
                 <Grid.RowDefinitions>

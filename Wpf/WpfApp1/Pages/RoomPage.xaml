@@ -6,53 +6,106 @@
       xmlns:local="clr-namespace:WpfApp1.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="RoomPage">
+      Title="RoomPage"
+    >
+    
+    <Page.Resources>
+        <Style x:Key="notesCollapsHeader" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+    </Page.Resources>
+
 
     <Grid Name ="pageGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <ListView Grid.Column="0" Grid.Row="0" x:Name="MembersListView" HorizontalAlignment="Left" Margin="22,35,478,183" VerticalAlignment="Top" Height="340" Width="550">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="0" DisplayMemberBinding="{Binding [username]}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <StackPanel x:Name="botomStack" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" FlowDirection="LeftToRight" Width="150" RenderTransformOrigin="-0.212,0.585" Margin="900,500,0,63" VerticalAlignment="Top">
-            <Button x:Name="btnStartStop" Content="Start!" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="60" Height="40" Click="btnStartStop_Click" FlowDirection="LeftToRight"/>
+        
+        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <ComboBox  x:Name="cmbStatus" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
+            <Button  x:Name="btnLogoutRoom" Content="Logout" HorizontalAlignment="Right" VerticalAlignment="Stretch" Click="BtnLogoutRoom_Click" Height="25" Width="50"/>
         </StackPanel>
-        <Button x:Name="btn_addnote" Content="Add" Margin="700,380,34,0" VerticalAlignment="Top" Click="Btn_addnote_Click" Height="40" Width="60" HorizontalAlignment="Right"/>
-        <ListView Grid.Row="0" x:Name="NoteListView" HorizontalAlignment="Left"  Margin="650,35,34,209" VerticalAlignment="Top" Background="#FFD4F735" Width="600" Height="330" BorderThickness="10" BorderBrush="Black">
+        
+        <ListView Grid.Column="0" Grid.Row="1" x:Name="MembersListView" HorizontalAlignment="Stretch"  VerticalAlignment="Top" Margin="2,-30,20,2">
             <ListView.View>
-                <GridView>
-                    <GridViewColumn
-                                 DisplayMemberBinding="{Binding Path=Id}"/>
-                    <GridViewColumn Width="320">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Path=Header}" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True"></TextBox>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                <GridView  >
+                    <GridViewColumn  DisplayMemberBinding="{Binding [username]}"/>
                 </GridView>
             </ListView.View>
         </ListView>
-        <ListView x:Name="chatbox" Background="#FFAEB881" HorizontalAlignment="Left" VerticalAlignment="bottom" Margin="52,286,274,63" Width="700" Height="230" VirtualizingStackPanel.IsVirtualizing="False">
-            <!--<ListView.ItemsPanel>
+        
+        <StackPanel x:Name="botomStack" Grid.Column="1" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" FlowDirection="RightToLeft"  VerticalAlignment="Bottom">
+            <Button x:Name="btnStartStop" Content="Start!" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Top" Width="70" Height="40" Click="btnStartStop_Click" FlowDirection="LeftToRight"/>
+        </StackPanel>
+        
+        <Grid Grid.Row="1" Grid.Column="1">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            
+            <Button x:Name="btn_addnote" Grid.Row="1" Content="Add" VerticalAlignment="Top" Click="Btn_addnote_Click" Height="30" Width="60" HorizontalAlignment="Right"/>
+            <ListView Grid.Row="0" Grid.Column="0" x:Name="NoteListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735"   BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource notesCollapsHeader}">
+                        <GridViewColumn
+                                 DisplayMemberBinding="{Binding Path=Id}"/>
+                        <GridViewColumn Width="320">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Header}" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsEnabled="True"></TextBox>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+        
+        <Grid Grid.Column="0" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <ListView x:Name="chatbox" Grid.Row="0" Grid.Column="0" Background="#FFAEB881" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="False">
+                <!--<ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel VerticalAlignment="Bottom"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>-->
-        </ListView>
-        <TextBox x:Name="txt_entry" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextWrapping="Wrap" Text="" Width="500" Height="40" Background="#FFFBFBBD" BorderBrush="#89000000" Margin="70,395,0,10" VerticalScrollBarVisibility="Auto" AcceptsTab="True"/>
-        <Button x:Name="btn_txtenter" Content="&gt;" HorizontalAlignment="Left" Margin="575,395,0,10" VerticalAlignment="Bottom" Width="40" Click="Btn_txtenter_Click" Height="40"/>
-        <ComboBox  x:Name="cmbStatus" HorizontalAlignment="Left" Margin="22,2,0,0" VerticalAlignment="Top" Width="120"/>
-        <Button  x:Name="btnLogoutRoom" Content="Logout" HorizontalAlignment="Right" Margin="715,5,10,0" VerticalAlignment="Top" Click="BtnLogoutRoom_Click"/>
+            </ListView>
+            <Grid Grid.Column="0" Grid.Row="1">
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <TextBox x:Name="txt_entry" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="" Background="#FFFBFBBD" BorderBrush="#89000000" VerticalScrollBarVisibility="Auto" AcceptsTab="True"/>
+                <Button x:Name="btn_txtenter" Grid.Column="1" Grid.Row="0" Content="&gt;" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="40" Click="Btn_txtenter_Click" Height="22"/>
+
+            </Grid>
+        </Grid>
+        
     </Grid>
 </Page>
