@@ -27,7 +27,6 @@ namespace WpfApp1.Pages
     /// </summary>
     public partial class AccountPage : Page
     {
-        private HttpClient client;
         public AccountPage()
         {
             InitializeComponent();
@@ -39,6 +38,12 @@ namespace WpfApp1.Pages
             txtUsername.Text = Inst.Utils.User.username;
             txtName.Text = Inst.Utils.User.firstName;
             txtLastName.Text = Inst.Utils.User.lastName;
+        }
+
+        private void BtnChangePass_Click(object sender, RoutedEventArgs e)
+        {
+            PassChangingForm passform = new PassChangingForm();
+            passform.Show();
         }
     }
 }
