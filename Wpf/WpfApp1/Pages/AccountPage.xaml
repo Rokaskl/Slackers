@@ -34,14 +34,14 @@
                 <ImageBrush ImageSource="https://t3.ftcdn.net/jpg/00/64/67/80/240_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg"/>
             </Border.Background>
         </Border>
-        <TextBlock Text="Username:" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" FontSize="16"/>
-        <TextBlock Text="Name:" Grid.Column="1" Grid.Row="4" VerticalAlignment="Top" FontSize="16"/>
-        <TextBlock Text="Last Name:" Grid.Column="1" Grid.Row="5" VerticalAlignment="Top" FontSize="16"/>
- <!--       <Button x:Name="btnEditProfile" Grid.Column="1" Grid.Row="6" Content="Edit profile" Width="120" HorizontalAlignment="Left" Margin="0,8,5,8" Height="Auto" /> -->
+        <TextBlock Text="Username:" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" FontSize="20"/>
+        <TextBlock Text="Name:" Grid.Column="1" Grid.Row="4" VerticalAlignment="Top" FontSize="20"/>
+        <TextBlock Text="Last Name:" Grid.Column="1" Grid.Row="5" VerticalAlignment="Top" FontSize="20"/>
+        <Button x:Name="btnEditProfile" Grid.Column="1" Grid.Row="6" Content="Edit profile" Width="120" HorizontalAlignment="Left" Margin="0,8,5,8" Height="Auto" />
 
-        <TextBlock x:Name="txtUsername" Text="username" Grid.Column="2" Grid.Row="3" VerticalAlignment="Top" FontSize="16"/>
-        <TextBlock x:Name="txtName" Text="Name" Grid.Column="2" Grid.Row="4" VerticalAlignment="Top" FontSize="16"/>
-        <TextBlock x:Name="txtLastName" Text="Last Name" Grid.Column="2" Grid.Row="5" VerticalAlignment="Top" FontSize="16"/>
-        <Button x:Name="btnChangePass" Grid.Column="1" Grid.Row="6" Content="Change password" Width="150" HorizontalAlignment="Left" Margin="10,8,0,0" Height="24" VerticalAlignment="Top" Click="BtnChangePass_Click" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="txtUsername" Text="username" Grid.Column="2" Grid.Row="3" VerticalAlignment="Top" FontSize="20"/>
+        <TextBlock x:Name="txtName" Text="Name" Grid.Column="2" Grid.Row="4" VerticalAlignment="Top" FontSize="20"/>
+        <TextBlock x:Name="txtLastName" Text="Last Name" Grid.Column="2" Grid.Row="5" VerticalAlignment="Top" FontSize="20"/>
+        <Button x:Name="btnChangePass" Grid.Column="2" Grid.Row="6" Content="Change password" Width="150" HorizontalAlignment="Left" Margin="10,8,0,0" Height="24" VerticalAlignment="Top" Click="BtnChangePass_Click" />
     </Grid>
 </Page>

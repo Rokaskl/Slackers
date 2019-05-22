@@ -38,6 +38,7 @@ namespace WpfApp1.Forms
         {
             lb_error.Visibility = Visibility.Hidden;
         }
+
         private void LoginForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
