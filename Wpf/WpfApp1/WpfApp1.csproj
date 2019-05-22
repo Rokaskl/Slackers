@@ -101,8 +101,8 @@
     <Compile Include="Forms\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\PassChangeForm.xaml.cs">
-      <DependentUpon>PassChangeForm.xaml</DependentUpon>
+    <Compile Include="Forms\PassChangingForm.xaml.cs">
+      <DependentUpon>PassChangingForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\RoomsPage.xaml.cs">
       <DependentUpon>RoomsPage.xaml</DependentUpon>
@@ -138,7 +138,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Forms\PassChangeForm.xaml">
+    <Page Include="Forms\PassChangingForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

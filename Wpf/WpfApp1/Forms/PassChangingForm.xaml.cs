@@ -23,11 +23,11 @@ using System.Reflection;
 namespace WpfApp1.Forms
 {
     /// <summary>
-    /// Interaction logic for PassChangeForm.xaml
+    /// Interaction logic for PassChangingForm.xaml
     /// </summary>
-    public partial class PassChangeForm : Window
+    public partial class PassChangingForm : Window
     {
-        public PassChangeForm()
+        public PassChangingForm()
         {
             InitializeComponent();
         }

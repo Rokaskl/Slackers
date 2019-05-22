@@ -42,7 +42,7 @@ namespace WpfApp1.Pages
 
         private void BtnChangePass_Click(object sender, RoutedEventArgs e)
         {
-            PassChangeForm passform = new PassChangeForm();
+            PassChangingForm passform = new PassChangingForm();
             passform.Show();
         }
     }
