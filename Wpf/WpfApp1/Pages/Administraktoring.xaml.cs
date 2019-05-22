@@ -133,7 +133,7 @@ namespace WpfApp1.Pages
 
                 ((BarSeries)chaha.Series[0]).ItemsSource = _stats.ToArray();
             }
-            else MessageBox.Show("Failed to get users stats\nOr no users in room");
+            //else MessageBox.Show("Failed to get users stats\nOr no users in room");
         }
         private void kickFromRoom_Click(object sender, RoutedEventArgs e)
         {
@@ -294,7 +294,7 @@ namespace WpfApp1.Pages
                 var response = await client.GetAsync($"/Rooms/login_group/{room.roomId}");
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show($"Joined {room.roomName}");
+                    //MessageBox.Show($"Joined {room.roomName}");
                     Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(room,"admin"));
                     Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
                     Inst.Utils.MainWindow.tabs.SelectedIndex = 2;
@@ -303,7 +303,7 @@ namespace WpfApp1.Pages
                 }
                 else
                 {
-                    MessageBox.Show("Joining failed...");
+                    //MessageBox.Show("Joining failed...");
                 }
 
             }
