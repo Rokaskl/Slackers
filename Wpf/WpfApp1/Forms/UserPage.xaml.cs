@@ -140,7 +140,7 @@ namespace WpfApp1.Forms
                 var response = await client.GetAsync($"/Rooms/login_group/{roomid.roomId}");
                 if (response.IsSuccessStatusCode)
                 {                
-                    MessageBox.Show($"Joined {roomid.roomName}");
+                    //MessageBox.Show($"Joined {roomid.roomName}");
                     Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(roomid,"user"));
                     Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
                     Inst.Utils.MainWindow.tabs.SelectedIndex = 2;  
@@ -149,7 +149,7 @@ namespace WpfApp1.Forms
                 }
                 else
                 {
-                    MessageBox.Show("Joining failed...");
+                    //MessageBox.Show("Joining failed...");
                 }
                 //var response = await client.GetAsync($"/Rooms/login_group/{room["roomId"]}");
                 //if (response.IsSuccessStatusCode)
@@ -195,13 +195,14 @@ namespace WpfApp1.Forms
                 var response = await client.PutAsJsonAsync($"/Rooms/join_group", new { guid = guid });
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show($"successfuly became a member");
+                    //MessageBox.Show($"successfuly became a member");
                     //Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
                     ShowRooms();
+                    this.guidText.Text = string.Empty;
                 }
                 else
                 {
-                    MessageBox.Show("Joining failed...");
+                    //MessageBox.Show("Joining failed...");
                 }
 
             }
