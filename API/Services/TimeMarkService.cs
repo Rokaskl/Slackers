@@ -75,6 +75,10 @@ namespace WebApi.Services
             // if (markArray[i].Action == true && markArray[i + 1].Action == false)
             TimeSpan span = new TimeSpan();
             DateTime date = new DateTime(year, month, day);
+            if (date > DateTime.Now)
+            {
+                return span;
+            }
             DateTime nextdaydate = date.AddDays(1);
             DateTime from;
             DateTime to;

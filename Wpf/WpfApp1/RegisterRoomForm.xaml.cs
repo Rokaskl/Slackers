@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WebApi.Dtos;
 using WebApi.Entities;
+using WpfApp1.Forms;
 
 namespace WpfApp1
 {
@@ -28,19 +29,25 @@ namespace WpfApp1
         private byte[] photo = null;
         private HttpClient client;
         private int rooomId = -1;
+        private Admin adminPage;
 
-        public RegisterRoomForm(int userId)
+        public RegisterRoomForm(int userId, Admin adminPage)
         {
             this.userId = userId;
             client = Inst.Utils.HttpClient;
             InitializeComponent();
+            this.Closed += RegisterRoomForm_Closed;
+            this.adminPage = adminPage;
         }
-        public RegisterRoomForm(RoomDto room)
-        {       
+
+        public RegisterRoomForm(RoomDto room, Admin adminPage)
+        {
+            this.adminPage = adminPage;
             this.userId = 0;
             this.rooomId = room.roomId;
             client = Inst.Utils.HttpClient;
             InitializeComponent();
+            this.Closed += RegisterRoomForm_Closed;
             this.RoomName.Text = room.roomName;
             this.RoomName.IsEnabled = false;
             this.RoomBio.Document.Blocks.Clear();
@@ -48,6 +55,12 @@ namespace WpfApp1
             this.create.Content = "Submit edit";
 
         }
+
+        private void RegisterRoomForm_Closed(object sender, EventArgs e)
+        {
+            this.adminPage.UpdateRoomView();
+        }
+
         public async void getAddData(int roomId)
         {
             var resp = await client.GetAsync($"AdditionalDatas/{roomId}/{false}");
@@ -91,11 +104,11 @@ namespace WpfApp1
                 var response = await client.PostAsJsonAsync("AdditionalDatas", data);
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Photo upload succsesful");
+                    //MessageBox.Show("Photo upload succsesful");
                 }
                 else
                 {
-                    MessageBox.Show("Photo upload failed");
+                    //MessageBox.Show("Photo upload failed");
                 }
             }            
         }
@@ -111,12 +124,12 @@ namespace WpfApp1
                 if (response.IsSuccessStatusCode)
                 {                    
                     RoomDto temp = response.Content.ReadAsAsync<RoomDto>().Result;
-                    MessageBox.Show("register successfully");  
+                    //MessageBox.Show("register successfully");  
                     rooomId = temp.roomId;
                 }
                 else
                 {
-                    MessageBox.Show("register failed...");
+                    //MessageBox.Show("register failed...");
                 }
 
             }
