@@ -105,7 +105,7 @@ namespace WebApi.Services
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return user;
+            return _context.Users.First(x=>x.Username==user.Username);
         }
 
         public void Update(User userParam, string password = null)

@@ -91,8 +91,8 @@ namespace WebApi.Controllers
             try 
             {
                 // save 
-                _userService.Create(user, userDto.Password);
-                return Ok();
+                var temp =  _mapper.Map<UserDto>(_userService.Create(user, userDto.Password));
+                return Ok(temp);
             } 
             catch(AppException ex)
             {
