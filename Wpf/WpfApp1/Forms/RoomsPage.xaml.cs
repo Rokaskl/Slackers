@@ -126,7 +126,7 @@ namespace WpfApp1.Forms
                 var response = await client.PostAsJsonAsync("/Rooms/register", club);
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Register Successfully");
+                    //MessageBox.Show("Register Successfully");
                     ShowRooms();
                 }
                 else
@@ -149,12 +149,12 @@ namespace WpfApp1.Forms
                 var response = await client.GetAsync($"/Rooms/login_group/{room["roomId"]}");
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show($"Joined {room["roomName"]}");
+                    //MessageBox.Show($"Joined {room["roomName"]}");
                    // Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
                 }
                 else
                 {
-                    MessageBox.Show("Joining failed...");
+                    //MessageBox.Show("Joining failed...");
                 }
 
             }
@@ -180,13 +180,13 @@ namespace WpfApp1.Forms
                 var response = await client.PutAsJsonAsync($"/Rooms/join_group", new { guid = guid });
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show($"successfuly became a member");
+                    //MessageBox.Show($"successfuly became a member");
                     //Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));
                     ShowRooms();
                 }
                 else
                 {
-                    MessageBox.Show("Joining failed...");
+                    //MessageBox.Show("Joining failed...");
                 }
 
             }

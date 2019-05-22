@@ -83,8 +83,7 @@ namespace WpfApp1.Forms
 
         private void BtnRegisterRoom_Click(object sender, RoutedEventArgs e)
         {
-            new RegisterRoomForm(Int32.Parse(Inst.Utils.User.id)).Show();
-
+            new RegisterRoomForm(Int32.Parse(Inst.Utils.User.id), this).Show();
             //if (roomNameText.Text != "")
             //RegisterRoom(roomNameText.Text);
             //else
@@ -93,8 +92,7 @@ namespace WpfApp1.Forms
         }
         private void BtnEditRoom_Click(object sender, RoutedEventArgs e)
         {
-            new RegisterRoomForm((RoomDto)((Button)sender).Tag).Show();
-
+            new RegisterRoomForm((RoomDto)((Button)sender).Tag, this).Show();
             //if (roomNameText.Text != "")
             //RegisterRoom(roomNameText.Text);
             //else
@@ -342,9 +340,8 @@ namespace WpfApp1.Forms
             var res = await client.DeleteAsync($"Rooms/{SelectedRoom.roomId}");
             if (res.IsSuccessStatusCode)
             {
-                MessageBox.Show($"Room {SelectedRoom.roomName} successful deleted");
-                RoomsList.Items.Clear();
-                ShowRooms();
+                //MessageBox.Show($"Room {SelectedRoom.roomName} successfully deleted");
+                UpdateRoomView();
                 //List<RoomDto> rooms = adminRooms.Items.Cast<RoomDto>().ToList<RoomDto>();
                 //rooms.Remove(SelectedRoom);
                 //adminRooms.ItemsSource = rooms;
@@ -354,6 +351,11 @@ namespace WpfApp1.Forms
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateRoomView();
+        }
+
+        public void UpdateRoomView()
         {
             RoomsList.Items.Clear();
             ShowRooms();
