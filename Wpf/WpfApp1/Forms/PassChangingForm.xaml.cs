@@ -30,6 +30,8 @@ namespace WpfApp1.Forms
         public PassChangingForm()
         {
             InitializeComponent();
+            newPassword.Focus();
+            this.KeyDown += PassChangingForm_KeyDown;
         }
 
         private async void ChangePass()
@@ -70,6 +72,14 @@ namespace WpfApp1.Forms
             }
         }
 
+        private void PassChangingForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                btnChangePass.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                e.Handled = true;
+            }
+        }
         private void BtnChangePass_Click(object sender, RoutedEventArgs e)
         {
             ChangePass();
