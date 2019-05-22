@@ -91,11 +91,11 @@ namespace WpfApp1
                 var response = await client.PostAsJsonAsync("AdditionalDatas", data);
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Photo upload succsesful");
+                    //MessageBox.Show("Photo upload succsesful");
                 }
                 else
                 {
-                    MessageBox.Show("Photo upload failed");
+                    MessageBox.Show("Photo and bio upload failed");
                 }
             }            
         }
@@ -111,7 +111,7 @@ namespace WpfApp1
                 if (response.IsSuccessStatusCode)
                 {                    
                     RoomDto temp = response.Content.ReadAsAsync<RoomDto>().Result;
-                    MessageBox.Show("register successfully");  
+                    //MessageBox.Show("register successfully");  
                     rooomId = temp.roomId;
                 }
                 else
