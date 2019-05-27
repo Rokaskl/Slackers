@@ -79,19 +79,22 @@ namespace WebApi
 
         private void Inst_RoomChanged(object sender, ChangeEventArgs e)
         {
-            TempRoom changedRoom = tempRooms.Find(x => x.roomId == e.roomId);
-            
-            if (changedRoom != null)
-            {
-                foreach (KeyValuePair<int, string> user in changedRoom.usersById)
-                {
-                    this.Server.SendInfo(user.Key, e.change.ToString());
-                }
-            }
-            //if (e.change == 3)
+            //TempRoom changedRoom = tempRooms.Find(x => x.roomId == e.roomId);
+
+            //if (changedRoom != null)
             //{
-            //    this.Server.SendInfo(user.Key, e.change.ToString());
+            //    foreach (KeyValuePair<int, string> user in changedRoom.usersById)
+            //    {
+            //        this.Server.SendInfo(user.Key, e.change.ToString());
+            //    }
             //}
+            if (e.registered_room_users != null)
+            {
+                foreach (int user in e.registered_room_users)
+                {
+                    this.Server.SendInfo(user, e.change.ToString());
+                }
+            } 
         }
 
         public bool Add(int id)
@@ -131,5 +134,6 @@ namespace WebApi
     {
         public int change;
         public int roomId;
+        public List<int> registered_room_users;
     }
 }

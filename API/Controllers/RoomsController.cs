@@ -58,8 +58,11 @@ namespace WebApi.Controllers
             var roomie = _mapper.Map<Room>(room);
             try
             {
-            var _room = _roomService.Create(roomie,room.users);//reiks įvesk validaciiją dėl vardų
-            return Ok(_room);//gražina kad sėkmingai registruota
+                var _room = _roomService.Create(roomie,room.users);//reiks įvesk validaciiją dėl vardų
+                List<int> users = new List<int>();
+                users.Add(room.roomAdminId);
+                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 5, roomId = room.roomId, registered_room_users = users });
+                return Ok(_room);//gražina kad sėkmingai registruota
             }
             catch (AppException ex)
             {
@@ -106,6 +109,11 @@ namespace WebApi.Controllers
                 int userToKick = data.Value<int>("userId");
                 int admin = Int32.Parse(Request.HttpContext.User.Identity.Name);
                 _roomService.KickUser(roomId,userToKick,admin);
+                //RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == roomId);
+                List<int> usersToKick = new List<int>();
+                usersToKick.Add(userToKick);
+                //registeredUsers.Add(room.roomAdminId);
+                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 4, roomId = roomId, registered_room_users = usersToKick});
                 return Ok();
             }
             catch (Exception ex)
@@ -128,7 +136,11 @@ namespace WebApi.Controllers
                 {
                     throw new AppException( "Room not found");
                 }
-                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 3, roomId = temp.roomId });
+
+                RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == temp.roomId);
+                List<int> registeredUsers = room.users;
+                registeredUsers?.Add(room.roomAdminId);
+                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 3, roomId = temp.roomId, registered_room_users = registeredUsers });
                 return Ok();
             }
             catch(AppException ex)
@@ -143,9 +155,8 @@ namespace WebApi.Controllers
         {
             try
             {
-            int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
-            _roomService.Delete(id,requesterId);//tik roomo adminas gali ištrinti roomą
-            
+                int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+                _roomService.Delete(id,requesterId);//tik roomo adminas gali ištrinti roomą
             }
             catch (Exception ex)
             {
@@ -194,7 +205,11 @@ namespace WebApi.Controllers
                 //throw new AppException("User is already logged into that room!");
                 return Content("User is already logged into that room!");
             }
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId });
+
+            RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == RoomId);
+            List<int> registeredUsers = room.users;
+            registeredUsers?.Add(room.roomAdminId);
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId, registered_room_users = registeredUsers });
             return Ok();
         }
 
@@ -220,10 +235,24 @@ namespace WebApi.Controllers
                 {
                     App.Inst.tempRooms.Remove(tempRoom);
                 }
-                //raise room modified event?
             }
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId });
+
+            RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == RoomId);
+            List<int> registeredUsers = room.users;
+            registeredUsers?.Add(room.roomAdminId);
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId, registered_room_users = registeredUsers });
             return Ok();
+        }
+
+        [Route("group_members/{RoomId:int}")]
+        public IActionResult GroupMembersInfo(int RoomId)
+        {
+            var userList = _roomService.GetRoom(RoomId)?.users?.Select(x =>
+            {
+                User user = _userService.GetById(x);
+                return new { id = user.Id, username = user.Username, firstName = user.FirstName, lastName = user.LastName, token = "" };
+            });
+            return Ok(userList);
         }
 
         [AllowAnonymous]//Pratestuoti
@@ -257,7 +286,11 @@ namespace WebApi.Controllers
                     room.usersById.Add(UserId, status);
                 }
             }
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = roomId });
+
+            RoomDto roomDto = _roomService.GetAllRooms().First(x => x.roomId == roomId);
+            List<int> registeredUsers = roomDto.users;
+            registeredUsers?.Add(roomDto.roomAdminId);
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = roomId, registered_room_users = registeredUsers });
             return Ok();
         }
     }

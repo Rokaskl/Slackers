@@ -47,7 +47,10 @@ namespace WebApi.Controllers
 
     public class TimeOutControl
     {
-        public TimeOutControl() { }
+
+        public TimeOutControl()
+        {
+        }
 
         public void Start()
         {
@@ -85,6 +88,12 @@ namespace WebApi.Controllers
             foreach(var user in App.Inst.users.Where(x => x.time > 2))
             {
                 App.Inst.tempRooms.FirstOrDefault(x => x.usersById.Keys.Contains(user.id))?.usersById.Remove(user.id);
+                //If user is trackint time, his time tracking should be stopped (stop mark left).
+                //
+                    //
+                        //need access to TimeMarkService or DbContext.
+                    //
+                //
                 //App.Inst.loggedin.Remove(user.id);
             }
 

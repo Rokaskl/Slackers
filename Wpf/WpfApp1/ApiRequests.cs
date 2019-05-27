@@ -321,13 +321,9 @@ namespace WpfApp1
             }
             return null;
         }
-        public async Task<List<User>> GetUsersList(List<int> usersIds)
+        public async Task<List<User>> GetUsersList(int roomId)
         {
-            if (usersIds==null)
-            {
-                return null;
-            }
-            var res = await client.PostAsJsonAsync("Users/get_list",new{ids= usersIds });
+            var res = await client.GetAsync($"Rooms/group_members/{roomId}");
             if (res.IsSuccessStatusCode)
             {
                 return res.Content.ReadAsAsync<List<User>>().Result;

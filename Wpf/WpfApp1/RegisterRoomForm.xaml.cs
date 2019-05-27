@@ -55,7 +55,7 @@ namespace WpfApp1
 
         private void RegisterRoomForm_Closed(object sender, EventArgs e)
         {
-            this.adminPage.UpdateRoomView();
+            //this.adminPage.UpdateRoomView();
         }
 
         public async void getAddData(int roomId)

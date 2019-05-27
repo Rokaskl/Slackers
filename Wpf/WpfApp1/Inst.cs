@@ -33,6 +33,9 @@ namespace WpfApp1
         //private User user;
         private MainWindow mainWindow;
         private Page roomPage;
+        private Page roomOverViewPage;
+        private Page userPage;
+        private Page adminPage;
         private TcpDock tcp_client;
 
         public Utils()
@@ -92,6 +95,24 @@ namespace WpfApp1
             set => roomPage = value;
         }
 
+        public Page Administraktoring
+        {
+            get => roomOverViewPage;
+            set => roomOverViewPage = value;
+        }
+
+        public Page UserPage
+        {
+            get => userPage;
+            set => userPage = value;
+        }
+
+        public Page AdminPage
+        {
+            get => adminPage;
+            set => adminPage = value;
+        }
+
         //private async void Ping()
         //{            
         //    try
@@ -139,17 +160,17 @@ namespace WpfApp1
         //    }
         //}
 
-        public event EventHandler MembersChanged;
-        //private delegate void MyChangesEventHandler(object sender, ChangesEventArgs e);
-        public virtual void RaiseMembersChangedEvent(object sender, EventArgs e)
-        {
-            EventHandler handler = MembersChanged;
-            handler?.Invoke(this, e);
-            //if (MessageChanged != null)
-            //{
-            //    MessageChanged(this, e);
-            //}
-        }
+        //public event EventHandler MembersChanged;
+        ////private delegate void MyChangesEventHandler(object sender, ChangesEventArgs e);
+        //public virtual void RaiseMembersChangedEvent(object sender, EventArgs e)
+        //{
+        //    EventHandler handler = MembersChanged;
+        //    handler?.Invoke(this, e);
+        //    //if (MessageChanged != null)
+        //    //{
+        //    //    MessageChanged(this, e);
+        //    //}
+        //}
     }
 
     public class User
