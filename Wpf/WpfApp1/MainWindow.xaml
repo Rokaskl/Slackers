@@ -51,10 +51,12 @@
                         <ColumnDefinition Width="96" />
                         <ColumnDefinition Width="24" />
                     </Grid.ColumnDefinitions>
-                    <Viewbox Grid.Column="0" Grid.Row="0" Stretch="Uniform" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="96">
-                        <TextBlock x:Name="firstNameTextBlock" Text="Firstname" Margin="5, 0, 0, 0"/>
-                    </Viewbox>
-                    
+
+                    <!--<Viewbox Grid.Column="0" Grid.Row="0" Stretch="Uniform" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="96">-->
+                    <Ellipse Grid.Column="0" x:Name="profilePicture" Width="69" Height="69.5" HorizontalAlignment="Center" VerticalAlignment="Top" ></Ellipse>
+                    <TextBlock Grid.Column="0" x:Name="firstNameTextBlock" Text="Firstname" Margin="5, 69, 0, 0"/>
+                    <!--</Viewbox>-->
+
                     <materialDesign:PopupBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
                         <StackPanel Width="150">
                             <Button Content="Account" Click="Account_Click" />
@@ -66,7 +68,7 @@
                     </materialDesign:PopupBox>
                 </Grid>
             </Grid>
-            
+
         </Grid>
         <TabControl x:Name="tabs" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <!--<TabItem Header="Rooms as user">

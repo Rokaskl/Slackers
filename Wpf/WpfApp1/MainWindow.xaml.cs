@@ -28,7 +28,7 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private HttpClient client;
+        //private HttpClient client;
 
         public MainWindow()
         {
@@ -38,7 +38,7 @@ namespace WpfApp1
             this.MinWidth = 800;
             Inst.CreateInstance();
             Inst.Utils.MainWindow = this;
-            client = Inst.Utils.HttpClient;
+            //client = Inst.Utils.HttpClient;
             LoginForm loginForm = new LoginForm();
             if (!(loginForm.ShowDialog() ?? false))
             {
@@ -69,7 +69,7 @@ namespace WpfApp1
             this.Hide();
             Inst.CreateInstance();
             Inst.Utils.MainWindow = this;
-            client = Inst.Utils.HttpClient;
+            //client = Inst.Utils.HttpClient;
             LoginForm loginForm = new LoginForm();
             if (!(loginForm.ShowDialog() ?? false))
             {
@@ -87,8 +87,8 @@ namespace WpfApp1
             Inst.Utils.MainWindow.room.Visibility = Visibility.Hidden;
             enableButton();
             Inst.Utils.MainWindow.tabs.SelectedIndex = 0;
-            var response = await client.GetAsync("Users/logout");
-            if (response.IsSuccessStatusCode)
+            //var response = await client.GetAsync("Users/logout");
+            if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.Logout())
             {
                 return true;
             }

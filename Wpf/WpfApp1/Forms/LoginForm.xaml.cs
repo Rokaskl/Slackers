@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using WebApi.Dtos;
 using System.Diagnostics;
 using System.Windows.Navigation;
+using System.IO;
 
 namespace WpfApp1.Forms
 {
@@ -23,7 +24,7 @@ namespace WpfApp1.Forms
     /// </summary>
     public partial class LoginForm : Window
     {
-        private HttpClient client = Inst.Utils.HttpClient;
+        //private HttpClient client = Inst.Utils.HttpClient;
 
         public LoginForm()
         {
@@ -46,6 +47,11 @@ namespace WpfApp1.Forms
                 btnLogin.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 e.Handled = true;
             }
+            if (e.Key == Key.F12)
+            {
+                new RegisterUser().Show();
+                e.Handled = true;
+            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -58,11 +64,11 @@ namespace WpfApp1.Forms
         {
             string nick = Username.Text;
             string pw = Password.Password;
-            Task<bool> x = Login();
+            /*Task<bool> x = */Login();
             //e.Handled = true;
         }
 
-        private async Task<bool> Login()
+        private async void Login()
         {
             try
             {
@@ -71,37 +77,61 @@ namespace WpfApp1.Forms
                     Username = Username.Text,
                     Password = Password.Password
                 };
-                var response = await client.PostAsJsonAsync("/Users/authenticate/0", credentials);
-                
-                if (response.IsSuccessStatusCode)
+                //var response = await client.PostAsJsonAsync("/Users/authenticate/0", credentials);
+                if (await Inst.ApiRequests.UserLogin(credentials))
                 {
-                    var user = response.Content.ReadAsAsync<User>().Result;
-                    Inst.Utils.User = new User() { id = user.id, firstName = user.firstName, lastName = user.lastName, token = user.token, username = user.username };//WTF kam, kodėl
-                    if (Inst.Utils.User.firstName.Length > 13)
+                    //var user = response.Content.ReadAsAsync<User>().Result;
+                    //Inst.Utils.User = new User() { id = user.id, firstName = user.firstName, lastName = user.lastName, token = user.token, username = user.username };//WTF kam, kodėl
+                    if (Inst.ApiRequests.User.firstName.Length > 13)
                     {
-                        Inst.Utils.MainWindow.firstNameTextBlock.Text = Inst.Utils.User.firstName.Substring(0, 13);
+                        Inst.Utils.MainWindow.firstNameTextBlock.Text = Inst.ApiRequests.User.firstName.Substring(0, 13);
                     }
                     else
                     {
-                        Inst.Utils.MainWindow.firstNameTextBlock.Text = Inst.Utils.User.firstName;
+                        Inst.Utils.MainWindow.firstNameTextBlock.Text = Inst.ApiRequests.User.firstName;
                     }
+                    if (await Inst.ApiRequests.UserLoginAddData())
+                    {
+                        SetProfilePhoto();
+                    }
+
                     this.DialogResult = true;
                     this.Close();
-                    return true;
+                    //return true;
                 }
                 else
                 {
                     Username.Text = string.Empty;
                     Password.Password = string.Empty;
                     lb_error.Visibility = Visibility.Visible;
-                    return false;
+                    //return false;
                 }
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return false;
+                //return false;
+            }
+        }
+        private void SetProfilePhoto()
+        {
+            if (Inst.ApiRequests.AdditionalData != null)
+            {
+                if (Inst.ApiRequests.AdditionalData.PhotoBytes != null)
+                {
+                    using (var memstr = new MemoryStream(Inst.ApiRequests.AdditionalData.PhotoBytes))
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad; // here
+                        image.StreamSource = memstr;
+                        image.EndInit();
+                        ImageBrush imgBrush = new ImageBrush();
+                        imgBrush.ImageSource = image;
+                        Inst.Utils.MainWindow.profilePicture.Fill = imgBrush;
+                    }
+                }
             }
         }
     }

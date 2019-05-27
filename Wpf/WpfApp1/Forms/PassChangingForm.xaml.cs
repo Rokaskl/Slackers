@@ -44,15 +44,15 @@ namespace WpfApp1.Forms
                     {
                         var info = new UserDto
                         {
-                            Id = int.Parse(Inst.Utils.User.id),
-                            Username = Inst.Utils.User.username,
-                            FirstName = Inst.Utils.User.firstName,
-                            LastName = Inst.Utils.User.lastName,
+                            Id = int.Parse(Inst.ApiRequests.User.id),
+                            Username = Inst.ApiRequests.User.username,
+                            FirstName = Inst.ApiRequests.User.firstName,
+                            LastName = Inst.ApiRequests.User.lastName,
                             Password = newPassword.Password
                         };
-                        var response = await Inst.Utils.HttpClient.PutAsJsonAsync("/Users/" + Inst.Utils.User.id, info);
+                        //var response = await Inst.Utils.HttpClient.PutAsJsonAsync("/Users/" + Inst.Utils.User.id, info);
 
-                        if (response.IsSuccessStatusCode)
+                        if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.UpdateAccount(info))
                         {
                             MessageBox.Show("Password changed successfully");
                             this.Close();

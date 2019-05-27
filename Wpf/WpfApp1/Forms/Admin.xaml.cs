@@ -32,12 +32,12 @@ namespace WpfApp1.Forms
     /// </summary>
     public partial class Admin : Page
     {
-        private HttpClient client;
+        //private HttpClient client;
         private RoomDto SelectedRoom;
 
         public Admin()
         {
-            client = Inst.Utils.HttpClient;
+            //client = Inst.Utils.HttpClient;
             ShowRooms();
             InitializeComponent();
 
@@ -83,7 +83,7 @@ namespace WpfApp1.Forms
 
         private void BtnRegisterRoom_Click(object sender, RoutedEventArgs e)
         {
-            new RegisterRoomForm(Int32.Parse(Inst.Utils.User.id), this).Show();
+            new RegisterRoomForm(Int32.Parse(Inst.ApiRequests.User.id), this).Show();
             //if (roomNameText.Text != "")
             //RegisterRoom(roomNameText.Text);
             //else
@@ -103,9 +103,10 @@ namespace WpfApp1.Forms
         {            
             try
             {
-                var res2 = await client.GetAsync("Rooms/admin_get_rooms");
+                //var res2 = await client.GetAsync("Rooms/admin_get_rooms");
                 //List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;                
-                List<RoomDto> userR = res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
+                List<RoomDto> userR = await Inst.ApiRequests.AdminGetRooms();//res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
+                if(userR!=null)
                 foreach (var item in userR)
                 {
                     
@@ -145,7 +146,7 @@ namespace WpfApp1.Forms
                     roomElipse.Width = 50;
                     roomElipse.Height = 50;
 
-                    AdditionalData data = await GetAddData(item.roomId);                    
+                    AdditionalData data = await Inst.ApiRequests.GetRoomAddData(item.roomId);                    
                     ImageBrush imgBrush = new ImageBrush();
                     if (data!=null)
                     {
@@ -181,16 +182,16 @@ namespace WpfApp1.Forms
                 Console.WriteLine(ex.ToString());
             }
         }
-        private async Task<AdditionalData> GetAddData(int id)
-        {
-            var resp = await client.GetAsync($"AdditionalDatas/{id}/{false}");
-            if (resp.IsSuccessStatusCode)
-            {
-                AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
-                return data;
-            }
-            return null;
-        }
+        //private async Task<AdditionalData> GetAddData(int id)
+        //{
+        //    var resp = await client.GetAsync($"AdditionalDatas/{id}/{false}");
+        //    if (resp.IsSuccessStatusCode)
+        //    {
+        //        AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
+        //        return data;
+        //    }
+        //    return null;
+        //}
         //private async void ShowRooms()
         //{
         //    try
@@ -337,8 +338,8 @@ namespace WpfApp1.Forms
         }
         private async void DeleteRoom()
         {
-            var res = await client.DeleteAsync($"Rooms/{SelectedRoom.roomId}");
-            if (res.IsSuccessStatusCode)
+            //var res = await client.DeleteAsync($"Rooms/{SelectedRoom.roomId}");
+            if (/*res.IsSuccessStatusCode*/await Inst.ApiRequests.DeleteRoom(SelectedRoom.roomId))
             {
                 //MessageBox.Show($"Room {SelectedRoom.roomName} successfully deleted");
                 UpdateRoomView();

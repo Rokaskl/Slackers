@@ -79,7 +79,7 @@ namespace WpfApp1
 
         private void ConnectToServer()
         {
-            byte[] buffer = BitConverter.GetBytes(1).Concat(BitConverter.GetBytes(int.Parse(Inst.Utils.User.id))).ToArray();//1 - last edit from wpf, 0 - last edit from webapi
+            byte[] buffer = BitConverter.GetBytes(1).Concat(BitConverter.GetBytes(int.Parse(Inst./*Utils*/ApiRequests.User.id))).ToArray();//1 - last edit from wpf, 0 - last edit from webapi
             client.GetStream().Write(buffer, 0, buffer.Length);
 
             Task.Run(() => Start(buffer));

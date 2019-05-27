@@ -35,9 +35,9 @@ namespace WpfApp1.Pages
 
         private void showInfo()
         {
-            txtUsername.Text = Inst.Utils.User.username;
-            txtName.Text = Inst.Utils.User.firstName;
-            txtLastName.Text = Inst.Utils.User.lastName;
+            txtUsername.Text = Inst.ApiRequests.User.username;
+            txtName.Text = Inst.ApiRequests.User.firstName;
+            txtLastName.Text = Inst.ApiRequests.User.lastName;
         }
 
         private void BtnChangePass_Click(object sender, RoutedEventArgs e)

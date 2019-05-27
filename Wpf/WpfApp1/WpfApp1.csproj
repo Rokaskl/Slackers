@@ -97,15 +97,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AdditionalData.cs" />
+    <Compile Include="ApiRequests.cs" />
+    <Compile Include="Entities\AdditionalData.cs" />
     <Compile Include="Forms\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\PassChangingForm.xaml.cs">
       <DependentUpon>PassChangingForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\RoomsPage.xaml.cs">
-      <DependentUpon>RoomsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\UserPage.xaml.cs">
       <DependentUpon>UserPage.xaml</DependentUpon>
@@ -114,6 +112,7 @@
     <Compile Include="Forms\LoginForm.xaml.cs">
       <DependentUpon>LoginForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NameLenghtRangeRule.cs" />
     <Compile Include="Pages\AccountPage.xaml.cs">
       <DependentUpon>AccountPage.xaml</DependentUpon>
     </Compile>
@@ -126,10 +125,14 @@
     <Compile Include="RegisterRoomForm.xaml.cs">
       <DependentUpon>RegisterRoomForm.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RoomDto.cs" />
+    <Compile Include="Entities\RoomDto.cs" />
+    <Compile Include="RegisterUser.xaml.cs">
+      <DependentUpon>RegisterUser.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TcpClient.cs" />
     <Compile Include="TimerControl\Timer.cs" />
-    <Compile Include="UserDto.cs" />
+    <Compile Include="Entities\UserDto.cs" />
+    <Compile Include="ValidationBinding.cs" />
     <Page Include="Forms\LoginForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -141,10 +144,6 @@
     <Page Include="Forms\PassChangingForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Forms\RoomsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Forms\UserPage.xaml">
       <SubType>Designer</SubType>
@@ -177,6 +176,10 @@
     <Page Include="RegisterRoomForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RegisterUser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

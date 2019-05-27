@@ -100,11 +100,19 @@ namespace WebApi.Controllers
         [HttpPut("kick_user")]
         public IActionResult KickUser(JObject data)
         {
-            int roomId = data.Value<int>("roomId");
-            int userToKick = data.Value<int>("userId");
-            int admin = Int32.Parse(Request.HttpContext.User.Identity.Name);
-            _roomService.KickUser(roomId,userToKick,admin);
-            return Ok();
+            try
+            {
+                int roomId = data.Value<int>("roomId");
+                int userToKick = data.Value<int>("userId");
+                int admin = Int32.Parse(Request.HttpContext.User.Identity.Name);
+                _roomService.KickUser(roomId,userToKick,admin);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
         // PUT: Rooms/join_group
         [HttpPut("join_group")]

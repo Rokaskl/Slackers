@@ -93,7 +93,11 @@ namespace WebApi.Services
             {
                 throw new AppException("Not admin of this room");
             }
-            List<int> temp = ConvertToInts(room.usersBytes);              
+            List<int> temp = ConvertToInts(room.usersBytes);
+            if (!temp.Contains(userId))
+            {
+                throw new AppException("User do not belong to room");
+            }
             temp.Remove(userId);
             room.usersBytes  = ConvertToBytes(temp);
             _context.Rooms.Update(room);
@@ -113,6 +117,10 @@ namespace WebApi.Services
 
         public List<RoomDto> GetRoomsUsers(List<int> ids,string idString)
         {
+            if (ids ==null)
+            {
+                return null;
+            }
             int id = Convert.ToInt32(idString);
             List<RoomDto> rooms = new List<RoomDto>();
             foreach (var item in ids)

@@ -28,7 +28,7 @@ namespace WpfApp1.Pages
     /// </summary>
     public partial class RoomPage : Page
     {
-        private HttpClient client;
+        //private HttpClient client;
         private RoomDto room;
         private string prevWindow;
         private Timer timer;
@@ -41,7 +41,7 @@ namespace WpfApp1.Pages
             this.prevWindow = prev;
             timer = new Timer();
             this.room = room;
-            client = Inst.Utils.HttpClient;
+            //client = Inst.Utils.HttpClient;
            
             InitializeComponent();
             this.chatbox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
@@ -84,7 +84,7 @@ namespace WpfApp1.Pages
                     if (lv != null)
                     {
                         lv.ToolTip = line.CreateDate.ToString("HH:mm:ss yyyy/MM/dd", CultureInfo.InvariantCulture);
-                        if (line.CreatorId.ToString() == Inst.Utils.User.id)
+                        if (line.CreatorId.ToString() == Inst.ApiRequests.User.id)
                         {
                             lv.Background = Brushes.LightBlue;
                         }
@@ -160,17 +160,17 @@ namespace WpfApp1.Pages
                 {
                     case "Active":
                         {
-                            DisplaySelectedStatus(await client.GetAsync($"/Rooms/status/{this.room.roomId}/A"), "Active");
+                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'A')/*client.GetAsync($"/Rooms/status/{this.room.roomId}/A")*/, "Active");
                             break;
                         }
                     case "Away":
                         {
-                            DisplaySelectedStatus(await client.GetAsync($"/Rooms/status/{this.room.roomId}/B"), "Away");
+                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'B')/*await client.GetAsync($"/Rooms/status/{this.room.roomId}/B")*/, "Away");
                             break;
                         }
                     case "Don't disturb":
                         {
-                            DisplaySelectedStatus(await client.GetAsync($"/Rooms/status/{this.room.roomId}/C"), "Don't disturb");
+                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'C')/*await client.GetAsync($"/Rooms/status/{this.room.roomId}/C")*/, "Don't disturb");
                             break;
                         }
                     default:
@@ -178,18 +178,18 @@ namespace WpfApp1.Pages
                             break;
                         }
                 }
-                void DisplaySelectedStatus(HttpResponseMessage response, string item)
+                void DisplaySelectedStatus(/*HttpResponseMessage*/bool response, string item)
                 {
-                    if (response.IsSuccessStatusCode)
+                    if (response/*.IsSuccessStatusCode*/)
                     {
                         this.cmbStatus.SelectedItem = item;
                         foreach(var x in this.MembersListView.Items)
                         {
-                            if (x.GetType().GetProperty("username").GetValue(x).ToString() == Inst.Utils.User.username)
+                            if (x.GetType().GetProperty("username").GetValue(x).ToString() == Inst.ApiRequests.User.username)
                             {
                                 int index = this.MembersListView.Items.IndexOf(x);
                                 this.MembersListView.Items.Remove(x);
-                                this.MembersListView.Items.Insert(index, new { username = Inst.Utils.User.username, status = item});
+                                this.MembersListView.Items.Insert(index, new { username = Inst.ApiRequests.User.username, status = item});
                                 break;
                             }
                         }
@@ -233,8 +233,8 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var response = await client.GetAsync($"/TimeTracker/mark/{room.roomId}/1");
-                if (response.IsSuccessStatusCode)
+                //var response = await client.GetAsync($"/TimeTracker/mark/{room.roomId}/1");
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.TimerMark(room.roomId,1))
                 {
                     this.timer.Start();
                     this.btnStartStop.Content = "Stop!";
@@ -255,8 +255,8 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var response = await client.GetAsync($"/TimeTracker/mark/{room.roomId}/0");
-                if (response.IsSuccessStatusCode)
+                //var response = await client.GetAsync($"/TimeTracker/mark/{room.roomId}/0");
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.TimerMark(room.roomId,0))
                 {
                     this.timer.Stop();
                     this.btnStartStop.Content = "Start!";
@@ -292,7 +292,7 @@ namespace WpfApp1.Pages
                 }
             }
         }
-        private async void DisplayMembersR()
+        private async Task DisplayMembersR()
         {
             while (true)
             {
@@ -308,77 +308,77 @@ namespace WpfApp1.Pages
             bool end = true;
             try
             {
-                var response = await client.GetAsync($"/Rooms/group/{this.room.roomId}");
-                if (response.IsSuccessStatusCode)
+                //var response = await client.GetAsync($"/Rooms/group/{this.room.roomId}");
+                List<Newtonsoft.Json.Linq.JObject> resp = await Inst.ApiRequests.GetGroupMembers(this.room.roomId);
+                if (/*response.IsSuccessStatusCode*/resp!=null)
                 {
                     this.Dispatcher.Invoke((Action)(() =>
                     {
                         List<Dictionary<string, string>> respListDict = new List<Dictionary<string, string>>();
-                        List<Newtonsoft.Json.Linq.JObject> resp = response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>().Result;
-                        if (resp == null)
-                        {
-                            Inst.Utils.MainWindow.frame1.Navigate(new UserPage());
-                            end = false;
-                        }
-                        else
-                        {
-                            resp.ForEach(x =>
-                            {
-                                Dictionary<string, string> respDict = new Dictionary<string, string>();
-                                foreach (var key in x.GetValue("key").ToObject<Dictionary<string, object>>())
-                                {
-                                    if (key.Value?.ToString() != null)
-                                    {
-                                        respDict.Add(key.Key, key.Value.ToString());
-                                    }   
-                                }
-                                respDict.Add("status", x.GetValue("value").ToObject<string>());
-                                respListDict.Add(respDict);
-                            });
-                            this.MembersListView.Items.Clear();
+                        //List<Newtonsoft.Json.Linq.JObject> resp = response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>().Result;
 
-                            //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn());
-                            //this.MembersGrid.
-                            //DependencyProperty dp = DependencyProperty.Register("username", typeof(string), typeof(Dictionary<string, string>));
-                            respListDict.ForEach(x =>
+                        resp.ForEach(x =>
+                        {
+                            Dictionary<string, string> respDict = new Dictionary<string, string>();
+                            foreach (var key in x.GetValue("key").ToObject<Dictionary<string, object>>())
                             {
-                            //Brush b = Brushes.Gray;
-                            string status = string.Empty;
-                                switch (x["status"])
+                                if (key.Value?.ToString() != null)
                                 {
-                                    case "A":
-                                        {
-                                        //b = Brushes.Green;
-                                        status = "Active";
-                                            break;
-                                        }
-                                    case "B":
-                                        {
-                                        //b = Brushes.Yellow;
-                                        status = "Away";
-                                            break;
-                                        }
-                                    case "C":
-                                        {
-                                        //b = Brushes.Red;
-                                        status = "Don't disturb!";
-                                            break;
-                                        }
-                                    default: break;
+                                    respDict.Add(key.Key, key.Value.ToString());
                                 }
-                            //ListViewItem lvi = new ListViewItem() { /*Content = "username",*/ Background = b };
-                            //lvi.SetValue(dp, x);
-                            this.MembersListView.Items.Add(new { username = x["username"], status = status });
-                            });
-                            //this.MembersListView.ItemsSource = respListDict;
-                            //ChangeStatuses(respListDict);
-                        }
+                            }
+                            respDict.Add("status", x.GetValue("value").ToObject<string>());
+                            respListDict.Add(respDict);
+                        });
+                        this.MembersListView.Items.Clear();
+
+                        //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn());
+                        //this.MembersGrid.
+                        //DependencyProperty dp = DependencyProperty.Register("username", typeof(string), typeof(Dictionary<string, string>));
+                        respListDict.ForEach(x =>
+                        {
+                                //Brush b = Brushes.Gray;
+                                string status = string.Empty;
+                            switch (x["status"])
+                            {
+                                case "A":
+                                    {
+                                            //b = Brushes.Green;
+                                            status = "Active";
+                                        break;
+                                    }
+                                case "B":
+                                    {
+                                            //b = Brushes.Yellow;
+                                            status = "Away";
+                                        break;
+                                    }
+                                case "C":
+                                    {
+                                            //b = Brushes.Red;
+                                            status = "Don't disturb!";
+                                        break;
+                                    }
+                                default: break;
+                            }
+                                //ListViewItem lvi = new ListViewItem() { /*Content = "username",*/ Background = b };
+                                //lvi.SetValue(dp, x);
+                                this.MembersListView.Items.Add(new { username = x["username"], status = status });
+                        });
+                        //this.MembersListView.ItemsSource = respListDict;
+                        //ChangeStatuses(respListDict);
+
                     }));
                     //this.MembersListView
                 }
+                else if (resp == null)
+                {
+                    Inst.Utils.MainWindow.frame1.Navigate(new UserPage());
+                    end = false;
+                }
                 else
                 {
-                    MessageBox.Show("Something went wrong!");
+                    MessageBox.Show("Something went wrong!");                    
                 }
 
             }
@@ -404,9 +404,9 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var response = await client.GetAsync($"/Rooms/logout_group/{room.roomId}");
-                if (response.IsSuccessStatusCode)
-                {
+                //var response = await client.GetAsync($"/Rooms/logout_group/{room.roomId}");
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.LogoutGroup(this.room.roomId))
+                {                    
                     if (this.timer.IsRunning)
                     {
                         StopTimer();
@@ -468,12 +468,13 @@ namespace WpfApp1.Pages
 
             try
             {
-                var response = await client.GetAsync($"/Notes/{room.roomId}");
-                if (response.IsSuccessStatusCode)
+                //var response = await client.GetAsync($"/Notes/{room.roomId}");
+                 List<Note> info = await Inst.ApiRequests.GetRoomNotes(this.room.roomId);
+                if (/*response.IsSuccessStatusCode*/info!=null)
                 {
                     //notelist.ItemsSource = response;
                     //List<Dictionary<string, string>> info = response.Content.ReadAsAsync<Newtonsoft.Json.Linq.JArray>().Result.ToObject(typeof(List<Dictionary<string, string>>));
-                    List<Note> info = response.Content.ReadAsAsync<List<Note>>().Result;
+                    //List<Note> info = response.Content.ReadAsAsync<List<Note>>().Result;
                     NoteListView.ItemsSource = info;
                 }
                 else
@@ -500,8 +501,8 @@ namespace WpfApp1.Pages
 
             try
             {
-                var response = await client.PostAsJsonAsync<Dictionary<string, string>>($"/Notes/submit", info);
-                if (response.IsSuccessStatusCode)
+                //var response = await client.PostAsJsonAsync<Dictionary<string, string>>($"/Notes/submit", info);
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.SubmitNote(info))
                 {
                     FillNotes();
                 }
@@ -521,8 +522,8 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var response = await client.PostAsJsonAsync<Note>($"/Notes/modify", note);
-                if (response.IsSuccessStatusCode)
+                //var response = await client.PostAsJsonAsync<Note>($"/Notes/modify", note);
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.ModNote(note))
                 {
                     //FillNotes();
                 }
@@ -555,8 +556,8 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var response = await client.GetAsync($"/Notes/delete/{roomId}/{noteId}");
-                if (response.IsSuccessStatusCode)
+                //var response = await client.GetAsync($"/Notes/delete/{roomId}/{noteId}");
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.DelNote(roomId,noteId))
                 {
                     FillNotes();
                 }
@@ -676,10 +677,11 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
-                if (response.IsSuccessStatusCode)
+                //var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
+                List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId);
+                if (data!=null)
                 {
-                    List<ChatLine> data = response.Content.ReadAsAsync<List<ChatLine>>().Result;
+                    //List<ChatLine> data = response.Content.ReadAsAsync<List<ChatLine>>().Result;
                     chatbox.Items.Clear();
                     
                     foreach (ChatLine line in data.OrderBy(x => x.CreateDate))
@@ -721,8 +723,8 @@ namespace WpfApp1.Pages
 
             try
             {
-                var response = await client.PostAsJsonAsync<string>($"/ChatLine/create/{this.room.roomId}", txt_entry.Text);
-                if (response.IsSuccessStatusCode)
+                //var response = await client.PostAsJsonAsync<string>($"/ChatLine/create/{this.room.roomId}", txt_entry.Text);
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.CreateEntry(txt_entry.Text,this.room.roomId))
                 {
                     txt_entry.Text = string.Empty;
                 }

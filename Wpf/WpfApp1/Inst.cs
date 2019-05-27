@@ -16,10 +16,12 @@ namespace WpfApp1
     public static class Inst
     {
         public static Utils Utils;
+        public static ApiRequests ApiRequests;
 
         public static void CreateInstance()
         {
             Utils = new Utils();
+            ApiRequests = new ApiRequests();
         }
     }
 
@@ -28,7 +30,7 @@ namespace WpfApp1
         private bool isLoginEnabled = true;
         private HttpClient client;
         private Uri url;
-        private User user;
+        //private User user;
         private MainWindow mainWindow;
         private Page roomPage;
         private TcpDock tcp_client;
@@ -52,26 +54,26 @@ namespace WpfApp1
             tcp_client.Stop();
         }
 
-        public HttpClient HttpClient
-        {
-            get => client;
-        }
+        //public HttpClient HttpClient
+        //{
+        //    get => client;
+        //}
 
-        public Uri Url
-        {
-            get => url;
-        }
+        //public Uri Url
+        //{
+        //    get => url;
+        //}
 
-        public User User
-        {
-            get => user;
-            set
-            {
-                user = value;
-                this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value.token);
-                Task.Run(() => PingR());
-            }
-        }
+        //public User User
+        //{
+        //    get => user;
+        //    set
+        //    {
+        //        user = value;
+        //        this.client.DefaultRequestHeaders.Add("Authorization", "Bearer " + value.token);
+        //        Task.Run(() => PingR());
+        //    }
+        //}
         public bool IsLoginEnabled
         {
             get => isLoginEnabled;
@@ -90,52 +92,52 @@ namespace WpfApp1
             set => roomPage = value;
         }
 
-        private async void Ping()
-        {            
-            try
-            {
-                int time = 0;
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
-                while (true)
-                {
-                    if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
-                    {
-                        var response = await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomsPage());//got kicked
+        //private async void Ping()
+        //{            
+        //    try
+        //    {
+        //        int time = 0;
+        //        Stopwatch stopWatch = new Stopwatch();
+        //        stopWatch.Start();
+        //        while (true)
+        //        {
+        //            if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
+        //            {
+        //                var response = await client.GetAsync($"TimeOut/ping/{Inst.ApiRequests.User.id}");
+        //                if (!response.IsSuccessStatusCode)
+        //                {
+        //                    Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomsPage());//got kicked
 
-                        }
-                        time = (int)stopWatch.Elapsed.TotalSeconds;
-                    }
-                }
-            }
-            catch(Exception exception)
-            {
-                Console.WriteLine(exception.ToString());
-                return;
-            }
-        }
-        private async void PingR()
-        {            
-            try
-            {
-                await Task.Delay(10000);
-                var response = await client.GetAsync($"TimeOut/ping/{Inst.Utils.User.id}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomsPage());//got kicked
+        //                }
+        //                time = (int)stopWatch.Elapsed.TotalSeconds;
+        //            }
+        //        }
+        //    }
+        //    catch(Exception exception)
+        //    {
+        //        Console.WriteLine(exception.ToString());
+        //        return;
+        //    }
+        //}
+        //private async void PingR()
+        //{            
+        //    try
+        //    {
+        //        await Task.Delay(10000);
+        //        var response = await client.GetAsync($"TimeOut/ping/{Inst.ApiRequests.User.id}");
+        //        if (!response.IsSuccessStatusCode)
+        //        {
+        //            Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new RoomsPage());//got kicked
 
-                }
-                PingR();
-            }
-            catch(Exception exception)
-            {
-                Console.WriteLine(exception.ToString());
-                return;
-            }
-        }
+        //        }
+        //        PingR();
+        //    }
+        //    catch(Exception exception)
+        //    {
+        //        Console.WriteLine(exception.ToString());
+        //        return;
+        //    }
+        //}
 
         public event EventHandler MembersChanged;
         //private delegate void MyChangesEventHandler(object sender, ChangesEventArgs e);

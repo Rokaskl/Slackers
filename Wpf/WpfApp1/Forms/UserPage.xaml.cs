@@ -16,7 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-//using Json.Net;
 using WebApi.Dtos;
 using Newtonsoft.Json;
 using WpfApp1.Forms;
@@ -31,11 +30,11 @@ namespace WpfApp1.Forms
     /// </summary>
     public partial class UserPage : Page
     {
-        private HttpClient client;
+        //private HttpClient client;
         //private Dictionary<string, string> SelectedRoom;
         public UserPage()
         {         
-            client = Inst.Utils.HttpClient;
+            //client = Inst.Utils.HttpClient;
             InitializeComponent(); 
             
             ShowRooms();
@@ -61,9 +60,10 @@ namespace WpfApp1.Forms
             try
             {
                 RoomsList.Items.Clear();
-                var res2 = await client.GetAsync("Rooms/user_get_rooms");
+                //var res2 = await client.GetAsync("Rooms/user_get_rooms");
                 //List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;                
-                List<RoomDto> userR = res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
+                List<RoomDto> userR = await Inst.ApiRequests.UserGetRooms();//res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
+                if(userR!=null)
                 foreach (var item in userR)
                 {
                     
@@ -86,7 +86,7 @@ namespace WpfApp1.Forms
                     roomElipse.Width = 50;
                     roomElipse.Height = 50;
 
-                    AdditionalData data = await GetAddData(item.roomId);                    
+                    AdditionalData data = await /*GetAddData*/Inst.ApiRequests.GetRoomAddData(item.roomId);                    
                     ImageBrush imgBrush = new ImageBrush();
                     if (data!=null)
                     {
@@ -119,16 +119,16 @@ namespace WpfApp1.Forms
                 Console.WriteLine(ex.ToString());
             }
         }
-        private async Task<AdditionalData> GetAddData(int id)
-        {
-            var resp = await client.GetAsync($"AdditionalDatas/{id}/{false}");
-            if (resp.IsSuccessStatusCode)
-            {
-                AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
-                return data;
-            }
-            return null;
-        }
+        //private async Task<AdditionalData> GetAddData(int id)
+        //{
+        //    var resp = await client.GetAsync($"AdditionalDatas/{id}/{false}");
+        //    if (resp.IsSuccessStatusCode)
+        //    {
+        //        AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
+        //        return data;
+        //    }
+        //    return null;
+        //}
 
         private async void LoginRoom(RoomDto roomid)
         {
@@ -137,8 +137,8 @@ namespace WpfApp1.Forms
             //Dictionary<string, string> room = temp[0];
             try
             {
-                var response = await client.GetAsync($"/Rooms/login_group/{roomid.roomId}");
-                if (response.IsSuccessStatusCode)
+                //var response = await client.GetAsync($"/Rooms/login_group/{roomid.roomId}");
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.LoginRoom(roomid.roomId))
                 {                
                     //MessageBox.Show($"Joined {roomid.roomName}");
                     Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(roomid,"user"));
@@ -192,8 +192,8 @@ namespace WpfApp1.Forms
         {
             try
             {
-                var response = await client.PutAsJsonAsync($"/Rooms/join_group", new { guid = guid });
-                if (response.IsSuccessStatusCode)
+                //var response = await client.PutAsJsonAsync($"/Rooms/join_group", new { guid = guid });
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.JoinGroup(guid))
                 {
                     //MessageBox.Show($"successfuly became a member");
                     //Inst.Utils.MainWindow.frame.NavigationService.Navigate(new RoomPage(new RoomDto() { roomAdminId = Int32.Parse(room["roomAdminId"].ToString()), roomId = Int32.Parse(room["roomId"].ToString()), roomName = room["roomName"].ToString() }));

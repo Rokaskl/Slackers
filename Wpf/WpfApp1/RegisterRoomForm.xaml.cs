@@ -27,14 +27,12 @@ namespace WpfApp1
     {
         private int userId = -1;
         private byte[] photo = null;
-        private HttpClient client;
         private int rooomId = -1;
         private Admin adminPage;
 
         public RegisterRoomForm(int userId, Admin adminPage)
         {
             this.userId = userId;
-            client = Inst.Utils.HttpClient;
             InitializeComponent();
             this.Closed += RegisterRoomForm_Closed;
             this.adminPage = adminPage;
@@ -45,7 +43,6 @@ namespace WpfApp1
             this.adminPage = adminPage;
             this.userId = 0;
             this.rooomId = room.roomId;
-            client = Inst.Utils.HttpClient;
             InitializeComponent();
             this.Closed += RegisterRoomForm_Closed;
             this.RoomName.Text = room.roomName;
@@ -63,10 +60,11 @@ namespace WpfApp1
 
         public async void getAddData(int roomId)
         {
-            var resp = await client.GetAsync($"AdditionalDatas/{roomId}/{false}");
-            if (resp.IsSuccessStatusCode)
+            //var resp = await client.GetAsync($"AdditionalDatas/{roomId}/{false}");
+            AdditionalData tempData = await Inst.ApiRequests.GetRoomAddData(roomId);
+            if (/*resp.IsSuccessStatusCode*/tempData!=null)
             {
-                AdditionalData tempData = resp.Content.ReadAsAsync<AdditionalData>().Result;
+                //AdditionalData tempData = resp.Content.ReadAsAsync<AdditionalData>().Result;
                 this.RoomBio.Document.Blocks.Add(new Paragraph(new Run(tempData.Biography)));
             }
         }
@@ -99,10 +97,10 @@ namespace WpfApp1
         {  
             if (rooomId!=-1||userId==0)
             {
-                string Bio = (new TextRange(RoomBio.Document.ContentStart,RoomBio.Document.ContentEnd)).Text;
-                AdditionalData data = new AdditionalData(rooomId,false,Bio,photo);
-                var response = await client.PostAsJsonAsync("AdditionalDatas", data);
-                if (response.IsSuccessStatusCode)
+                //string Bio = (new TextRange(RoomBio.Document.ContentStart,RoomBio.Document.ContentEnd)).Text;
+                AdditionalData data = new AdditionalData(rooomId,false,(new TextRange(RoomBio.Document.ContentStart,RoomBio.Document.ContentEnd)).Text,photo);
+                //var response = await client.PostAsJsonAsync("AdditionalDatas", data);
+                if (await Inst.ApiRequests.UpdateAddDataRoom(data))
                 {
                     //MessageBox.Show("Photo upload succsesful");
                 }
@@ -116,21 +114,22 @@ namespace WpfApp1
         {
             try
             {
-                var club = new
-                {
-                    roomName = name
-                };
-                var response = await client.PostAsJsonAsync("/rooms/register", club);
-                if (response.IsSuccessStatusCode)
+                //var club = new
+                //{
+                //    roomName = name
+                //};
+                //var response = await client.PostAsJsonAsync("/rooms/register", club);
+                RoomDto temp = await Inst.ApiRequests.RegisterRoom(name);
+                if (/*response.IsSuccessStatusCode*/temp!=null)
                 {                    
-                    RoomDto temp = response.Content.ReadAsAsync<RoomDto>().Result;
+                    //RoomDto temp = response.Content.ReadAsAsync<RoomDto>().Result;
                     //MessageBox.Show("register successfully");  
                     rooomId = temp.roomId;
                 }
-                else
-                {
-                    //MessageBox.Show("register failed...");
-                }
+                //else
+                //{
+                //    //MessageBox.Show("register failed...");
+                //}
 
             }
             catch (Exception ex)

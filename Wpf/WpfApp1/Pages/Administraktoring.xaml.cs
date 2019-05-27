@@ -20,7 +20,7 @@ namespace WpfApp1.Pages
     /// </summary>
     public partial class Administraktoring : Page
     {
-        private HttpClient client;
+        //private HttpClient client;
         private RoomDto room;
         private List<User> users = new List<User>();
         
@@ -28,7 +28,7 @@ namespace WpfApp1.Pages
         public Administraktoring(RoomDto room)
         {
             this.room = room;
-            client = Inst.Utils.HttpClient;
+            //client = Inst.Utils.HttpClient;
 
             InitializeComponent();
             Inst.Utils.MembersChanged += Utils_MembersChanged;
@@ -75,53 +75,52 @@ namespace WpfApp1.Pages
             }
             
         }
-        private async Task<AdditionalData> GetAddDataUser(int id)
-        {
-            var resp = await client.GetAsync($"AdditionalDatas/{id}/{true}");
-            if (resp.IsSuccessStatusCode)
-            {
-                 return resp.Content.ReadAsAsync<AdditionalData>().Result;
-            }
-            return null;
-        }
+        //private async Task<AdditionalData> GetAddDataUser(int id)
+        //{
+        //    var resp = await client.GetAsync($"AdditionalDatas/{id}/{true}");
+        //    if (resp.IsSuccessStatusCode)
+        //    {
+        //         return resp.Content.ReadAsAsync<AdditionalData>().Result;
+        //    }
+        //    return null;
+        //}
         private async void GetAddDataRoom()
         {
-            var resp = await client.GetAsync($"AdditionalDatas/{room.roomId}/{false}");
-
-            if (resp.IsSuccessStatusCode)
+            //var resp = await client.GetAsync($"AdditionalDatas/{room.roomId}/{false}");
+            AdditionalData data = await Inst.ApiRequests.GetRoomAddData(room.roomId);
+            //if (resp.IsSuccessStatusCode)
+            //{
+            //AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
+            if (data != null)
             {
-                AdditionalData data = resp.Content.ReadAsAsync<AdditionalData>().Result;
-                
-                if (data!=null)
+                if (data.PhotoBytes != null)
                 {
-                    if (data.PhotoBytes!=null)
+                    using (var memstr = new MemoryStream(data.PhotoBytes))
                     {
-                        using (var memstr = new MemoryStream(data.PhotoBytes))
-                        {
-                            var image = new BitmapImage();
-                            image.BeginInit();
-                            image.CacheOption = BitmapCacheOption.OnLoad; // here
-                            image.StreamSource = memstr;
-                            image.EndInit();
-                            ImageBrush imgBrush = new ImageBrush();
-                            imgBrush.ImageSource = image;
-                            this.elipsePhoto.Fill = imgBrush;            
-                        }
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad; // here
+                        image.StreamSource = memstr;
+                        image.EndInit();
+                        ImageBrush imgBrush = new ImageBrush();
+                        imgBrush.ImageSource = image;
+                        this.elipsePhoto.Fill = imgBrush;
                     }
                 }
-
             }
+            //}
         }
         private async void ShowUsersTimes(DateTime from,DateTime to)//Testuot
         {
-            string uri = $"TimeTracker/timeroom/{from}/{to}/{room.roomId}/{0}";
-            var resp = await client.GetAsync(uri);
-            if (resp.IsSuccessStatusCode)
+            //string uri = $"TimeTracker/timeroom/{from}/{to}/{room.roomId}/{0}";
+            //var resp = await client.GetAsync(uri);
+            Dictionary<int, int> stats = await Inst.ApiRequests.GetTimes(from,to,room.roomId);
+            if (/*resp.IsSuccessStatusCode*/stats!=null)
             {
-                Dictionary<int, int> stats = resp.Content.ReadAsAsync<Dictionary<int, int>>().Result;
+                //Dictionary<int, int> stats = resp.Content.ReadAsAsync<Dictionary<int, int>>().Result;
                 List<KeyValuePair<string, int>> _stats = new List<KeyValuePair<string, int>>();
                                                 
-                users.Add(Inst.Utils.User);
+                users.Add(Inst.ApiRequests.User);
 
                 //_stats.Add(new KeyValuePair<string, int>("TinkisVinkis", 69));
                 //_stats.Add(new KeyValuePair<string, int>("Dipsis", 42));
@@ -129,7 +128,7 @@ namespace WpfApp1.Pages
                 //_stats.Add(new KeyValuePair<string, int>("Pou", 68));
 
                 users.ForEach(x => _stats.Add(new KeyValuePair<string, int>(x.username, (stats.Where(y => y.Key == Int32.Parse(x.id)).Count() != 0) ? stats.Where(y => y.Key == Int32.Parse(x.id)).First().Value : 0)));
-                users.Remove(Inst.Utils.User);
+                users.Remove(Inst.ApiRequests.User);
 
                 ((BarSeries)chaha.Series[0]).ItemsSource = _stats.ToArray();
             }
@@ -185,11 +184,11 @@ namespace WpfApp1.Pages
         {
             try
             {  
-             var data = new{ 
-                 roomId = room.roomId,
-                 userId = user};   
-                var res = await client.PutAsJsonAsync("Rooms/kick_user",data);
-                if (res.IsSuccessStatusCode)
+             //var data = new{ 
+             //    roomId = room.roomId,
+             //    userId = user};   
+             //   var res = await client.PutAsJsonAsync("Rooms/kick_user",data);
+                if (/*res.IsSuccessStatusCode*/await Inst.ApiRequests.KickUser(user,room.roomId))
                 {
                     this.usersList.Items.Clear();
                     List<int> temp = room.users.ToList<int>();
@@ -207,12 +206,13 @@ namespace WpfApp1.Pages
         {
             try
             {
-                var usersIds = new {ids= room.users.ToList()};
-                var res = await client.PostAsJsonAsync("Users/get_list",usersIds);
-                users = res.Content.ReadAsAsync<List<User>>().Result;
+                //var usersIds = new {ids= room.users.ToList()};
+                //var res = await client.PostAsJsonAsync("Users/get_list",usersIds);
+                //users = res.Content.ReadAsAsync<List<User>>().Result;
+                users = await Inst.ApiRequests.GetUsersList(room.users.ToList());
+                if(users!=null)
                 foreach (var item in users)
                 {
-                    AdditionalData temp = await GetAddDataUser(Int32.Parse(item.id));
                     Button btn = new Button();
                     btn.Content = "Kick";
                     btn.Click += kickFromRoom_Click;
@@ -232,7 +232,8 @@ namespace WpfApp1.Pages
                     roomElipse.Width = 50;
                     roomElipse.Height = 50;
 
-                    AdditionalData data = await GetAddDataUser(Int32.Parse(item.id));
+                    //AdditionalData data = await GetAddDataUser(Int32.Parse(item.id));
+                    AdditionalData data = await Inst.ApiRequests.GetUserAddData(Int32.Parse(item.id));
                     ImageBrush imgBrush = new ImageBrush();
                     roomElipse.Fill = Brushes.LightGray;
                     if (data != null)
@@ -291,8 +292,8 @@ namespace WpfApp1.Pages
             
             try
             {
-                var response = await client.GetAsync($"/Rooms/login_group/{room.roomId}");
-                if (response.IsSuccessStatusCode)
+                //var response = await client.GetAsync($"/Rooms/login_group/{room.roomId}");
+                if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.LoginRoom(room.roomId))
                 {
                     //MessageBox.Show($"Joined {room.roomName}");
                     Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(room,"admin"));
