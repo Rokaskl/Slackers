@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -158,34 +159,70 @@ namespace WebApi.Controllers
                     datefrom = datefrom.AddDays(1);
                 }
 
-                switch (format){
+                switch (format)
+                {
                     case 0:
+                    {
+                        Dictionary<int, int> data = new Dictionary<int, int>();
+                        foreach (KeyValuePair<int, List<TimeSpan>> pair in info)
                         {
-                            Dictionary<int, int> data = new Dictionary<int, int>();
-                            foreach(KeyValuePair<int, List<TimeSpan>> pair in info)
-                            {
-                                data.Add(pair.Key, (int)Math.Round(pair.Value.Sum(x => x.TotalMinutes), 0));
-                            }
-                            return Ok(data);
+                            data.Add(pair.Key, (int) Math.Round(pair.Value.Sum(x => x.TotalMinutes), 0));
                         }
+
+                        return Ok(data);
+                    }
                     case 1:
+                    {
+                        List<Dictionary<string, string>> data = new List<Dictionary<string, string>>();
+                        foreach (KeyValuePair<int, List<TimeSpan>> pair in info)
                         {
-                            List<Dictionary<string, string>> data = new List<Dictionary<string, string>>();
-                            foreach (KeyValuePair<int, List<TimeSpan>> pair in info)
+                            Dictionary<string, string> info_dic = new Dictionary<string, string>();
+                            info_dic.Add("Id", pair.Key.ToString());
+                            info_dic.Add("Times",
+                                string.Join(',', pair.Value.Select(x => (int) Math.Round(x.TotalMinutes, 0))));
+                            data.Add(info_dic);
+                        }
+
+                        return Ok(data);
+                    }
+                    case 2:
+                    {
+                       // Random rnd = new Random();
+                            //{
+                            //    name: "Rokas",
+                            //    type: "bar",
+                            //    data: [
+                            //    {
+                            //        x: "02-10-2017 GMT",
+                            //        y: 34
+                            //    },
+                            Dictionary<string, Dictionary<string, int>> data =
+                            new Dictionary<string, Dictionary<string, int>>();
+                        foreach (KeyValuePair<int, List<TimeSpan>> pair in info)
+                        {
+
+                                DateTime startdate = DateTime.Parse(from);
+                            Dictionary<string, int> days = new Dictionary<string, int>();
+
+                            pair.Value.ForEach(x => 
                             {
-                                Dictionary<string, string> info_dic = new Dictionary<string, string>();
-                                info_dic.Add("Id", pair.Key.ToString());
-                                info_dic.Add("Times", string.Join(',', pair.Value.Select(x => (int)Math.Round(x.TotalMinutes, 0))));
-                                data.Add(info_dic);
-                            }
-                            return Ok(data);
+                               // int sk = rnd.Next(425);
+
+                                days.Add(
+                                    startdate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture) + " GMT",
+                                    (int) Math.Round(x.TotalMinutes, 0));
+                                startdate = startdate.AddDays(1);
+                            });
+                            data.Add(_userService.GetById(pair.Key).Username, days);
                         }
+
+                        return Ok(data.Select(x => new { name = x.Key, type = "bar", data = x.Value.Select(z => new { x = z.Key, y = z.Value })}));
+                    }
                     default:
-                        {
-                            break;
-                        }
+                    {
+                        break;
+                    }
                 }
-                
             }
             catch (Exception exception)
             {
@@ -198,8 +235,8 @@ namespace WebApi.Controllers
         public IActionResult MarkTime(int roomId, int ac)//0 - Stop(false); 1 - Start(true).
         {
             int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
-            //int userId = 1;
-            if (ac == 1 || ac == 0)
+                // int userId = 2;
+            if (ac == 2 || ac == 0)
             {
                 _timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now });
 
