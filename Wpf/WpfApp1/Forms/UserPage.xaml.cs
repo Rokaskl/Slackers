@@ -35,8 +35,8 @@ namespace WpfApp1.Forms
         public UserPage()
         {         
             //client = Inst.Utils.HttpClient;
-            InitializeComponent(); 
-            
+            InitializeComponent();
+            Inst.Utils.UserPage = this;
             ShowRooms();
 
             RoomsList.SelectionMode = SelectionMode.Single;
@@ -54,6 +54,10 @@ namespace WpfApp1.Forms
             }                      
         }
 
+        public void UpdateRoomsListView()
+        {
+            ShowRooms();
+        }
 
         private async void ShowRooms()
         {            

@@ -12,6 +12,7 @@ using System.IO;
 using WebApi.Entities;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace WpfApp1.Pages
 {
@@ -31,25 +32,59 @@ namespace WpfApp1.Pages
             //client = Inst.Utils.HttpClient;
 
             InitializeComponent();
-            Inst.Utils.MembersChanged += Utils_MembersChanged;
             ListUsers();
-
-            this.Name.Content = room.roomName;
+            this.IsVisibleChanged += Administraktoring_IsVisibleChanged;
+            this.Name.Content = room.roomName.Replace(" ",string.Empty);
             this.Name.FontSize = 14;
 
             ShowUsersTimes(DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek),DateTime.Today);
-            fromDate.SelectedDate= DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-            toDate.SelectedDate = DateTime.Today;
+            fromDate.SelectedDate= DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+            toDate.SelectedDate = DateTime.Today.AddDays(1);
 
             GetAddDataRoom();
+
+            Task.Run(() => LiveChart());
 
             //Random ran = new Random();
             //UNICORNS(ran);
 
         }
 
-        private void Utils_MembersChanged(object sender, EventArgs e)
+        private bool cancel = false;
+
+        public void StopChart()
         {
+            cancel = true;
+        }
+
+        private void Administraktoring_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == true)// became visible
+            {
+                UpdateChart();
+            }
+        }
+
+        private async void LiveChart()
+        {
+            while (true)
+            {
+                await Task.Delay(30000);
+                this.Dispatcher.Invoke(() =>
+                {
+                    UpdateChart();
+                });
+
+                if (cancel)
+                {
+                    break;
+                }
+            }
+        }
+
+        public void UpdateMembersListView()
+        {
+            this.usersList.Items.Clear();
             ListUsers();
         }
 
@@ -191,9 +226,9 @@ namespace WpfApp1.Pages
                 if (/*res.IsSuccessStatusCode*/await Inst.ApiRequests.KickUser(user,room.roomId))
                 {
                     this.usersList.Items.Clear();
-                    List<int> temp = room.users.ToList<int>();
-                    temp.Remove(user);
-                    room.users = temp.ToArray();
+                    //List<int> temp = room.users.ToList<int>();
+                    //temp.Remove(user);
+                    //room.users = temp.ToArray();
                     ListUsers();
                 }
             }
@@ -209,61 +244,66 @@ namespace WpfApp1.Pages
                 //var usersIds = new {ids= room.users.ToList()};
                 //var res = await client.PostAsJsonAsync("Users/get_list",usersIds);
                 //users = res.Content.ReadAsAsync<List<User>>().Result;
-                users = await Inst.ApiRequests.GetUsersList(room.users.ToList());
-                if(users!=null)
-                foreach (var item in users)
+                users = await Inst.ApiRequests.GetUsersList(room.roomId);
+                if (users != null)
                 {
-                    Button btn = new Button();
-                    btn.Content = "Kick";
-                    btn.Click += kickFromRoom_Click;
-                    btn.Tag = item;
-                    btn.Margin = new Thickness(2, 2, 2, 2);
-                    btn.HorizontalAlignment = HorizontalAlignment.Center;
-                    btn.VerticalAlignment = VerticalAlignment.Center;
-                    btn.Style = (Style)App.Current.Resources["bad"];                    
-
-                    Label name = new Label();
-                    name.Content = item.username;
-                    name.Margin = new Thickness(2, 2, 2, 2);
-                    name.VerticalAlignment = VerticalAlignment.Center;
-                    name.HorizontalAlignment = HorizontalAlignment.Center;
-
-                    Ellipse roomElipse = new Ellipse();
-                    roomElipse.Width = 50;
-                    roomElipse.Height = 50;
-
-                    //AdditionalData data = await GetAddDataUser(Int32.Parse(item.id));
-                    AdditionalData data = await Inst.ApiRequests.GetUserAddData(Int32.Parse(item.id));
-                    ImageBrush imgBrush = new ImageBrush();
-                    roomElipse.Fill = Brushes.LightGray;
-                    if (data != null)
+                    foreach (var item in users)
                     {
-                        if (data.PhotoBytes!=null)
+                        Button btn = new Button();
+                        btn.Content = "Kick";
+                        btn.Click += kickFromRoom_Click;
+                        btn.Tag = item;
+                        btn.Margin = new Thickness(2, 2, 2, 2);
+                        btn.HorizontalAlignment = HorizontalAlignment.Center;
+                        btn.VerticalAlignment = VerticalAlignment.Center;
+                        btn.Style = (Style)App.Current.Resources["bad"];
+
+                        Label name = new Label();
+                        name.Content = item.username;
+                        name.Margin = new Thickness(2, 2, 2, 2);
+                        name.VerticalAlignment = VerticalAlignment.Center;
+                        name.HorizontalAlignment = HorizontalAlignment.Center;
+
+                        Ellipse roomElipse = new Ellipse();
+                        roomElipse.Width = 50;
+                        roomElipse.Height = 50;
+
+                        //AdditionalData data = await GetAddDataUser(Int32.Parse(item.id));
+                        AdditionalData data = await Inst.ApiRequests.GetUserAddData(Int32.Parse(item.id));
+                        ImageBrush imgBrush = new ImageBrush();
+                        roomElipse.Fill = Brushes.LightGray;
+                        if (data != null)
                         {
-                            using (var memstr = new MemoryStream(data.PhotoBytes))
+                            if (data.PhotoBytes != null)
                             {
-                                var image = new BitmapImage();
-                                image.BeginInit();
-                                image.CacheOption = BitmapCacheOption.OnLoad;
-                                image.StreamSource = memstr;
-                                image.EndInit();
-                                imgBrush.ImageSource = image;
-                                roomElipse.Fill = imgBrush;
+                                using (var memstr = new MemoryStream(data.PhotoBytes))
+                                {
+                                    var image = new BitmapImage();
+                                    image.BeginInit();
+                                    image.CacheOption = BitmapCacheOption.OnLoad;
+                                    image.StreamSource = memstr;
+                                    image.EndInit();
+                                    imgBrush.ImageSource = image;
+                                    roomElipse.Fill = imgBrush;
+                                }
                             }
-                        }                                              
+                        }
+
+                        StackPanel roomPanel = new StackPanel();
+                        roomPanel.Orientation = Orientation.Horizontal;
+                        roomPanel.Children.Add(roomElipse);
+                        roomPanel.Children.Add(name);
+                        roomPanel.Children.Add(btn);
+
+                        usersList.Items.Add(roomPanel);
                     }
-                    
-                    StackPanel roomPanel = new StackPanel();
-                    roomPanel.Orientation = Orientation.Horizontal;
-                    roomPanel.Children.Add(roomElipse);
-                    roomPanel.Children.Add(name);
-                    roomPanel.Children.Add(btn);
-
-                    usersList.Items.Add(roomPanel);
-                }                
-
+                }
+                else
+                {
+                    users = new List<User>();
+                }
             }
-            catch (Exception)
+            catch (Exception exception)
             {               
             }
         }
@@ -324,6 +364,7 @@ namespace WpfApp1.Pages
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Forms.Admin());
+            Inst.Utils.Administraktoring = null;
         }
         private void Copy_guid_Click(object sender,RoutedEventArgs e)
         {
@@ -333,11 +374,16 @@ namespace WpfApp1.Pages
 
         private void GetStats_Click(object sender, RoutedEventArgs e)
         {
-            if (this.fromDate.SelectedDate!=null&&this.toDate.SelectedDate!=null)
+            UpdateChart();
+        }
+
+        private void UpdateChart()
+        {
+            if (this.fromDate.SelectedDate != null && this.toDate.SelectedDate != null)
             {
                 DateTime from = this.fromDate.SelectedDate.Value;
                 DateTime to = this.toDate.SelectedDate.Value;
-                ShowUsersTimes(from,to);
+                ShowUsersTimes(from, to);
             }
         }
     }

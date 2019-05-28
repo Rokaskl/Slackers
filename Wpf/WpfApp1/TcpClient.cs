@@ -8,6 +8,7 @@ using System.Net;
 using WpfApp1.Pages;
 using System.Windows;
 using System.Threading;
+using WpfApp1.Forms;
 
 namespace WpfApp1
 {
@@ -32,7 +33,7 @@ namespace WpfApp1
 
         private TcpClient client;
 
-        public TcpDock(int port = 8080)
+        public TcpDock(int port = 6969)
         {
             client = new TcpClient("localhost", port);
             MessageChanged += HandleChange;
@@ -66,7 +67,38 @@ namespace WpfApp1
                     }
                 case 3://room members
                     {
-                        Inst.Utils.RaiseMembersChangedEvent(this, EventArgs.Empty);//neveikia, nes webapi neranda prisijungusiu nariu ar roomu.
+                        (Inst.Utils.Administraktoring as Administraktoring)?.Dispatcher.Invoke(() =>
+                        {
+                            //Inst.Utils.RaiseMembersChangedEvent(this, EventArgs.Empty);//neveikia, nes webapi neranda prisijungusiu nariu ar roomu.
+                            (Inst.Utils.Administraktoring as Administraktoring).UpdateMembersListView();
+                        });
+                        break;
+                    }
+                case 4://You got kicked out.
+                    {
+                        if(Inst.Utils.RoomPage != null)
+                        {
+                            //useris jau buna logoutintas is roomo...
+                            (Inst.Utils.RoomPage as RoomPage)?.Dispatcher.Invoke(() =>
+                            {
+                                (Inst.Utils.RoomPage as RoomPage).Close();
+                            });
+                        }
+                        
+                        (Inst.Utils.UserPage as UserPage)?.Dispatcher.Invoke(() =>
+                        {
+                            (Inst.Utils.UserPage as UserPage).UpdateRoomsListView();
+                        });
+                        
+                        MessageBox.Show("You was kicked out!");
+                        break;
+                    }
+                case 5://Room created, deleted, modified.
+                    {
+                        (Inst.Utils.AdminPage as Admin)?.Dispatcher.Invoke(() =>
+                        {
+                            (Inst.Utils.AdminPage as Admin).UpdateRoomView();
+                        });
                         break;
                     }
                 default:

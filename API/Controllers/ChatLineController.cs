@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using WebApi.Dtos;
 using WebApi.Services;
 
 namespace WebApi.Controllers
@@ -19,11 +20,13 @@ namespace WebApi.Controllers
     {
         private IChatLineService _chatLineService;
         private IUserService _userService;
+        private IRoomService _roomService;
 
-        public ChatLineController(IChatLineService chatLineService, IUserService userService)
+        public ChatLineController(IChatLineService chatLineService, IUserService userService, IRoomService roomService)
         {
             _chatLineService = chatLineService;
             _userService = userService;
+            _roomService = roomService;
         }
 
         [Route("create/{roomId:int}")]
@@ -41,7 +44,11 @@ namespace WebApi.Controllers
             {
                 return BadRequest(exception.Message);
             }
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 1, roomId = roomId });
+
+            RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == roomId);
+            List<int> registeredUsers = room.users;
+            registeredUsers?.Add(room.roomAdminId);
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 1, roomId = roomId, registered_room_users = registeredUsers });
             return Ok();
         }
 

@@ -491,24 +491,8 @@ namespace WpfApp1.Pages
             {
                 //var response = await client.GetAsync($"/Rooms/logout_group/{room.roomId}");
                 if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.LogoutGroup(this.room.roomId))
-                {                    
-                    if (this.timer.IsRunning)
-                    {
-                        StopTimer();
-                    }                    
-                    Inst.Utils.MainWindow.room.Visibility = Visibility.Hidden;                    
-                    enableButton();
-                    Inst.Utils.MainWindow.frame1.Refresh();
-                    Inst.Utils.MainWindow.frame2.Refresh();
-                    if (prevWindow=="admin")
-                    {                           
-                    Inst.Utils.MainWindow.tabs.SelectedIndex = 0;
-                    //Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Admin());
-                    }
-                    else                        
-                    Inst.Utils.MainWindow.tabs.SelectedIndex = 1;
-                    //Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new UserPage());
-                    Inst.Utils.RoomPage = null;
+                {
+                    Close();
                 }
                 else
                 {
@@ -522,6 +506,28 @@ namespace WpfApp1.Pages
             }
             
         }
+
+        public void Close()
+        {
+            if (this.timer.IsRunning)
+            {
+                StopTimer();
+            }
+            Inst.Utils.MainWindow.room.Visibility = Visibility.Hidden;
+            enableButton();
+            Inst.Utils.MainWindow.frame1.Refresh();
+            Inst.Utils.MainWindow.frame2.Refresh();
+            if (prevWindow == "admin")
+            {
+                Inst.Utils.MainWindow.tabs.SelectedIndex = 0;
+                //Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Admin());
+            }
+            else
+                Inst.Utils.MainWindow.tabs.SelectedIndex = 1;
+            //Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new UserPage());
+            Inst.Utils.RoomPage = null;
+        }
+
         private void enableButton()
         {
             Inst.Utils.IsLoginEnabled = true;

@@ -38,9 +38,9 @@ namespace WpfApp1.Forms
         public Admin()
         {
             //client = Inst.Utils.HttpClient;
-            ShowRooms();
             InitializeComponent();
-
+            Inst.Utils.AdminPage = this;
+            ShowRooms();
             //adminRooms.SelectionMode = SelectionMode.Single;
             //adminRooms.SelectionChanged += AdminRooms_SelectionChanged;
             ////adminRooms.MouseDown += AdminRooms_MouseDown;
@@ -90,6 +90,7 @@ namespace WpfApp1.Forms
 
             // MessageBox.Show("Theres no room name");
         }
+
         private void BtnEditRoom_Click(object sender, RoutedEventArgs e)
         {
             new RegisterRoomForm((RoomDto)((Button)sender).Tag, this).Show();
@@ -99,6 +100,7 @@ namespace WpfApp1.Forms
 
             // MessageBox.Show("Theres no room name");
         }
+
         private async void ShowRooms()
         {            
             try
@@ -111,7 +113,7 @@ namespace WpfApp1.Forms
                 {
                     
                     Button btn = new Button();
-                    btn.Content = "Login";
+                    btn.Content = "More";
                     btn.Click += LoginAsAdmin_Click;
                     btn.Tag = item;
                     btn.Margin = new Thickness(2,2,2,2);
@@ -284,7 +286,13 @@ namespace WpfApp1.Forms
             RoomDto roomId = (RoomDto)((Button)sender).Tag;
             //SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
             SelectedRoom = roomId;
-            Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Administraktoring(SelectedRoom));
+            if (Inst.Utils.Administraktoring != null)
+            {
+                (Inst.Utils.Administraktoring as Administraktoring).StopChart();
+            }
+            Administraktoring adm_page = new Administraktoring(SelectedRoom);
+            Inst.Utils.MainWindow.frame2.NavigationService.Navigate(adm_page);
+            Inst.Utils.Administraktoring = adm_page;
             //LoginRoom();
         }
         
@@ -342,7 +350,9 @@ namespace WpfApp1.Forms
             if (/*res.IsSuccessStatusCode*/await Inst.ApiRequests.DeleteRoom(SelectedRoom.roomId))
             {
                 //MessageBox.Show($"Room {SelectedRoom.roomName} successfully deleted");
-                UpdateRoomView();
+
+                //UpdateRoomView();//Turetu atnaujinti per TCP
+
                 //List<RoomDto> rooms = adminRooms.Items.Cast<RoomDto>().ToList<RoomDto>();
                 //rooms.Remove(SelectedRoom);
                 //adminRooms.ItemsSource = rooms;

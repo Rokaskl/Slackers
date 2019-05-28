@@ -11,7 +11,7 @@ namespace WebApi
     public class TcpServer
     {
         private TcpListener server;
-        public TcpServer(int port = 8080)
+        public TcpServer(int port = 6969)
         {
             server = new TcpListener(Dns.GetHostAddresses("localhost")[0], port);
             Start();

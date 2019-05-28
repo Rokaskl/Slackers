@@ -10,6 +10,7 @@ namespace WebApi.Services
     public interface IRoomService
     {
         RoomDto GetById(int id,int requesterId);
+        RoomDto GetRoom(int id);
         Room Create(Room room,List<int> users);
         void Delete(int id,int requesterId);
         IEnumerable<RoomDto> GetAllRooms();
@@ -17,6 +18,7 @@ namespace WebApi.Services
         List<RoomDto> GetRoomsUsers(List<int> ids,string idString);
         List<RoomDto> GetRoomsAdmin(string idStrings);
         void KickUser(int roomId,int userId,int roomAdminId);
+        bool Logout_from_room(Room room, int userId);
     }
     public class RoomService : IRoomService
     {
@@ -82,11 +84,21 @@ namespace WebApi.Services
             var room = _context.Rooms.Find(id);
             if (room != null&&room.roomAdminId==requesterId)
             {
-            _context.Rooms.Remove(room);
-            _context.SaveChanges();
+                ConvertToInts(room.usersBytes)?.ForEach(x => 
+                {
+                    KickUser(room.roomId, x, requesterId);
+                    List<int> usersToKick = new List<int>();
+                    usersToKick.Add(x);
+                    App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 4, roomId = id, registered_room_users = usersToKick });
+                });
+                _context.Rooms.Remove(room);
+                _context.SaveChanges();
+                List<int> users = new List<int>();
+                users.Add(requesterId);
+                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 5, roomId = id, registered_room_users = users });
             }
         }
-        public void KickUser(int roomId, int userId,int roomAdminId)
+        public void KickUser(int roomId, int userId, int roomAdminId)
         {
             Room room = _context.Rooms.Find(roomId);
             if (room.roomAdminId!=roomAdminId)
@@ -102,6 +114,7 @@ namespace WebApi.Services
             room.usersBytes  = ConvertToBytes(temp);
             _context.Rooms.Update(room);
             _context.SaveChanges();
+            Logout_from_room(room, userId);
         }
         public IEnumerable<RoomDto> GetAllRooms()
         {
@@ -208,6 +221,34 @@ namespace WebApi.Services
             users.Add(id);
             room.usersBytes = ConvertToBytes(users);
             return room;
+        }
+
+        public RoomDto GetRoom(int id)
+        {
+            Room temp = _context.Rooms.Find(id);
+            List<int> _users = ConvertToInts(temp.usersBytes);
+            return new RoomDto(temp.roomId, temp.roomAdminId, temp.roomName, _users);
+        }
+
+        public bool Logout_from_room(Room room, int UserId)
+        {
+            TempRoom tempRoom;
+            if ((tempRoom = App.Inst.tempRooms.Where(x => x.usersById.Keys.Contains(UserId)).FirstOrDefault()) == null)
+            {
+                return true;
+            }
+            else
+            {
+                tempRoom.usersById.Remove(UserId);
+                if (tempRoom.usersById.Count == 0)
+                {
+                    App.Inst.tempRooms.Remove(tempRoom);
+                }
+            }
+            List<int> registeredUsers = ConvertToInts(room.usersBytes);
+            registeredUsers?.Add(room.roomAdminId);
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = room.roomId, registered_room_users = registeredUsers });
+            return true;
         }
     }
 }
