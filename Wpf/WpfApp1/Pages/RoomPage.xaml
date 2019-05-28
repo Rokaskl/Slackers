@@ -8,7 +8,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="RoomPage"
     >
-    
+
     <Page.Resources>
         <Style x:Key="notesCollapsHeader" TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Visibility" Value="Collapsed" />
@@ -23,75 +23,71 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="50"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
-            <ComboBox  x:Name="cmbStatus" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
-            <Button  x:Name="btnLogoutRoom" Content="Logout" HorizontalAlignment="Right" VerticalAlignment="Stretch" Click="BtnLogoutRoom_Click" Height="25" Width="50"/>
-        </StackPanel>
-        
-        <ListView Grid.Column="0" Grid.Row="1" x:Name="MembersListView" HorizontalAlignment="Stretch"  VerticalAlignment="Top" Margin="2,-30,20,2">
+
+        <StackPanel x:Name="roomInfo" Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Left" Orientation="Horizontal"/>
+        <Grid Grid.Column="1" Grid.Row="0" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"></RowDefinition>
+            </Grid.RowDefinitions>
+            <ComboBox  x:Name="cmbStatus" Grid.Column="0" Width="100"  HorizontalAlignment="Left"/>
+            <StackPanel x:Name="botomStack" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="150">
+            </StackPanel>
+            <Button  x:Name="btnLogoutRoom" Grid.Column="2" Content="Logout" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="BtnLogoutRoom_Click" Height="25" Width="50"/>
+
+        </Grid>
+
+        <!--<ListView Grid.Column="0" Grid.Row="1" x:Name="MembersListView" HorizontalAlignment="Stretch"  VerticalAlignment="Top" Margin="2,-30,20,2">
             <ListView.View>
                 <GridView  >
                     <GridViewColumn  DisplayMemberBinding="{Binding [username]}"/>
                 </GridView>
             </ListView.View>
-        </ListView>
-        
-        <StackPanel x:Name="botomStack" Grid.Column="1" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" FlowDirection="RightToLeft"  VerticalAlignment="Bottom">
-            <Button x:Name="btnStartStop" Content="Start!" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Top" Width="70" Height="40" Click="btnStartStop_Click" FlowDirection="LeftToRight"/>
-        </StackPanel>
-        
-        <Grid Grid.Row="1" Grid.Column="1">
-            
+        </ListView>-->
+        <Grid Grid.Column="0" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="30" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                
             </Grid.RowDefinitions>
+            <ListView x:Name="usersList" Grid.Column="0" Grid.Row="0" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
             
-            <Button x:Name="btn_addnote" Grid.Row="1" Content="Add" VerticalAlignment="Top" Click="Btn_addnote_Click" Height="30" Width="60" HorizontalAlignment="Right"/>
-            <ListView Grid.Row="0" Grid.Column="0" x:Name="NoteListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735"   BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView Grid.Row="0" Grid.Column="0" x:Name="usersListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735"   BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
                 <ListView.View>
                     <GridView ColumnHeaderContainerStyle="{StaticResource notesCollapsHeader}">
-                        <GridViewColumn
-                                 DisplayMemberBinding="{Binding Path=Id}"/>
-                        <GridViewColumn Width="320">
+                        <GridViewColumn >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBox Text="{Binding Path=Header}" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsEnabled="True"></TextBox>
+                                    <Ellipse Fill="{Binding [photo]}" Width="25" Height="25" VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="Auto"  DisplayMemberBinding="{Binding [username]}"/>
+                        <GridViewColumn >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Ellipse Fill="{Binding [status]}" Width="10" Height="10" VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>
-        </Grid>
-        
-        <Grid Grid.Column="0" Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+            
+            <Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="30"/>
-            </Grid.RowDefinitions>
-            <ListView x:Name="chatbox" Grid.Row="0" Grid.Column="0" Background="#FFAEB881" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="False">
-                <!--<ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel VerticalAlignment="Bottom"/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>-->
-            </ListView>
-            <Grid Grid.Column="0" Grid.Row="1">
-                
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="50"/>
@@ -100,12 +96,60 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                
-                <TextBox x:Name="txt_entry" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="" Background="#FFFBFBBD" BorderBrush="#89000000" VerticalScrollBarVisibility="Auto" AcceptsTab="True"/>
-                <Button x:Name="btn_txtenter" Grid.Column="1" Grid.Row="0" Content="&gt;" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="40" Click="Btn_txtenter_Click" Height="22"/>
+                <Grid Grid.Column="0" Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <ListView x:Name="chatbox" Grid.Row="0" Grid.Column="0" Background="#FFAEB881" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="False"/>
+                    <!--<ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel VerticalAlignment="Bottom"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>-->
+                    <TextBox x:Name="txt_entry" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="" Background="#FFFBFBBD" BorderBrush="#89000000" VerticalScrollBarVisibility="Auto" AcceptsTab="True" Width="305"/>
+                    <Button x:Name="btn_txtenter" Grid.Column="1" Grid.Row="1" Content="&gt;" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="40" Click="Btn_txtenter_Click"/>
+
+                </Grid>
+                
             </Grid>
         </Grid>
-        
+
+
+
+        <Grid Grid.Row="1" Grid.Column="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="133*"/>
+                <ColumnDefinition Width="267*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+
+            <Button x:Name="btn_addnote" Grid.Row="1" Content="Add" VerticalAlignment="Top" Click="Btn_addnote_Click" Height="30" Width="60" HorizontalAlignment="Right" Grid.Column="1"/>
+            <ListView Grid.Row="0" Grid.Column="0" x:Name="NoteListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735"   BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource notesCollapsHeader}">
+                        <GridViewColumn Width="30"
+                                 DisplayMemberBinding="{Binding Path=Id}"/>
+                        <GridViewColumn  Width="300">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Header}" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsEnabled="True" Width="Auto"></TextBox>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+
     </Grid>
 </Page>

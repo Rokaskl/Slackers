@@ -128,7 +128,7 @@ namespace WpfApp1
             var response = await client.GetAsync($"/Rooms/group/{roomId}");
             if (response.IsSuccessStatusCode)
             {
-                return response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>().Result;
+                return await response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>();
             }
             return null;
         }

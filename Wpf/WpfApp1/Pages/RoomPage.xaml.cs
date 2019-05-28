@@ -20,6 +20,8 @@ using System.Diagnostics;
 using WpfApp1.TimerControl;
 using System.Reflection;
 using System.Globalization;
+using System.IO;
+using WebApi.Entities;
 
 namespace WpfApp1.Pages
 {
@@ -29,10 +31,13 @@ namespace WpfApp1.Pages
     public partial class RoomPage : Page
     {
         //private HttpClient client;
+        private AdditionalData roomAddData;
         private RoomDto room;
         private string prevWindow;
         private Timer timer;
+        private Button btnStartStop;
         private bool Changed;
+        
 
         public RoomPage(){}
         public RoomPage(RoomDto room,string prev)
@@ -44,36 +49,109 @@ namespace WpfApp1.Pages
             //client = Inst.Utils.HttpClient;
            
             InitializeComponent();
+            RoomInfo();
+            ListUsers();
+
+            FillNotes();
+            FillChat();
+
             this.chatbox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
             this.KeyDown += RoomPage_KeyDown;
             this.txt_entry.KeyUp += Txt_entry_KeyUp;
-
             this.NoteListView.SelectionMode = SelectionMode.Single;
             this.NoteListView.MouseLeftButtonUp += NoteListView_MouseLeftButtonUp;
 
-            ConfigureTimer();
-
-            (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
-            {
-                //Header = "Id",
-                Header = "Username",
-                DisplayMemberBinding = new Binding("username"),
-                Width = 100 
-            });
-            (this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
-            {
-                Header = "Status",
-                DisplayMemberBinding = new Binding("status"),
-                Width = 100
-            });
+            //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
+            //{
+            //    //Header = "Id",
+            //    Header = "Username",
+            //    DisplayMemberBinding = new Binding("username"),
+            //    Width = 100 
+            //});
+            //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
+            //{
+            //    Header = "Status",
+            //    DisplayMemberBinding = new Binding("status"),
+            //    Width = 100
+            //});
             
             InitCmbStatus();
-            FillMembers();//pirma karta uzkrauna iskarto.
-            FillNotes();
-            FillChat();
+            ConfigureBotStack();
+            //FillMembers();//pirma karta uzkrauna iskarto.
+            
+
             Task.Run(() => DisplayMembersR());//toliau naujina info kas 10secs.
         }
 
+        private void UsersListView_MouseLeave(object sender, MouseEventArgs e)
+        {
+            CloseBioPop();
+        }
+
+        private Popup userBioPOP;
+        private void UsersListView_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (((ListView)sender).Items.Count!=0 )
+            {
+            userBioPOP = new Popup();
+            userBioPOP.Width = 200;
+            userBioPOP.Height = 200;
+
+            StackPanel stack = new StackPanel();
+            stack.VerticalAlignment = VerticalAlignment.Stretch;
+            stack.HorizontalAlignment = HorizontalAlignment.Stretch;
+            stack.Background = Brushes.LightGray;
+            
+            TextBlock userBio = new TextBlock();
+            userBio.Text = ((Dictionary<string,object>)((ListView)sender).Items.CurrentItem)["bio"].ToString();
+            stack.Children.Add(userBio);
+            userBioPOP.Child = stack;
+            
+            userBioPOP.StaysOpen = false;
+            userBioPOP.Placement = PlacementMode.Mouse;
+            userBioPOP.Visibility = Visibility.Visible;
+            userBioPOP.PopupAnimation = PopupAnimation.Fade;
+            userBioPOP.IsOpen = true;
+            userBioPOP.MouseLeave += Bio_LostFocus;
+            }            
+        }
+        private void CloseBioPop()
+        {
+            if (userBioPOP!=null)
+            {
+                userBioPOP.IsOpen=false;
+            }
+        }
+        private void Bio_LostFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as Popup).IsOpen = false;
+        }
+
+        private async void RoomInfo()
+        {
+            this.roomAddData = await Inst.ApiRequests.GetRoomAddData(this.room.roomId);
+            Ellipse roomPhoto = new Ellipse();
+            roomPhoto.Width = 50;
+            roomPhoto.Height = 50;
+            if(roomAddData!=null&&roomAddData.PhotoBytes!=null)
+            using (var memstr = new MemoryStream(roomAddData.PhotoBytes))
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad; // here
+                        image.StreamSource = memstr;
+                        image.EndInit();
+                        ImageBrush imgBrush = new ImageBrush();
+                        imgBrush.ImageSource = image;
+                        roomPhoto.Fill = imgBrush;
+            }  
+            this.roomInfo.Children.Add(roomPhoto);
+            Label roomNameLabel = new Label();
+            roomNameLabel.Content = this.room.roomName;
+            roomNameLabel.FontSize = 20;
+            roomNameLabel.Foreground = Brushes.Pink;            
+            this.roomInfo.Children.Add(roomNameLabel);
+        }
         private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
         {
             if (Changed && this.chatbox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
@@ -183,16 +261,16 @@ namespace WpfApp1.Pages
                     if (response/*.IsSuccessStatusCode*/)
                     {
                         this.cmbStatus.SelectedItem = item;
-                        foreach(var x in this.MembersListView.Items)
-                        {
-                            if (x.GetType().GetProperty("username").GetValue(x).ToString() == Inst.ApiRequests.User.username)
-                            {
-                                int index = this.MembersListView.Items.IndexOf(x);
-                                this.MembersListView.Items.Remove(x);
-                                this.MembersListView.Items.Insert(index, new { username = Inst.ApiRequests.User.username, status = item});
-                                break;
-                            }
-                        }
+                        //foreach(var x in this.MembersListView.Items)
+                        //{
+                        //    if (x.GetType().GetProperty("username").GetValue(x).ToString() == Inst.ApiRequests.User.username)
+                        //    {
+                        //        int index = this.MembersListView.Items.IndexOf(x);
+                        //        this.MembersListView.Items.Remove(x);
+                        //        this.MembersListView.Items.Insert(index, new { username = Inst.ApiRequests.User.username, status = item});
+                        //        break;
+                        //    }
+                        //}
                     }
                 } 
             }
@@ -203,15 +281,22 @@ namespace WpfApp1.Pages
             }
         }
 
-        private void ConfigureTimer()
+        private void ConfigureBotStack()
         {
+            btnStartStop = new Button();
+            btnStartStop.Content = "Start!";
+            btnStartStop.VerticalAlignment = VerticalAlignment.Center;
+            btnStartStop.HorizontalAlignment = HorizontalAlignment.Stretch;
+            btnStartStop.Click += btnStartStop_Click;
+            btnStartStop.Height = 25;
+            btnStartStop.Width = 50;
             
-            timer.HorizontalAlignment = HorizontalAlignment.Left;
+            timer.HorizontalAlignment = HorizontalAlignment.Stretch;
             timer.Margin = new Thickness(0, 0, 0, 0);
-            timer.VerticalAlignment = VerticalAlignment.Top;
-            timer.Width = 95;
+            timer.VerticalAlignment = VerticalAlignment.Center;
             timer.FlowDirection = FlowDirection.LeftToRight;
             this.botomStack.Children.Add(timer);
+            this.botomStack.Children.Add(btnStartStop);
             
         }
 
@@ -275,119 +360,119 @@ namespace WpfApp1.Pages
             }
         }
 
-        private void DisplayMembers()
-        {
-            int time = 0;
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-            while (true)
-            {
-                if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
-                {
-                    if (!FillMembers().Result)
-                    {
-                        break;
-                    }
-                    time = (int)stopWatch.Elapsed.TotalSeconds;
-                }
-            }
-        }
+        //private void DisplayMembers()
+        //{
+        //    int time = 0;
+        //    Stopwatch stopWatch = new Stopwatch();
+        //    stopWatch.Start();
+        //    while (true)
+        //    {
+        //        if (time + 10 <= stopWatch.Elapsed.TotalSeconds)
+        //        {
+        //            if (true/*!FillMembers().Result*/)
+        //            {
+        //                break;
+        //            }
+        //            time = (int)stopWatch.Elapsed.TotalSeconds;
+        //        }
+        //    }
+        //}
         private async Task DisplayMembersR()
         {
             while (true)
             {
                     await Task.Delay(10000);
-                    if (!FillMembers().Result)
+                    if (!ListUsers().Result/*!FillMembers().Result*/)
                     {
                         break;
                     }                    
             }
         }
-        private async Task<bool> FillMembers()
-        {
-            bool end = true;
-            try
-            {
-                //var response = await client.GetAsync($"/Rooms/group/{this.room.roomId}");
-                List<Newtonsoft.Json.Linq.JObject> resp = await Inst.ApiRequests.GetGroupMembers(this.room.roomId);
-                if (/*response.IsSuccessStatusCode*/resp!=null)
-                {
-                    this.Dispatcher.Invoke((Action)(() =>
-                    {
-                        List<Dictionary<string, string>> respListDict = new List<Dictionary<string, string>>();
-                        //List<Newtonsoft.Json.Linq.JObject> resp = response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>().Result;
+        //private async Task<bool> FillMembers()
+        //{
+        //    bool end = true;
+        //    try
+        //    {
+        //        //var response = await client.GetAsync($"/Rooms/group/{this.room.roomId}");
+        //        List<Dictionary<User,string> >resp = await Inst.ApiRequests.GetGroupMembers(this.room.roomId);                
+        //        if (/*response.IsSuccessStatusCode*/resp!=null)
+        //        {
+        //            this.Dispatcher.Invoke((Action)(() =>
+        //            {
+        //                List<Dictionary<string, string>> respListDict = new List<Dictionary<string, string>>();
+        //                //List<Newtonsoft.Json.Linq.JObject> resp = response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>().Result;
 
-                        resp.ForEach(x =>
-                        {
-                            Dictionary<string, string> respDict = new Dictionary<string, string>();
-                            foreach (var key in x.GetValue("key").ToObject<Dictionary<string, object>>())
-                            {
-                                if (key.Value?.ToString() != null)
-                                {
-                                    respDict.Add(key.Key, key.Value.ToString());
-                                }
-                            }
-                            respDict.Add("status", x.GetValue("value").ToObject<string>());
-                            respListDict.Add(respDict);
-                        });
-                        this.MembersListView.Items.Clear();
+        //                resp.ForEach(x =>
+        //                {
+        //                    Dictionary<string, string> respDict = new Dictionary<string, string>();
+        //                    foreach (var key in x)
+        //                    {
+        //                        if (key.Value?.ToString() != null)
+        //                        {
+        //                            respDict.Add(key.Key, key.Value.ToString());
+        //                        }
+        //                    }
+        //                    respDict.Add("status", x.GetValue("value").ToObject<string>());
+        //                    respListDict.Add(respDict);
+        //                });
+        //               // this.MembersListView.Items.Clear();
 
-                        //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn());
-                        //this.MembersGrid.
-                        //DependencyProperty dp = DependencyProperty.Register("username", typeof(string), typeof(Dictionary<string, string>));
-                        respListDict.ForEach(x =>
-                        {
-                                //Brush b = Brushes.Gray;
-                                string status = string.Empty;
-                            switch (x["status"])
-                            {
-                                case "A":
-                                    {
-                                            //b = Brushes.Green;
-                                            status = "Active";
-                                        break;
-                                    }
-                                case "B":
-                                    {
-                                            //b = Brushes.Yellow;
-                                            status = "Away";
-                                        break;
-                                    }
-                                case "C":
-                                    {
-                                            //b = Brushes.Red;
-                                            status = "Don't disturb!";
-                                        break;
-                                    }
-                                default: break;
-                            }
-                                //ListViewItem lvi = new ListViewItem() { /*Content = "username",*/ Background = b };
-                                //lvi.SetValue(dp, x);
-                                this.MembersListView.Items.Add(new { username = x["username"], status = status });
-                        });
-                        //this.MembersListView.ItemsSource = respListDict;
-                        //ChangeStatuses(respListDict);
+        //                //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn());
+        //                //this.MembersGrid.
+        //                //DependencyProperty dp = DependencyProperty.Register("username", typeof(string), typeof(Dictionary<string, string>));
+        //                respListDict.ForEach(x =>
+        //                {
+        //                        //Brush b = Brushes.Gray;
+        //                        string status = string.Empty;
+        //                    switch (x["status"])
+        //                    {
+        //                        case "A":
+        //                            {
+        //                                    //b = Brushes.Green;
+        //                                    status = "Active";
+        //                                break;
+        //                            }
+        //                        case "B":
+        //                            {
+        //                                    //b = Brushes.Yellow;
+        //                                    status = "Away";
+        //                                break;
+        //                            }
+        //                        case "C":
+        //                            {
+        //                                    //b = Brushes.Red;
+        //                                    status = "Don't disturb!";
+        //                                break;
+        //                            }
+        //                        default: break;
+        //                    }
+        //                        //ListViewItem lvi = new ListViewItem() { /*Content = "username",*/ Background = b };
+        //                        //lvi.SetValue(dp, x);
+        //                        //this.MembersListView.Items.Add(new { username = x["username"], status = status });
+        //                });
+        //                //this.MembersListView.ItemsSource = respListDict;
+        //                //ChangeStatuses(respListDict);
 
-                    }));
-                    //this.MembersListView
-                }
-                else if (resp == null)
-                {
-                    Inst.Utils.MainWindow.frame1.Navigate(new UserPage());
-                    end = false;
-                }
-                else
-                {
-                    MessageBox.Show("Something went wrong!");                    
-                }
+        //            }));
+        //            //this.MembersListView
+        //        }
+        //        else if (resp == null)
+        //        {
+        //            Inst.Utils.MainWindow.frame1.Navigate(new UserPage());
+        //            end = false;
+        //        }
+        //        else
+        //        {
+        //            MessageBox.Show("Something went wrong!");                    
+        //        }
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            return end;
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.ToString());
+        //    }
+        //    return end;
+        //}
 
         private void BtnLogoutRoom_Click(object sender, RoutedEventArgs e)
         {
@@ -454,7 +539,8 @@ namespace WpfApp1.Pages
 
         public void UpdateUsersListView()
         {
-            FillMembers();
+             ListUsers();
+            //FillMembers();
         }
 
         public void UpdateGroupChat()
@@ -739,5 +825,78 @@ namespace WpfApp1.Pages
                 Console.WriteLine(ex.ToString());
             }
         }
-    }
+        public async Task<bool> ListUsers()
+        {
+            this.usersList.Items.Clear();
+            List<Newtonsoft.Json.Linq.JObject> users = await Inst.ApiRequests.GetGroupMembers(this.room.roomId);
+            if (users==null)
+            {
+                return false;
+            }
+            List<Dictionary<string,object>> usersList = new List<Dictionary<string, object>>(); 
+            foreach (var item in users)
+            {
+                UserDto temp = item["key"].ToObject<UserDto>();
+                AdditionalData userAddData = await Inst.ApiRequests.GetUserAddData(temp.Id);
+                if (userAddData == null)
+                {
+                    this.usersList.Items.Add(UsersStatus(null, item["value"].ToObject<string>(), temp.Username));
+                }
+                usersList.Add(UsersStatus(userAddData, item["value"].ToObject<string>(), temp.Username));
+            }
+            this.usersListView.ItemsSource = usersList;
+            return true;
+        }
+        private Dictionary<string,object> UsersStatus(AdditionalData addData,string statusChar,string userName)
+        {
+            Dictionary<string,object> temp = new Dictionary<string, object>();
+            temp.Add("bio",addData.Biography);
+            if(addData.PhotoBytes!=null)
+            using (var memstr = new MemoryStream(addData.PhotoBytes))
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad; // here
+                        image.StreamSource = memstr;
+                        image.EndInit();
+                        ImageBrush imgBrush = new ImageBrush();
+                        imgBrush.ImageSource = image;
+                        temp.Add("photo",imgBrush);
+            }
+            else
+            {
+                temp.Add("photo",Brushes.LightGray);
+            }
+            Brush status;          
+             switch (statusChar)
+            {
+                case "A":
+                    {
+                        //b = Brushes.Green;
+                        status = Brushes.Green;
+                        break;
+                    }
+                case "B":
+                    {
+                        //b = Brushes.Yellow;
+                        status = Brushes.Yellow;
+                        break;
+                    }
+                case "C":
+                    {
+                        //b = Brushes.Red;
+                        status = Brushes.Red;
+                        break;
+                    }
+                default: 
+                    status = Brushes.Gray;
+                    break;
+            }     
+            temp.Add("status",status);
+            temp.Add("username",userName);
+            return temp;
+        }
+
+    }   
+    
 }

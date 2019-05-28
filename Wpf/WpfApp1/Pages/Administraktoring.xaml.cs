@@ -34,7 +34,7 @@ namespace WpfApp1.Pages
             Inst.Utils.MembersChanged += Utils_MembersChanged;
             ListUsers();
 
-            this.Name.Content = room.roomName.Replace(" ",string.Empty);
+            this.Name.Content = room.roomName;
             this.Name.FontSize = 14;
 
             ShowUsersTimes(DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek),DateTime.Today);
