@@ -56,6 +56,7 @@ function ButtonsOrProfile(props)
           <div style={style}>{'  '}{props.authentication.user.username}</div>  
           <a className="avatar" href="./profilePage">
             <Image src=".//..//images/avatar.png"   roundedCircle width={50} height={50}  />
+            <a href="./login" className="btn btn-primary" role="button" aria-pressed="true">Logout</a>
           </a>
        </form>
        )

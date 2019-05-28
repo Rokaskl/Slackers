@@ -5,10 +5,18 @@ export const roomService = {
     register,
     getAll,
     getById,
-    delete: _delete
+    delete: _delete,
+    getTimes
 };
 
+function getTimes(from,to,id) {
+    const requestOptions = {
+        method: 'GET',
+        headers: authHeader()
+    };
 
+    return fetch(`${config.apiUrl}/TimeTracker/timeroom/${from}/${to}/${id}/2`, requestOptions).then(handleResponse);
+}
 function getAll() {
     const requestOptions = {
         method: 'GET',

@@ -1,5 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { RoomPage } from '../SingleRoomPage';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { PrivateRoute } from '../_components';
 
 import { roomActions } from '../_actions/room.actions.js';
 import RoomCard from '../_components/RoomCard.jsx';
@@ -55,10 +58,12 @@ class RoomsPage extends React.Component {
     
    
     render() {
+        
         const { user, rooms} = this.props;
         const {newRoom} =this.state;
             return (
             <div>
+                 
                 <h1>Rooms page</h1>
                  {/* Button trigger modal */}
                  <button type="button" className="btn btn-primary btn-icon btn-round btn-lg" data-toggle="modal" data-target="#exampleModal">
@@ -67,7 +72,7 @@ class RoomsPage extends React.Component {
                 {rooms.loading && <em>Loading rooms...</em>}
                 {rooms.error && <span className="text-danger">ERROR: {rooms.error}</span>}
                 {rooms.items &&
-                   <div className="card-columns">
+                   <div>
                         
                         {rooms.items.map((room, index) =>
                             <div key={room.roomId}>
@@ -79,7 +84,7 @@ class RoomsPage extends React.Component {
                                     : room.deleteError ? <span className="text-danger"> - ERROR: {room.deleteError}</span>
                                     :   <span> 
                                         
-                                         <a href={`/room/${room.roomId}`} className="btn btn-secondary" role="button" aria-pressed="true">Room Info</a>
+                                         <a href={`/${room.roomId}`} className="btn btn-secondary" role="button" aria-pressed="true">Room Info</a>
                                          <button type="button" className="btn btn-primary" onClick={this.handleDeleteroom(room.roomId)}>Delete</button>
                                         
                                         </span>
