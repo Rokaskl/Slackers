@@ -60,7 +60,10 @@ namespace WebApi.Controllers
             int roomId = Int32.Parse(info_dic["roomId"]);
             RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == roomId);
             List<int> registeredUsers = new List<int>();
-            registeredUsers.AddRange(room.users);
+            if (room.users != null)
+            {
+                registeredUsers.AddRange(room.users);
+            }  
             registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 0, roomId = roomId, registered_room_users = registeredUsers});
             return Ok();
@@ -81,7 +84,8 @@ namespace WebApi.Controllers
 
             RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == roomId);
             List<int> registeredUsers = new List<int>();
-            registeredUsers.AddRange(room.users);
+            if (room.users != null)
+                registeredUsers.AddRange(room.users);
             registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 0, roomId = roomId, registered_room_users = registeredUsers });
             return Ok();
@@ -103,7 +107,8 @@ namespace WebApi.Controllers
 
             RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == note.RoomId);
             List<int> registeredUsers = new List<int>();
-            registeredUsers.AddRange(room.users);
+            if (room.users != null)
+                registeredUsers.AddRange(room.users);
             registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 0, roomId = note.RoomId, registered_room_users = registeredUsers });
             return Ok();

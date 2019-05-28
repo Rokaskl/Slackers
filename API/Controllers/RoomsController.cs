@@ -139,7 +139,8 @@ namespace WebApi.Controllers
 
                 RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == temp.roomId);
                 List<int> registeredUsers = new List<int>();
-                registeredUsers.AddRange(room.users);
+                if (room.users != null)
+                    registeredUsers.AddRange(room.users);
                 registeredUsers.Add(room.roomAdminId);
                 App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 3, roomId = temp.roomId, registered_room_users = registeredUsers });
                 return Ok();
@@ -209,7 +210,10 @@ namespace WebApi.Controllers
 
             RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == RoomId);
             List<int> registeredUsers = new List<int>();
-            registeredUsers.AddRange(room.users);
+            if (room.users != null)
+            {
+                registeredUsers.AddRange(room.users);
+            }
             registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId, registered_room_users = registeredUsers });
             return Ok();
@@ -241,7 +245,8 @@ namespace WebApi.Controllers
 
             RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == RoomId);
             List<int> registeredUsers = new List<int>();
-            registeredUsers.AddRange(room.users);
+            if (room.users != null)
+                registeredUsers.AddRange(room.users);
             registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId, registered_room_users = registeredUsers });
             return Ok();
@@ -292,7 +297,8 @@ namespace WebApi.Controllers
 
             RoomDto roomDto = _roomService.GetAllRooms().First(x => x.roomId == roomId);
             List<int> registeredUsers = new List<int>();
-            registeredUsers.AddRange(roomDto.users);
+            if (roomDto.users != null)
+                registeredUsers.AddRange(roomDto.users);
             registeredUsers.Add(roomDto.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = roomId, registered_room_users = registeredUsers });
             return Ok();

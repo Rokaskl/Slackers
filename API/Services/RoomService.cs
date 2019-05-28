@@ -247,7 +247,8 @@ namespace WebApi.Services
                 }
             }
             List<int> registeredUsers = new List<int>();
-            registeredUsers.AddRange(ConvertToInts(room.usersBytes));
+            if (ConvertToInts(room.usersBytes) != null)
+                registeredUsers.AddRange(ConvertToInts(room.usersBytes));
             registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = room.roomId, registered_room_users = registeredUsers });
             return true;
