@@ -388,5 +388,33 @@ namespace WpfApp1.Pages
                 ShowUsersTimes(from, to);
             }
         }
+
+        private void Btn_guidChange_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Change room's guid?", "", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes)
+            {
+                ChangeRoomGuid();
+            }
+        }
+
+        private async void ChangeRoomGuid()
+        {
+            try
+            {
+                if (await Inst.ApiRequests.ChangeRoomGuid(room))
+                {
+                    MessageBox.Show("Guid was successfuly changed!");
+                }
+                else
+                {
+                    MessageBox.Show("Could not change room's guid!");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
     }
 }

@@ -6,7 +6,8 @@ export const roomActions = {
     register,
     getAll,
     getById,
-    delete: _delete
+    delete: _delete,
+    getTimes
 };
 
 
@@ -32,7 +33,21 @@ function register(room) {
     function success(room) { return { type: roomConstants.REGISTER_SUCCESS, room } }
     function failure(error) { return { type: roomConstants.REGISTER_FAILURE, error } }
 }
+function getTimes(from, to ,id) {
+    return dispatch => {
+        dispatch(request());
 
+        roomService.getTimes(from,to,id)
+            .then(
+                times => dispatch(success(times)),
+                error => dispatch(failure(error.toString()))
+            );
+    };
+
+    function request() { return { type: roomConstants.GETTIMES_REQUEST } }
+    function success(times) { return { type: roomConstants.GETTIMES_SUCCESS, times } }
+    function failure(error) { return { type: roomConstants.GETTIMES_FAILURE, error } }
+}
 function getAll() {
     return dispatch => {
         dispatch(request());
