@@ -286,10 +286,6 @@ namespace WpfApp1.Forms
             RoomDto roomId = (RoomDto)((Button)sender).Tag;
             //SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
             SelectedRoom = roomId;
-            if (Inst.Utils.Administraktoring != null)
-            {
-                (Inst.Utils.Administraktoring as Administraktoring).StopChart();
-            }
             Administraktoring adm_page = new Administraktoring(SelectedRoom);
             Inst.Utils.MainWindow.frame2.NavigationService.Navigate(adm_page);
             Inst.Utils.Administraktoring = adm_page;

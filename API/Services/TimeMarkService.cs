@@ -17,6 +17,7 @@ namespace WebApi.Services
         TimeSpan GetTimeMarkDay(int roomId, int userId, int year, int month, int day);
         TimeSpan GetTimeMarkWeek(int roomId, int userId, int year, int week);
         TimeSpan GetTimeMarkMonth(int roomId, int userId, int year, int month);
+        void ResolveTimeOuts(int userId);
         //Room JoinGroup(int id, string uid);
         //List<RoomDto> GetRoomsUsers(List<int> ids, string idString);
         //List<RoomDto> GetRoomsAdmin(string idStrings);
@@ -148,6 +149,55 @@ namespace WebApi.Services
                 span.Add(GetTimeMarkDay(roomId, userId, year, month, i));
             }
             return span;
-        }       
+        }
+
+        public void ResolveTimeOuts(int userId)
+        {
+            Dictionary<DateTime, int> timeouts = App.Inst.User_TimeOut_List.Where(x => x.Value == userId)?.OrderBy(z => z.Key).ToDictionary(y => y.Key, y => y.Value);
+            if (timeouts.Count == 0)//User had no timeouts
+            {
+                return;
+            }
+            List<TimeMark> marks = new List<TimeMark>();
+            marks = _context.TimeMarks.Where(x => x.UserId == userId).OrderBy(y => y.Time).ToList();
+            if (marks.Count == 0)
+            {
+                foreach (KeyValuePair<DateTime, int> item in timeouts)
+                {
+                    App.Inst.User_TimeOut_List.Remove(item.Key);
+                }
+                return;
+            }
+            for (int i = 0; i < marks.Count - 1; i+=2)
+            {
+                if (marks[i].Action == true && marks[i + 1].Action == true)//2 start marks in a row
+                {
+                    Dictionary<DateTime, int> timeout_Time = timeouts.Where(x => x.Key > marks[i].Time && x.Key < marks[i + 1].Time).ToDictionary(y => y.Key, y => y.Value);//Should always exist
+                    if (timeout_Time != null)
+                    {
+                        _context.TimeMarks.Add(new TimeMark() { Action = false/*Stop*/, RoomId = marks[i].RoomId, UserId = userId, Time = timeout_Time.First().Key });
+                        foreach (KeyValuePair<DateTime, int> item in timeout_Time)
+                        {
+                            App.Inst.User_TimeOut_List.Remove(item.Key);
+                        }
+                    }
+                }
+            }
+
+            if (marks.Last().Action == true)//Last time mark was "Start"
+            {
+                Dictionary<DateTime, int> timeout_Time = timeouts.Where(x => x.Key > marks.Last().Time).ToDictionary(y => y.Key, y => y.Value);
+                if (timeout_Time != null)
+                {
+                    _context.TimeMarks.Add(new TimeMark() { Action = false/*Stop*/, RoomId = marks.Last().RoomId, UserId = userId, Time = timeout_Time.First().Key });
+                    foreach (KeyValuePair<DateTime, int> item in timeout_Time)
+                    {
+                        App.Inst.User_TimeOut_List.Remove(item.Key);
+                    }
+                }
+            }
+
+            _context.SaveChanges();
+        }
     }
 }

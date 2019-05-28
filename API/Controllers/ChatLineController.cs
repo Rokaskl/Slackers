@@ -46,8 +46,9 @@ namespace WebApi.Controllers
             }
 
             RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == roomId);
-            List<int> registeredUsers = room.users;
-            registeredUsers?.Add(room.roomAdminId);
+            List<int> registeredUsers = new List<int>();
+            registeredUsers.AddRange(room.users);
+            registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 1, roomId = roomId, registered_room_users = registeredUsers });
             return Ok();
         }

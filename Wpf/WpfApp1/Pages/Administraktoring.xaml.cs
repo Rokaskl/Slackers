@@ -366,6 +366,7 @@ namespace WpfApp1.Pages
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Forms.Admin());
+            StopChart();
             Inst.Utils.Administraktoring = null;
         }
         private void Copy_guid_Click(object sender,RoutedEventArgs e)

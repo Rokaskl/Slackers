@@ -246,8 +246,9 @@ namespace WebApi.Services
                     App.Inst.tempRooms.Remove(tempRoom);
                 }
             }
-            List<int> registeredUsers = ConvertToInts(room.usersBytes);
-            registeredUsers?.Add(room.roomAdminId);
+            List<int> registeredUsers = new List<int>();
+            registeredUsers.AddRange(ConvertToInts(room.usersBytes));
+            registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = room.roomId, registered_room_users = registeredUsers });
             return true;
         }
