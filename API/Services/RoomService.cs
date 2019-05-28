@@ -19,6 +19,7 @@ namespace WebApi.Services
         List<RoomDto> GetRoomsAdmin(string idStrings);
         void KickUser(int roomId,int userId,int roomAdminId);
         bool Logout_from_room(Room room, int userId);
+        Guid? UpdateGuid(int roomId, int userId);
     }
     public class RoomService : IRoomService
     {
@@ -249,6 +250,23 @@ namespace WebApi.Services
             registeredUsers?.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = room.roomId, registered_room_users = registeredUsers });
             return true;
+        }
+
+        public Guid? UpdateGuid(int roomId, int userId)
+        {
+            Room temp = _context.Rooms.Find(roomId);
+            if (temp.roomAdminId == userId)
+            {
+                Guid new_guid = Guid.NewGuid();
+                temp.guid = new_guid.ToString();
+                _context.Rooms.Update(temp);
+                _context.SaveChanges();
+                return new_guid;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

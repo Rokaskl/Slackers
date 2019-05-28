@@ -293,5 +293,20 @@ namespace WebApi.Controllers
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = roomId, registered_room_users = registeredUsers });
             return Ok();
         }
+
+        [Route("change_guid/{roomId:int}")]
+        public IActionResult ChangeRoomGuid(int roomId)
+        {
+            int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            Guid? new_guid = _roomService.UpdateGuid(roomId, userId);
+            if (new_guid != null)
+            {
+                return Ok(new_guid);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

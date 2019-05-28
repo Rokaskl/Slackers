@@ -20,13 +20,21 @@
             <RowDefinition Height="*" />
             <!--<RowDefinition Height="*" />-->
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
-            <Ellipse x:Name="elipsePhoto" Width="50" Height="50"></Ellipse>
+        <Grid Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Width="Auto">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" MinWidth="50"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" MinWidth="0" MaxWidth="154"/>
+                <ColumnDefinition Width="*" MinWidth="75"/>
+            </Grid.ColumnDefinitions>
+            <Ellipse x:Name="elipsePhoto" Width="50" Height="50" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0"></Ellipse>
             <!--<Image x:Name="roomPhoto"></Image>-->
-            <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Button x:Name="Back" Content="Back" Click="Back_Click" Width="40" Margin="2,2,2,2"></Button>
-            <Button x:Name="Copyguid" Content="Copy guid to clipboard" Margin="2,2,2,2" Click="Copy_guid_Click" Width="150"></Button>            
-        </StackPanel>
+            <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0"/>
+            <Button x:Name="Back" Content="Back" Click="Back_Click" Width="40" Margin="2,2,2,2" HorizontalAlignment="Left" Grid.Column="2" Grid.Row="0"></Button>
+            <Button x:Name="Copyguid" Content="Copy guid to clipboard" Margin="2,2,2,2" Click="Copy_guid_Click" MinWidth="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3" Grid.Row="0"></Button>
+            <Button x:Name="btn_guidChange" Content="Change guid" Width="75" MinWidth="75" Click="Btn_guidChange_Click" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="2,2,2,2" Grid.Column="4" Grid.Row="0"/>
+        </Grid>
         <Button x:Name="btnLogin" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click" Style="{DynamicResource enable}"/>
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.ColumnDefinitions>

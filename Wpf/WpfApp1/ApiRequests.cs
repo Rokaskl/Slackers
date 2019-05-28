@@ -383,6 +383,22 @@ namespace WpfApp1
             }
             return null;
         }
+
+        public async Task<bool> ChangeRoomGuid(RoomDto room)
+        {
+            var resp = await this.client.GetAsync($"Rooms/change_guid/{room.roomId}");
+            if (resp.IsSuccessStatusCode)
+            {
+                Guid new_guid = resp.Content.ReadAsAsync<Guid>().Result;
+                room.guid = new_guid.ToString();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         #endregion
         public AdditionalData AdditionalData
         {
