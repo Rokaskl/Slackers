@@ -1,6 +1,8 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebApi.Dtos;
 using WebApi.Entities;
 using WebApi.Helpers;
 
@@ -8,12 +10,14 @@ namespace WebApi.Services
 {
     public interface IUserService
     {
-        User Authenticate(string username, string password);
-        IEnumerable<User> GetAll();
+        UserDto Authenticate(string username, string password, bool web);
+        IEnumerable<UserDto> GetAll();
         User GetById(int id);
         User Create(User user, string password);
+        List<User> GetList(List<int> users);
         void Update(User user, string password = null);
         void Delete(int id);
+
     }
 
     public class UserService : IUserService
@@ -26,13 +30,25 @@ namespace WebApi.Services
         }
         
 
-        public User Authenticate(string username, string password)
+        public UserDto Authenticate(string username, string password, bool web = false)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return null;
 
             var user = _context.Users.SingleOrDefault(x => x.Username == username);
+            if (user == null)
+            {
+                return null;
+            }
 
+            //check if user is already logged in.
+            if (!web && App.Inst.users.Any(x => x.id == user.Id))
+            {
+                return null;
+            }
+
+            List<int> rooms = ConvertToInts(user.roomsBytes);
+            UserDto _user = new UserDto(user.Id,user.FirstName,user.LastName,user.Username,rooms);
             // check if username exists
             if (user == null)
                 return null;
@@ -42,19 +58,35 @@ namespace WebApi.Services
                 return null;
 
             // authentication successful
-            return user;
+            return _user;
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<UserDto> GetAll()
         {
-            return _context.Users;
+            List<UserDto> _users = new List<UserDto>();
+            var users = _context.Users;
+            foreach (var user in users) 
+                _users.Add(new UserDto(user.Id,user.FirstName,user.LastName,user.Username,ConvertToInts(user.roomsBytes)));
+            return _users;
         }
 
         public User GetById(int id)
         {
             return _context.Users.Find(id);
         }
-
+        public List<User> GetList(List<int> users)
+        {
+            List<User> _users = new List<User>();
+            foreach (var item in users)
+            {
+                User tempUser = GetById(item);
+                tempUser.PasswordHash=null;
+                tempUser.PasswordSalt=null;
+                tempUser.roomsBytes=null;
+                _users.Add(tempUser);
+            }
+            return _users;
+        }
         public User Create(User user, string password)
         {
             // validation
@@ -73,7 +105,7 @@ namespace WebApi.Services
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return user;
+            return _context.Users.First(x=>x.Username==user.Username);
         }
 
         public void Update(User userParam, string password = null)
@@ -118,7 +150,6 @@ namespace WebApi.Services
                 _context.SaveChanges();
             }
         }
-
         // private helper methods
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
@@ -151,5 +182,35 @@ namespace WebApi.Services
 
             return true;
         }
+        
+        private static byte[] ConvertToBytes(List<int> users)
+        {
+            if (users==null)
+            {
+                return null;
+            }
+            byte[] _users = new byte[users.Count*4];
+            for (int i = 0; i < users.Count; i++)
+            {
+                BitConverter.GetBytes(users[i]).CopyTo(_users,i*4);
+            }
+            return _users;
+        }
+        
+        private static List<int> ConvertToInts(byte[] users)
+        {
+            if (users==null)
+            {
+                return null;
+            }
+            List<int> _users = new List<int>();
+            for (int i = 0; i < users.Length/4; i++)
+            {
+                _users.Add(BitConverter.ToInt32(users,i*4));
+            }
+            return _users;
+        }
+
+
     }
 }

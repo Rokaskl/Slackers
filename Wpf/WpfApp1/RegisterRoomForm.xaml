@@ -1,0 +1,35 @@
+﻿<Window x:Class="WpfApp1.RegisterRoomForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="RegisterRoomForm" Height="400" Width="500" Background="White" ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Orientation="Horizontal">
+            <Label Content="*Room name:" HorizontalAlignment="Left"></Label>
+            <TextBox x:Name="RoomName" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="380"></TextBox>
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Label Content="Room bio:" HorizontalAlignment="Left"></Label>
+            <RichTextBox x:Name="RoomBio" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="400"></RichTextBox>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Label Content="Picure:" VerticalAlignment="Center" HorizontalAlignment="Right" ></Label>
+            <Label x:Name="file"></Label>
+            <Button x:Name="UploadPicture" Content="Picure" Click="UploadPicture_Click" VerticalAlignment="Center"></Button>
+        </StackPanel>
+        <Button Grid.Row="3" x:Name="create" Content="Create room" Click="Create_Click"></Button>
+    </Grid>
+</Window>

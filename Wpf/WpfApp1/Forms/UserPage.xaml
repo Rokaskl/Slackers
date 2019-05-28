@@ -1,0 +1,48 @@
+﻿<Page x:Class="WpfApp1.Forms.UserPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WpfApp1.Forms"
+      mc:Ignorable="d" 
+      d:DesignHeight="500" d:DesignWidth="1000"
+      Title="UserPage">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBox x:Name="guidText" Grid.Column="0" Grid.Row="0" Margin="0,0,0,35" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Button x:Name="btnJoinRoom" Grid.Column="1" Grid.Row="0" Content="Join as Member" Width="150" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="BtnJoinRoom_Click" Margin="1,35,0,35" />
+        <ListView x:Name="RoomsList" Grid.Column="0" Grid.Row="1" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" >
+            
+        </ListView>
+        <!--<ListView x:Name="userRooms" Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ListView.View >
+                <GridView x:Name="gridview">
+                    <GridViewColumn DisplayMemberBinding="{Binding [photo]}">
+                        <Ellipse Width="50" Height="50">
+                            <Ellipse.Fill>
+                                <ImageBrush x:Name="roomPhoto"></ImageBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </GridViewColumn>
+                    <GridViewColumn   Header="Your rooms as user"
+                                DisplayMemberBinding="{Binding [roomName]}"/>
+                    <GridViewColumn x:Name="btnCell">
+                        <GridViewColumn.CellTemplate >
+                            <DataTemplate >
+                                <Button x:Name="btnLogin" Content="Login" Margin="0" VerticalAlignment="Center" Tag="{Binding [roomId]}" Click="BtnLoginRoom_Click" Style="{DynamicResource enable}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>-->
+    </Grid>
+</Page>

@@ -16,133 +16,106 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Json.Net;
 using WebApi.Dtos;
-using  Newtonsoft.Json;
+using Newtonsoft.Json;
+using WpfApp1.Forms;
+using WpfApp1.Pages;
 
 namespace WpfApp1
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainForm.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static Uri uri= new Uri("http://localhost:4000");
+        //private HttpClient client;
+
         public MainWindow()
         {
             InitializeComponent();
-        }
-        private void btnRegister_Click(object sender, RoutedEventArgs e)
-        {
-            roomMaker(1,1,"Club",new int[]{1,2,3,4,5,6});
-            //string str = new TextRange(txtBody.Document.ContentStart,txtBody.Document.ContentEnd).Text;
             
-            //register("tadas","Sisnaspardis","suldubulduVabaliukai","lalala");
-
-        }
-        private void btnAuthorize_Click(object sender, RoutedEventArgs e)
-        {
-            Task<HttpClient> sesion= authenticate("lalala","suldubulduVabaliukai");
-            //var user = sesion.
-     //       MessageBox.Show();
-
-        }
-
-        public async void register(string firstName, string lastName, string password,string username)
-        {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = uri;
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            try
+            this.MinHeight = 400;
+            this.MinWidth = 800;
+            Inst.CreateInstance();
+            Inst.Utils.MainWindow = this;
+            //client = Inst.Utils.HttpClient;
+            LoginForm loginForm = new LoginForm();
+            if (!(loginForm.ShowDialog() ?? false))
             {
-                var dude = new  UserDto()
-                {
-                    Id = 69911,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    Password = password,
-                    Username = username
-                };
-                var response = await client.PostAsJsonAsync("/Users/register", dude);
-                if (response.IsSuccessStatusCode)  
-                {  
-                    MessageBox.Show("Register Successfully");  
-                }  
-                else  
-                {  
-                    MessageBox.Show("Register Failed...");  
-                } 
+                this.Close();
+                return;
+            }
+            Inst.Utils.CreateTcpServer();
+            this.Closed += MainWindow_Closed;//prisisubscribinama po to, kai logino forma jau nebe gali isjungti mainformos
+            frame2.NavigationService.Navigate(new Admin());
+            frame1.NavigationService.Navigate(new UserPage());   
+            roomPage.NavigationService.Navigate(new Pages.RoomPage());
+            
+        }
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
-        public async void roomMaker(int id,int Aid,string name,int[] users)
+        private void MainWindow_Closed(object sender, EventArgs e)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = uri;
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            try
-            {
-                var club = new  RoomDto()
-                {
-                    roomId = id,
-                    roomAdminId = Aid,
-                    roomName = name,
-                    users = users
-                };
-                var response = await client.PostAsJsonAsync("/Rooms/register", club);
-                if (response.IsSuccessStatusCode)  
-                {  
-                    MessageBox.Show("Register Successfully");  
-                }  
-                else  
-                {  
-                    MessageBox.Show("Register Failed...");  
-                } 
+            //Task<bool> x = Logout();//Kai mainwindow yra uzdaromas - reikia i api nusiusti atsijungimo uzklausa.
+        }
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
-        public async Task<HttpClient> authenticate(string username, string password)
+        private void Logout_Click(object sender, RoutedEventArgs e)//testuot - nesamone kazkokia sitas metodas
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = uri;
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var dude = new UserDto()
+            if (Inst.Utils.RoomPage != null)
             {
-                Username = username,
-                Password = password
-            };
-            var response = await client.PostAsJsonAsync("/Users/authenticate",dude);
-            if (response.IsSuccessStatusCode)  
-            {  
-                var user = response.Content.ReadAsAsync<User>().Result;
-                
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + user.token);
-                var res = await client.GetAsync("/Users/1");
-                var auhf = res.Content.ReadAsAsync<object>().Result;
-                MessageBox.Show(auhf.ToString());
-                return client;
-            }  
-            else  
-            {  
-                MessageBox.Show("Login Failed...");  
+                (Inst.Utils.RoomPage as RoomPage).Logout();
             }
-            return null;
+            Task<bool> x = Logout();
+            Inst.Utils.StopTcpServer();
+            this.Hide();
+            Inst.CreateInstance();
+            Inst.Utils.MainWindow = this;
+            //client = Inst.Utils.HttpClient;
+            LoginForm loginForm = new LoginForm();
+            if (!(loginForm.ShowDialog() ?? false))
+            {
+                this.Close();
+                return;
+            }
+            Inst.Utils.CreateTcpServer();
+            frame2.NavigationService.Navigate(new Admin());
+            frame1.NavigationService.Navigate(new UserPage());               
+            roomPage.NavigationService.Navigate(new Pages.RoomPage());
+            this.ShowDialog();
         }
-        public class User
+        private async Task<bool> Logout()
+        {           
+            Inst.Utils.MainWindow.room.Visibility = Visibility.Hidden;
+            enableButton();
+            Inst.Utils.MainWindow.tabs.SelectedIndex = 0;
+            //var response = await client.GetAsync("Users/logout");
+            if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.Logout())
+            {
+                return true;
+            }
+            return false;
+        }    
+        private void enableButton()
         {
-            public string id { get; set; }
-            public  string username { get; set; }
-            public  string firstName { get; set; }
-            public string lastName { get; set; }
-            public  string token { get; set; }
+            Style style = new Style();
+            style.TargetType = typeof(Button);            
+            style.BasedOn = (Style)App.Current.FindResource("enable");
+            style.Setters.Add(new Setter(Button.IsEnabledProperty,true));
+            App.Current.Resources["enable"] = style;
+        }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Inst.Utils.RoomPage != null)
+            {
+                (Inst.Utils.RoomPage as RoomPage).Logout();
+            }
+            Task<bool> x = Logout();
+        }
+
+        private void Account_Click(object sender, RoutedEventArgs e)
+        {
+            tabs.Visibility = Visibility.Visible;
+            tabs.SelectedIndex = 3;
+            accountPage.NavigationService.Navigate(new AccountPage());
         }
     }
 }

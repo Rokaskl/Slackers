@@ -1,0 +1,48 @@
+﻿<Page x:Class="WpfApp1.Forms.Admin"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WpfApp1.Forms"
+      mc:Ignorable="d" 
+      d:DesignHeight="500" d:DesignWidth="1000"
+      Title="Admin">
+    <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <Button x:Name="btnRefresh" Content="Refresh" Grid.Column="0" Grid.Row="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,35,20,35" Click="BtnRefresh_Click"></Button>
+            <Button x:Name="btnRegisterRoom" Grid.Column="1" Grid.Row="0" Content="Register room" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnRegisterRoom_Click" Margin="1,35,0,35" Height="Auto" />
+        </StackPanel>
+          <!--<Button x:Name="btnLoginRoom" Grid.Column="1" Grid.Row="1" Content="Login" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnLoginRoom_Click" Margin="0,0,0,0" Height="40" />-->
+        <ListView x:Name="RoomsList" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False">
+            
+        </ListView>
+        <!--<ListView x:Name="adminRooms" Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ListView.View>
+                <GridView >
+                    <GridViewColumn Header="Your rooms as admin" 
+                                DisplayMemberBinding="{Binding roomName}" />
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="LoginAsAdmin" Content="Login" Click="LoginAsAdmin_Click" Tag="{Binding roomId}" Width="50" Margin="2,2,2,2"></Button>
+                                    <Button x:Name="RemoveRoom" Content="Delete" Click="RemoveRoom_Click" Tag="{Binding roomId}" Width="50" Margin="2,2,2,2" Style="{StaticResource bad}"></Button>
+                                </StackPanel>
+                              </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn> 
+                </GridView>
+            </ListView.View>
+        </ListView>-->
+    </Grid>
+</Page>

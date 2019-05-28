@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using WebApi.Services;
 using WebApi.Dtos;
 using WebApi.Entities;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace WebApi.Controllers
 {
@@ -29,11 +31,11 @@ namespace WebApi.Controllers
             _userService = userService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
-            TestSeed(20); // Kiek randomu sugeneruoti testavimui
+            //TestSeed(20); // Kiek randomu sugeneruoti testavimui
         }
 
         public void TestSeed(int n)
-        {
+        {           
             string y;
             for (int i = 0; i < n; i++)
             {
@@ -43,10 +45,10 @@ namespace WebApi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]UserDto userDto)
+        [HttpPost("authenticate/{web}")]
+        public IActionResult Authenticate(int web, [FromBody]UserDto userDto)
         {
-            var user = _userService.Authenticate(userDto.Username, userDto.Password);
+            var user = _userService.Authenticate(userDto.Username, userDto.Password, web == 1);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
@@ -59,18 +61,22 @@ namespace WebApi.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
+            //prideda sekmingai prisijungusi vartotoja prie serverio loggedin useriu saraso.
+            //App.Inst.loggedin.Add(user.Id);
+            App.Inst.Add(user.Id);
             // return basic user info (without password) and token to store client side
             return Ok(new {
                 Id = user.Id,
                 Username = user.Username,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Rooms = user.rooms,
                 Token = tokenString
             });
         }
@@ -85,34 +91,40 @@ namespace WebApi.Controllers
             try 
             {
                 // save 
-                _userService.Create(user, userDto.Password);
-                return Ok();
+                var temp =  _mapper.Map<UserDto>(_userService.Create(user, userDto.Password));
+                return Ok(temp);
             } 
             catch(AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll()//reiks ištrint arba paliktri kad gražintų tik vardus
         {
             var users =  _userService.GetAll();
-            var userDtos = _mapper.Map<IList<UserDto>>(users);
-            return Ok(userDtos);
-        }
-
+            return Ok(users);
+        }        
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(int id)//same kap viršesnio ^^^
         {
             var user =  _userService.GetById(id);
             var userDto = _mapper.Map<UserDto>(user);
             return Ok(userDto);
+        }                     
+        [HttpPost("get_list")]
+        public IActionResult GetList(JObject users)//same kap viršesnio ^^^
+        {
+            List<int> ids = users.Value<JArray>("ids").ToObject<List<int>>();
+            
+            //List<int> IDS= ids.AsParallel().ToList<int>();
+            List<User> user =  _userService.GetList(ids );
+            return Ok(user);
         }
-
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]UserDto userDto)
+        public IActionResult Update(int id, [FromBody]UserDto userDto)//gal pakeisti reikės 
         {
             // map dto to entity and set id
             var user = _mapper.Map<User>(userDto);
@@ -130,10 +142,18 @@ namespace WebApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [Route("logout")]
+        public IActionResult Logout()
         {
+            int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
+            App.Inst.Remove(requesterId);
+            return Ok();
+        }
+
+        [HttpDelete]
+        public IActionResult Delete()
+        {
+            int id = Convert.ToInt32(Request.HttpContext.User.Identity.Name);//pašalina prisijungusį vartotoją
             _userService.Delete(id);
             return Ok();
         }
