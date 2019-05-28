@@ -52,7 +52,10 @@
                 </GridView>
             </ListView.View>
         </ListView>-->
-        <Grid Grid.Column="0" Grid.Row="1">
+        <Grid Grid.Column="0" Grid.Row="1" Margin="0,0,20,0">
+            <Grid.Resources>
+                <local:AddStroke x:Key="strokeMe"></local:AddStroke>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -62,23 +65,30 @@
                 <RowDefinition Height="*"/>
                 
             </Grid.RowDefinitions>
-            <ListView x:Name="usersList" Grid.Column="0" Grid.Row="0" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+            <!--<ListView x:Name="usersList" Grid.Column="0" Grid.Row="0" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto"/>-->
             
             <ListView Grid.Row="0" Grid.Column="0" x:Name="usersListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735"   BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
-                <ListView.View>
+                <ListView.View >
                     <GridView ColumnHeaderContainerStyle="{StaticResource notesCollapsHeader}">
                         <GridViewColumn >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Ellipse Fill="{Binding [photo]}" Width="25" Height="25" VerticalAlignment="Center"/>
+                                    <Ellipse Fill="{Binding [photo]}" Width="30" Height="30" VerticalAlignment="Center" Tag="{Binding [bio]}" MouseLeftButtonUp="UsersListView_MouseEnter" MouseLeave="UsersListView_MouseLeave" Stroke="Black" StrokeThickness="1"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto"  DisplayMemberBinding="{Binding [username]}"/>
+                        </GridViewColumn >
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Label Content="{Binding [username]}" VerticalAlignment="Center" FontSize="15" Width="auto"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn >
+                        <!--<GridViewColumn  Width="Auto" DisplayMemberBinding="{Binding [username]}"/>-->
                         <GridViewColumn >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Ellipse Fill="{Binding [status]}" Width="10" Height="10" VerticalAlignment="Center"/>
+                                    <Ellipse Fill="{Binding [status]}" Width="10" Height="10" VerticalAlignment="Center" Margin="0,10"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -86,7 +96,7 @@
                 </ListView.View>
             </ListView>
             
-            <Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid Grid.Column="0" Grid.Row="1"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -96,7 +106,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Grid Grid.Column="0" Grid.Row="1">
+                <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
@@ -105,15 +115,26 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-                    <ListView x:Name="chatbox" Grid.Row="0" Grid.Column="0" Background="#FFAEB881" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="False"/>
+                    <ListView x:Name="chatbox" Grid.Row="0" Background="#FFAEB881" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="False"/>
                     <!--<ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel VerticalAlignment="Bottom"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>-->
-                    <TextBox x:Name="txt_entry" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="" Background="#FFFBFBBD" BorderBrush="#89000000" VerticalScrollBarVisibility="Auto" AcceptsTab="True" Width="305"/>
-                    <Button x:Name="btn_txtenter" Grid.Column="1" Grid.Row="1" Content="&gt;" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="40" Click="Btn_txtenter_Click"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
 
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBox x:Name="txt_entry" Grid.Column="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="" Background="#FFFBFBBD" BorderBrush="#89000000" VerticalScrollBarVisibility="Auto" AcceptsTab="True" />
+                        <Button x:Name="btn_txtenter" Grid.Column="1" Content="&gt;" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="40" Click="Btn_txtenter_Click"/>
+
+                    </Grid>
+                    
                 </Grid>
                 
             </Grid>
@@ -121,7 +142,7 @@
 
 
 
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.Row="1" Grid.Column="1" Margin="20,0,0,0">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="133*"/>
@@ -142,7 +163,7 @@
                         <GridViewColumn  Width="300">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBox Text="{Binding Path=Header}" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsEnabled="True" Width="Auto"></TextBox>
+                                    <Label Content="{Binding Path=Header}"  IsEnabled="True" Width="Auto"></Label>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

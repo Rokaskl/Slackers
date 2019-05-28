@@ -205,6 +205,7 @@ namespace WpfApp1
             var response = await client.GetAsync("Users/logout");
             if (response.IsSuccessStatusCode)
             {
+                this.additionalData = null;
                 return true;
             }
             return false;

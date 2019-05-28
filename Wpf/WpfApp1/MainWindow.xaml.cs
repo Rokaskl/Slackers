@@ -90,6 +90,8 @@ namespace WpfApp1
             //var response = await client.GetAsync("Users/logout");
             if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.Logout())
             {
+                Inst.Utils.Administraktoring.Dispatcher.DisableProcessing();
+                Inst.Utils.Administraktoring = null;
                 return true;
             }
             return false;

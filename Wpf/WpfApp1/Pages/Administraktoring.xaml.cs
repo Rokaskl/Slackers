@@ -161,7 +161,7 @@ namespace WpfApp1.Pages
                 //_stats.Add(new KeyValuePair<string, int>("Dipsis", 42));
                 //_stats.Add(new KeyValuePair<string, int>("Lialia", 0));
                 //_stats.Add(new KeyValuePair<string, int>("Pou", 68));
-
+                if(users!=null&&!users.Contains(null))
                 users.ForEach(x => _stats.Add(new KeyValuePair<string, int>(x.username, (stats.Where(y => y.Key == Int32.Parse(x.id)).Count() != 0) ? stats.Where(y => y.Key == Int32.Parse(x.id)).First().Value : 0)));
                 users.Remove(Inst.ApiRequests.User);
 
@@ -247,7 +247,7 @@ namespace WpfApp1.Pages
                 users = await Inst.ApiRequests.GetUsersList(room.roomId);
                 if (users != null)
                 {
-                    foreach (var item in users)
+                    foreach (var item in users.ToList())
                     {
                         Button btn = new Button();
                         btn.Content = "Kick";
@@ -294,8 +294,10 @@ namespace WpfApp1.Pages
                         roomPanel.Children.Add(roomElipse);
                         roomPanel.Children.Add(name);
                         roomPanel.Children.Add(btn);
-
-                        usersList.Items.Add(roomPanel);
+                        if (!usersList.Items.Contains(roomPanel))
+                        {
+                            usersList.Items.Add(roomPanel);
+                        }                        
                     }
                 }
                 else

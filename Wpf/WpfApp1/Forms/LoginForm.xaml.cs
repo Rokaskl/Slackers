@@ -132,6 +132,15 @@ namespace WpfApp1.Forms
                         Inst.Utils.MainWindow.profilePicture.Fill = imgBrush;
                     }
                 }
+                else
+            {
+                 Inst.Utils.MainWindow.profilePicture.Fill = Brushes.LightGray;
+            }
+               
+            }
+            else
+            {
+                 Inst.Utils.MainWindow.profilePicture.Fill = Brushes.LightGray;
             }
         }
     }

@@ -37,6 +37,7 @@ namespace WpfApp1.Pages
         private Timer timer;
         private Button btnStartStop;
         private bool Changed;
+        private bool breakDaRules = false;
         
 
         public RoomPage(){}
@@ -51,6 +52,7 @@ namespace WpfApp1.Pages
             InitializeComponent();
             RoomInfo();
             ListUsers();
+            //ListUsersStack();
 
             FillNotes();
             FillChat();
@@ -60,7 +62,7 @@ namespace WpfApp1.Pages
             this.txt_entry.KeyUp += Txt_entry_KeyUp;
             this.NoteListView.SelectionMode = SelectionMode.Single;
             this.NoteListView.MouseLeftButtonUp += NoteListView_MouseLeftButtonUp;
-
+            this.usersListView.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged1;
             //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             //{
             //    //Header = "Id",
@@ -83,36 +85,56 @@ namespace WpfApp1.Pages
             Task.Run(() => DisplayMembersR());//toliau naujina info kas 10secs.
         }
 
+        private void ItemContainerGenerator_StatusChanged1(object sender, EventArgs e)
+        {
+            if (this.usersListView.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+            {
+                foreach(Dictionary<string,object> line in (sender as System.Windows.Controls.ItemContainerGenerator).Items)
+                {
+                    ListViewItem lv = (ListViewItem)usersListView.ItemContainerGenerator.ContainerFromItem(line);
+                    if (lv != null)
+                    {
+                        if (line["userId"].ToString() == Inst.ApiRequests.User.id)
+                        {
+                            lv.Background = Brushes.AliceBlue;
+                        }
+                    }
+                }
+            }
+        }
+
         private void UsersListView_MouseLeave(object sender, MouseEventArgs e)
         {
-            CloseBioPop();
+            //CloseBioPop();
         }
 
         private Popup userBioPOP;
-        private void UsersListView_GotFocus(object sender, RoutedEventArgs e)
+        private void UsersListView_MouseEnter(object sender, RoutedEventArgs e)
         {
-            if (((ListView)sender).Items.Count!=0 )
+            if ((string)((Ellipse)sender).Tag!=null )
             {
             userBioPOP = new Popup();
-            userBioPOP.Width = 200;
-            userBioPOP.Height = 200;
+            userBioPOP.Width = 150;
+            userBioPOP.Height = 100;  
+               
 
             StackPanel stack = new StackPanel();
             stack.VerticalAlignment = VerticalAlignment.Stretch;
             stack.HorizontalAlignment = HorizontalAlignment.Stretch;
             stack.Background = Brushes.LightGray;
             
+            
             TextBlock userBio = new TextBlock();
-            userBio.Text = ((Dictionary<string,object>)((ListView)sender).Items.CurrentItem)["bio"].ToString();
+            userBio.Text = ((Ellipse)sender).Tag.ToString();
             stack.Children.Add(userBio);
             userBioPOP.Child = stack;
             
             userBioPOP.StaysOpen = false;
-            userBioPOP.Placement = PlacementMode.Mouse;
+            userBioPOP.Placement = PlacementMode.MousePoint;
             userBioPOP.Visibility = Visibility.Visible;
-            userBioPOP.PopupAnimation = PopupAnimation.Fade;
+            userBioPOP.PopupAnimation = PopupAnimation.Slide;
+            userBioPOP.MouseLeave +=Bio_LostFocus;
             userBioPOP.IsOpen = true;
-            userBioPOP.MouseLeave += Bio_LostFocus;
             }            
         }
         private void CloseBioPop()
@@ -144,6 +166,7 @@ namespace WpfApp1.Pages
                         ImageBrush imgBrush = new ImageBrush();
                         imgBrush.ImageSource = image;
                         roomPhoto.Fill = imgBrush;
+                        roomPhoto.Tag = roomAddData.Biography;
             }  
             this.roomInfo.Children.Add(roomPhoto);
             Label roomNameLabel = new Label();
@@ -381,11 +404,13 @@ namespace WpfApp1.Pages
         {
             while (true)
             {
-                    await Task.Delay(10000);
-                    if (!ListUsers().Result/*!FillMembers().Result*/)
-                    {
-                        break;
-                    }                    
+                await Task.Delay(10000);
+                
+                //ListUsersStack();
+                if (!ListUsers().Result/*!FillMembers().Result*/)
+                {
+                    break;
+                }
             }
         }
         //private async Task<bool> FillMembers()
@@ -543,9 +568,9 @@ namespace WpfApp1.Pages
             FillNotes();
         }
 
-        public void UpdateUsersListView()
+        public  void UpdateUsersListView()
         {
-             ListUsers();
+             this.Dispatcher.Invoke(ListUsers);
             //FillMembers();
         }
 
@@ -833,30 +858,31 @@ namespace WpfApp1.Pages
         }
         public async Task<bool> ListUsers()
         {
-            this.usersList.Items.Clear();
             List<Newtonsoft.Json.Linq.JObject> users = await Inst.ApiRequests.GetGroupMembers(this.room.roomId);
-            if (users==null)
+            if (users == null)
             {
                 return false;
             }
-            List<Dictionary<string,object>> usersList = new List<Dictionary<string, object>>(); 
+            List<Dictionary<string, object>> usersList = new List<Dictionary<string, object>>();
             foreach (var item in users)
             {
                 UserDto temp = item["key"].ToObject<UserDto>();
                 AdditionalData userAddData = await Inst.ApiRequests.GetUserAddData(temp.Id);
                 if (userAddData == null)
                 {
-                    this.usersList.Items.Add(UsersStatus(null, item["value"].ToObject<string>(), temp.Username));
+                    usersList.Add(UsersStatus(null, item["value"].ToObject<string>(), temp.Username,temp.Id.ToString()));
                 }
-                usersList.Add(UsersStatus(userAddData, item["value"].ToObject<string>(), temp.Username));
+                else
+                    usersList.Add(UsersStatus(userAddData, item["value"].ToObject<string>(), temp.Username,temp.Id.ToString()));
             }
-            this.usersListView.ItemsSource = usersList;
+            this.usersListView.ItemsSource = usersList;            
             return true;
         }
-        private Dictionary<string,object> UsersStatus(AdditionalData addData,string statusChar,string userName)
+        private Dictionary<string,object> UsersStatus(AdditionalData addData,string statusChar,string userName,string id)
         {
             Dictionary<string,object> temp = new Dictionary<string, object>();
             temp.Add("bio",addData.Biography);
+            temp.Add("userId",id);
             if(addData.PhotoBytes!=null)
             using (var memstr = new MemoryStream(addData.PhotoBytes))
                     {
@@ -902,7 +928,96 @@ namespace WpfApp1.Pages
             temp.Add("username",userName);
             return temp;
         }
+        //public async void ListUsersStack()
+        //{
+        //    usersList.Items.Clear();
+        //    List<Newtonsoft.Json.Linq.JObject> users = await Inst.ApiRequests.GetGroupMembers(this.room.roomId);
+        //    if (users == null)
+        //    {
+        //        breakDaRules =  true;
+        //    }            
+        //    foreach (var item in users)
+        //    {
+        //        UserDto temp = item["key"].ToObject<UserDto>();
+        //        AdditionalData userAddData = await Inst.ApiRequests.GetUserAddData(temp.Id);
+        //        if (userAddData == null)
+        //        {
+        //            usersList.Items.Add(UsersStatus(null, item["value"].ToObject<string>(), temp.Username));
+        //        }
+        //        else
+        //            usersList.Items.Add(UsersStatus(userAddData, item["value"].ToObject<string>(), temp.Username));
+        //    }            
+        //    breakDaRules = false;
+        //}
+        private StackPanel UsersStatuses(byte[] photoBytes,string username,string stat)
+        {
+            StackPanel stack = new StackPanel();
+            stack.Orientation = Orientation.Horizontal;
+            Ellipse photo = new Ellipse();
+            photo.Width = 25;
+            photo.Height = 25;
+            if(photoBytes!=null)
+            using (var memstr = new MemoryStream(photoBytes))
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad; // here
+                        image.StreamSource = memstr;
+                        image.EndInit();
+                        ImageBrush imgBrush = new ImageBrush();
+                        imgBrush.ImageSource = image;
+                        photo.Fill = imgBrush;
+            }
+            stack.Children.Add(photo);
+            Label userName = new Label();
+            userName.Content = username;
+            Brush status;          
+             switch (stat)
+            {
+                case "A":
+                    {
+                        //b = Brushes.Green;
+                        status = Brushes.Green;
+                        break;
+                    }
+                case "B":
+                    {
+                        //b = Brushes.Yellow;
+                        status = Brushes.Yellow;
+                        break;
+                    }
+                case "C":
+                    {
+                        //b = Brushes.Red;
+                        status = Brushes.Red;
+                        break;
+                    }
+                default: 
+                    status = Brushes.Gray;
+                    break;
+            }     
+            Ellipse statusPhoto = new Ellipse();
+            statusPhoto.Width = 10;
+            statusPhoto.Height = 10;
+            statusPhoto.Fill = status;
+            stack.Children.Add(statusPhoto);
+            return stack;
+        }   
+    }
+    class AddStroke : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((string)((Dictionary<string,object>)value)["userId"]==Inst.ApiRequests.User.id.ToString())
+            {
+                return 5;
+            }
+            return 0;
+        }
 
-    }   
-    
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
