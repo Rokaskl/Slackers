@@ -8,40 +8,35 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="AccountPage">
 
-    <Grid Name="accountGrid">
+    <Grid Name="accountGrid" Margin="70,0,0,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition Width="130" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="200" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="200" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="20*" />
+            <RowDefinition Height="200*" />
+            <RowDefinition Height="16*" />
+            <RowDefinition Height="16*" />
+            <RowDefinition Height="16*" />
+            <RowDefinition Height="24*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Profile" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" FontSize="20"/>
-        <Border Width="180" Height="180" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="10,10,10,10">
+        <TextBlock Text="Profile" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" FontSize="20" Margin="0,0,100,0"/>
+        <Border  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxHeight="240" MaxWidth="240" Margin="0,0,100,0">
             <Border.Background>
                 <ImageBrush x:Name="profilePicture"/>
             </Border.Background>
         </Border>
-        <TextBlock Text="Username:" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" FontSize="16"/>
-        <TextBlock Text="Name:" Grid.Column="1" Grid.Row="4" VerticalAlignment="Top" FontSize="16"/>
-        <TextBlock Text="Last Name:" Grid.Column="1" Grid.Row="5" VerticalAlignment="Top" FontSize="16"/>
-        <Button x:Name="btnChangePhoto" Grid.Column="1" Grid.Row="6" Content="Change photo" Width="120" HorizontalAlignment="Left" Margin="0,8,5,8" Height="Auto" Click="BtnChangePhoto_Click" />
+        <TextBlock Text="Username:" Grid.Column="0" Grid.Row="2" VerticalAlignment="Stretch" FontSize="16" HorizontalAlignment="Stretch"/>
+        <TextBlock Text="Name:" Grid.Column="0" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="16"/>
+        <TextBlock Text="Last Name:" Grid.Column="0" Grid.Row="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="16"/>
+        <Button x:Name="btnChangePhoto" Grid.Column="0" Grid.Row="5" Content="Change photo" Width="120" HorizontalAlignment="Left" VerticalAlignment="Stretch"  MaxHeight="24" Click="BtnChangePhoto_Click" />
 
-        <TextBlock x:Name="txtUsername" Text="username" Grid.Column="2" Grid.Row="3" VerticalAlignment="Top" FontSize="16"/>
-        <TextBlock x:Name="txtName" Text="Name" Grid.Column="2" Grid.Row="4" VerticalAlignment="Top" FontSize="16"/>
-        <TextBlock x:Name="txtLastName" Text="Last Name" Grid.Column="2" Grid.Row="5" VerticalAlignment="Top" FontSize="16"/>
-        <Button x:Name="btnChangePass" Grid.Column="2" Grid.Row="6" Content="Change password" Width="150" HorizontalAlignment="Left" Margin="10,8,0,0" Height="24" VerticalAlignment="Top" Click="BtnChangePass_Click" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="txtUsername" Text="username" Grid.Column="1" Grid.Row="2" VerticalAlignment="Top" FontSize="16"/>
+        <TextBlock x:Name="txtName" Text="Name" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" FontSize="16"/>
+        <TextBlock x:Name="txtLastName" Text="Last Name" Grid.Column="1" Grid.Row="4" VerticalAlignment="Top" FontSize="16"/>
+        <Button x:Name="btnChangePass" Grid.Column="1" Grid.Row="5" Content="Change password" Width="150" HorizontalAlignment="Left" MaxHeight="24" VerticalAlignment="Stretch" Click="BtnChangePass_Click" Grid.ColumnSpan="2"/>
     </Grid>
 </Page>

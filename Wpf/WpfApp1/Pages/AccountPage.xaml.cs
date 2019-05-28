@@ -64,13 +64,13 @@ namespace WpfApp1.Pages
             AdditionalData data = new AdditionalData(userId, true, "", photo);
             if (await Inst.ApiRequests.UpdateAddDataUser(data))
             {
+                SetProfilePhoto();
                 MessageBox.Show("Photo upload succsesful");
             }
             else
             {
                 MessageBox.Show("Photo upload failed");
             }
-            SetProfilePhoto();
         }
 
         private async void SetProfilePhoto()
@@ -89,6 +89,9 @@ namespace WpfApp1.Pages
                             image.StreamSource = memstr;
                             image.EndInit();
                             profilePicture.ImageSource = image;
+                            ImageBrush imgBrush = new ImageBrush();
+                            imgBrush.ImageSource = image;
+                            Inst.Utils.MainWindow.profilePicture.Fill = imgBrush; 
                         }
                     }
                 }
