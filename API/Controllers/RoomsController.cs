@@ -134,7 +134,13 @@ namespace WebApi.Controllers
                 List<int> usersToKick = new List<int>();
                 usersToKick.Add(user);
                 //registeredUsers.Add(room.roomAdminId);
-                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 4, roomId = roomId, registered_room_users = usersToKick});
+                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 4, roomId = roomId, registered_room_users = usersToKick});                
+                RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == roomId);
+                List<int> registeredUsers = new List<int>();
+                if (room.users != null)
+                    registeredUsers.AddRange(room.users);
+                registeredUsers.Add(room.roomAdminId);
+                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 3, roomId = roomId, registered_room_users = registeredUsers });
                 return Ok();
             }
             catch (Exception ex)

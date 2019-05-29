@@ -225,12 +225,14 @@ namespace WpfApp1.Pages
              //   var res = await client.PutAsJsonAsync("Rooms/kick_user",data);
                 if (/*res.IsSuccessStatusCode*/await Inst.ApiRequests.KickUser(user,room.roomId))
                 {
-                    this.usersList.Items.Clear();
+                    
                     //List<int> temp = room.users.ToList<int>();
                     //temp.Remove(user);
                     //room.users = temp.ToArray();
-                    ListUsers();
+                    
                 }
+                this.usersList.Items.Clear();
+                ListUsers();
             }
             catch (Exception)
             {

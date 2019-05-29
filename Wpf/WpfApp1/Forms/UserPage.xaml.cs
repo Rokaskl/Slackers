@@ -136,7 +136,11 @@ namespace WpfApp1.Forms
 
         private void Leave_Click(object sender, RoutedEventArgs e)
         {
-            Leave(((RoomDto)((Button)sender).Tag).roomId);
+            if(MessageBox.Show($"Leave room {((RoomDto)((Button)sender).Tag).roomName} ?", "Warning!", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
+                {
+                    Leave(((RoomDto)((Button)sender).Tag).roomId);
+                }
+            
         }
         private async void Leave(int roomId)
         {
