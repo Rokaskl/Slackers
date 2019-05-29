@@ -7,8 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="CanResize"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="" Foreground="White"
-        Closing="Window_Closing"
+        Title="Slackers!" Foreground="White" 
         
         >
 
@@ -41,7 +40,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Grid.Row="1" Text="Slackers" HorizontalAlignment="Center" VerticalAlignment="Bottom"  FontSize="22" Margin="0, 0, 0, 15"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="Slackers!" HorizontalAlignment="Center" VerticalAlignment="Bottom"  FontSize="22" Margin="0, 0, 0, 15"/>
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -54,14 +53,13 @@
 
                     <!--<Viewbox Grid.Column="0" Grid.Row="0" Stretch="Uniform" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="96">-->
                     <Ellipse Grid.Column="0" x:Name="profilePicture" Width="69" Height="69.5" HorizontalAlignment="Center" VerticalAlignment="Top" ></Ellipse>
-                    <TextBlock Grid.Column="0" x:Name="firstNameTextBlock" Text="Firstname" Margin="5, 69, 0, 0"/>
+                    <TextBlock Grid.Column="0" x:Name="firstNameTextBlock" HorizontalAlignment="Center" Text=" " FontSize="13"  Margin="5, 80, 0, 0"/>
                     <!--</Viewbox>-->
 
                     <materialDesign:PopupBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
                         <StackPanel Width="150">
                             <Button Content="Account" Click="Account_Click" />
-                            <Button Content="Settings"/>
-                            <Button Content="Help"/>
+                            <Button Content="Web" Click="Web_Click"/>
                             <Separator/>
                             <Button Content="Logout" Click="Logout_Click"/>
                         </StackPanel>

@@ -144,6 +144,7 @@ namespace WebApi.Controllers
             for (int i = 0; i < users.Count; i++)
             {
                 info.Add(users[i], new List<TimeSpan>());
+                _timeMarkService.ResolveTimeOuts(users[i]);
             }
 
             try
@@ -236,7 +237,7 @@ namespace WebApi.Controllers
         {
             int userId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
                 // int userId = 2;
-            if (ac == 2 || ac == 0)
+            if (ac == 1 || ac == 0)
             {
                 _timeMarkService.Create(new TimeMark { UserId = userId, Action = ac == 0 ? false : true, RoomId = roomId, Time = DateTime.Now });
 

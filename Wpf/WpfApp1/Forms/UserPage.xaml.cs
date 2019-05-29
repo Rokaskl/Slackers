@@ -114,7 +114,17 @@ namespace WpfApp1.Forms
                     roomPanel.Children.Add(roomElipse);
                     roomPanel.Children.Add(name);
                     roomPanel.Children.Add(btn);
+                    
+                    Button leave = new Button();
+                    leave.Content = "Leave";
+                        leave.Click += Leave_Click; ;
+                    leave.Tag = item;
+                    leave.Margin = new Thickness(2,2,2,2);
+                    leave.HorizontalAlignment = HorizontalAlignment.Center;
+                    leave.VerticalAlignment = VerticalAlignment.Center;                    
+                    leave.Style = (Style)App.Current.Resources["bad"];
 
+                    roomPanel.Children.Add(leave);
                     RoomsList.Items.Add(roomPanel);
                 }
             }
@@ -122,6 +132,22 @@ namespace WpfApp1.Forms
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+        private void Leave_Click(object sender, RoutedEventArgs e)
+        {
+            if(MessageBox.Show($"Leave room {((RoomDto)((Button)sender).Tag).roomName} ?", "Warning!", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
+                {
+                    Leave(((RoomDto)((Button)sender).Tag).roomId);
+                }
+            
+        }
+        private async void Leave(int roomId)
+        {
+            if (!await Inst.ApiRequests.LeaveRoom(roomId))
+            {
+                MessageBox.Show("Failed");
+            }     
         }
         //private async Task<AdditionalData> GetAddData(int id)
         //{
@@ -206,7 +232,7 @@ namespace WpfApp1.Forms
                 }
                 else
                 {
-                    //MessageBox.Show("Joining failed...");
+                    MessageBox.Show("Available room was not found.");
                 }
 
             }

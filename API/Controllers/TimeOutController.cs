@@ -89,11 +89,7 @@ namespace WebApi.Controllers
             {
                 App.Inst.tempRooms.FirstOrDefault(x => x.usersById.Keys.Contains(user.id))?.usersById.Remove(user.id);
                 //If user is trackint time, his time tracking should be stopped (stop mark left).
-                //
-                    //
-                        //need access to TimeMarkService or DbContext.
-                    //
-                //
+                App.Inst.User_TimeOut_List.Add(DateTime.Now, user.id);
                 //App.Inst.loggedin.Remove(user.id);
             }
 

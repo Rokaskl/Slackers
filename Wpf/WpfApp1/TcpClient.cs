@@ -126,12 +126,13 @@ namespace WpfApp1
 
         private bool Continue = true;
 
-        public void Start(byte[] prevbuffer)
+        public async void Start(byte[] prevbuffer)
         {
             byte[] prev = prevbuffer;
 
             while (Continue)
             {
+                await Task.Delay(2);
                 try
                 {
                     if (client.GetStream().CanRead && client.Available >= 8)

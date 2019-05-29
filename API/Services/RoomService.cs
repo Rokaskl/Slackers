@@ -20,6 +20,7 @@ namespace WebApi.Services
         void KickUser(int roomId,int userId,int roomAdminId);
         bool Logout_from_room(Room room, int userId);
         Guid? UpdateGuid(int roomId, int userId);
+        void LeaveRoom(int user,int roomId);
     }
     public class RoomService : IRoomService
     {
@@ -98,6 +99,20 @@ namespace WebApi.Services
                 users.Add(requesterId);
                 App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 5, roomId = id, registered_room_users = users });
             }
+        }
+        public void LeaveRoom(int user, int roomID)
+        {
+            Room room = _context.Rooms.Find(roomID);
+            List<int> temp = ConvertToInts(room.usersBytes);
+            if (!temp.Contains(user))
+            {
+                throw new AppException("User do not belong to room");
+            }
+            temp.Remove(user);
+            room.usersBytes  = ConvertToBytes(temp);
+            _context.Rooms.Update(room);
+            _context.SaveChanges();            
+            Logout_from_room(room, user);
         }
         public void KickUser(int roomId, int userId, int roomAdminId)
         {
@@ -246,8 +261,10 @@ namespace WebApi.Services
                     App.Inst.tempRooms.Remove(tempRoom);
                 }
             }
-            List<int> registeredUsers = ConvertToInts(room.usersBytes);
-            registeredUsers?.Add(room.roomAdminId);
+            List<int> registeredUsers = new List<int>();
+            if (ConvertToInts(room.usersBytes) != null)
+                registeredUsers.AddRange(ConvertToInts(room.usersBytes));
+            registeredUsers.Add(room.roomAdminId);
             App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = room.roomId, registered_room_users = registeredUsers });
             return true;
         }

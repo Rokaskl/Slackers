@@ -128,7 +128,7 @@ namespace WpfApp1
             var response = await client.GetAsync($"/Rooms/group/{roomId}");
             if (response.IsSuccessStatusCode)
             {
-                return response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>().Result;
+                return await response.Content.ReadAsAsync<List<Newtonsoft.Json.Linq.JObject>>();
             }
             return null;
         }
@@ -205,6 +205,7 @@ namespace WpfApp1
             var response = await client.GetAsync("Users/logout");
             if (response.IsSuccessStatusCode)
             {
+                this.additionalData = null;
                 return true;
             }
             return false;
@@ -247,6 +248,19 @@ namespace WpfApp1
                 return res.Content.ReadAsAsync<List<RoomDto>>().Result;
             }
             return null;
+        }
+        public async Task<bool> LeaveRoom(int roomId)
+        {
+            if (roomId<1)
+            {
+                return false;
+            }
+            var resp = await client.PutAsJsonAsync("Rooms/leave",new {roomId=roomId });
+            if (resp.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
         }
         public async Task<bool> JoinGroup(string guid)
         {

@@ -6,7 +6,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1.Forms"
         mc:Ignorable="d"
-        Title="Login" Height="319" Width="300">
+        Title="Login" Height="319" Width="300"
+        >
+    
     <StackPanel Margin="20,20,20,7">
         <Label Content="Slackers" Foreground="Black" FontSize="25" HorizontalAlignment="Center" Margin="78,0"/>
         <Label x:Name="lb_error" Content="Login failed!" Visibility="Hidden" Foreground="Red" Margin="0,0,0,0" HorizontalAlignment="Center"/>

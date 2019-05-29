@@ -63,13 +63,14 @@ namespace WebApi
         //private Dictionary<int, Tuple<int, int>> users;//UserId = 1, timespan value = 2, RoomId = 3
         public List<UserInfo> users;
         public TcpServer Server;
-        //public List<int> loggedin;
+        public Dictionary<DateTime, int> User_TimeOut_List;
 
         
         public Inst()
         {
             RoomChanged += Inst_RoomChanged;    
             tempRooms = new List<TempRoom>();
+            User_TimeOut_List = new Dictionary<DateTime, int>();
             (new TimeOutControl()).Start();
             //users = new Dictionary<int, Tuple<int, int>>();
             users = new List<UserInfo>();

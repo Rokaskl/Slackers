@@ -20,6 +20,7 @@ using WebApi.Dtos;
 using Newtonsoft.Json;
 using WpfApp1.Forms;
 using WpfApp1.Pages;
+using System.Diagnostics;
 
 namespace WpfApp1
 {
@@ -39,22 +40,26 @@ namespace WpfApp1
             Inst.CreateInstance();
             Inst.Utils.MainWindow = this;
             //client = Inst.Utils.HttpClient;
-            LoginForm loginForm = new LoginForm();
+            LoginForm loginForm = new LoginForm();            
+            loginForm.Closing -= Window_Closing;
             if (!(loginForm.ShowDialog() ?? false))
             {
                 this.Close();
                 return;
             }
+            this.Closing += Window_Closing;
             Inst.Utils.CreateTcpServer();
-            this.Closed += MainWindow_Closed;//prisisubscribinama po to, kai logino forma jau nebe gali isjungti mainformos
+            //this.Closed += MainWindow_Closed;//prisisubscribinama po to, kai logino forma jau nebe gali isjungti mainformos
             frame2.NavigationService.Navigate(new Admin());
             frame1.NavigationService.Navigate(new UserPage());   
             roomPage.NavigationService.Navigate(new Pages.RoomPage());
             
         }
 
+
         private void MainWindow_Closed(object sender, EventArgs e)
         {
+            
             //Task<bool> x = Logout();//Kai mainwindow yra uzdaromas - reikia i api nusiusti atsijungimo uzklausa.
         }
 
@@ -69,6 +74,7 @@ namespace WpfApp1
             this.Hide();
             Inst.CreateInstance();
             Inst.Utils.MainWindow = this;
+            this.Closing -=Window_Closing;
             //client = Inst.Utils.HttpClient;
             LoginForm loginForm = new LoginForm();
             if (!(loginForm.ShowDialog() ?? false))
@@ -76,6 +82,7 @@ namespace WpfApp1
                 this.Close();
                 return;
             }
+            this.Closing +=Window_Closing;
             Inst.Utils.CreateTcpServer();
             frame2.NavigationService.Navigate(new Admin());
             frame1.NavigationService.Navigate(new UserPage());               
@@ -89,7 +96,8 @@ namespace WpfApp1
             Inst.Utils.MainWindow.tabs.SelectedIndex = 0;
             //var response = await client.GetAsync("Users/logout");
             if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.Logout())
-            {
+            {                
+                Inst.Utils.Administraktoring = null;
                 return true;
             }
             return false;
@@ -104,11 +112,18 @@ namespace WpfApp1
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (Inst.Utils.RoomPage != null)
+            if (MessageBox.Show("Logout?", "", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes)
             {
-                (Inst.Utils.RoomPage as RoomPage).Logout();
+                if (Inst.Utils.RoomPage != null)
+                {
+                    (Inst.Utils.RoomPage as RoomPage).Logout();
+                }
+                Task<bool> x = Logout();
             }
-            Task<bool> x = Logout();
+            else
+            {
+                e.Cancel = true;
+            }
         }
 
         private void Account_Click(object sender, RoutedEventArgs e)
@@ -116,6 +131,12 @@ namespace WpfApp1
             tabs.Visibility = Visibility.Visible;
             tabs.SelectedIndex = 3;
             accountPage.NavigationService.Navigate(new AccountPage());
+        }
+
+        private void Web_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("http://localhost:8080/login"));
+            e.Handled = true;
         }
     }
 }
