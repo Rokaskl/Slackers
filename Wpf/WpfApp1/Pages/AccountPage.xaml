@@ -24,7 +24,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="Profile" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" FontSize="20" Margin="0,0,100,0"/>
-        <Border  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxHeight="240" MaxWidth="240" Margin="0,0,100,0">
+        <Border x:Name="imgFrame"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxHeight="240" MaxWidth="240" Margin="0,0,100,0" BorderBrush="Black" BorderThickness="2">
             <Border.Background>
                 <ImageBrush x:Name="profilePicture"/>
             </Border.Background>

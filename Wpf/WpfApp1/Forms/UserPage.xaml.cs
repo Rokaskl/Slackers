@@ -206,7 +206,7 @@ namespace WpfApp1.Forms
                 }
                 else
                 {
-                    //MessageBox.Show("Joining failed...");
+                    MessageBox.Show("Available room was not found.");
                 }
 
             }

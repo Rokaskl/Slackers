@@ -13,6 +13,10 @@
         <Style x:Key="notesCollapsHeader" TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Visibility" Value="Collapsed" />
         </Style>
+        <Style x:Key="listView_borders" TargetType="ListView">
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
     </Page.Resources>
 
 
@@ -115,7 +119,8 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-                    <ListView x:Name="chatbox" Grid.Row="0" Background="#FFAEB881" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="False"/>
+                    <ListView x:Name="chatbox" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="False"
+                              Style="{StaticResource listView_borders}"/>
                     <!--<ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel VerticalAlignment="Bottom"/>

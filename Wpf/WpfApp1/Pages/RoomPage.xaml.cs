@@ -109,44 +109,53 @@ namespace WpfApp1.Pages
         }
 
         private Popup userBioPOP;
+        private Popup roomBioPOP;
+
         private void UsersListView_MouseEnter(object sender, RoutedEventArgs e)
         {
             if ((string)((Ellipse)sender).Tag!=null )
             {
-            userBioPOP = new Popup();
-            userBioPOP.Width = 150;
-            userBioPOP.Height = 100;  
-               
+                userBioPOP = CreateBioPopup(((Ellipse)sender).Tag.ToString());
+            }            
+        }
+
+        private Popup CreateBioPopup(string text)
+        {
+            Popup popup = new Popup();
+            popup.MouseLeave += Bio_LostFocus;
+            popup.Width = 150;
+            popup.Height = 100;
 
             StackPanel stack = new StackPanel();
             stack.VerticalAlignment = VerticalAlignment.Stretch;
             stack.HorizontalAlignment = HorizontalAlignment.Stretch;
             stack.Background = Brushes.LightGray;
-            
-            
-            TextBlock userBio = new TextBlock();
-            userBio.Text = ((Ellipse)sender).Tag.ToString();
-            stack.Children.Add(userBio);
-            userBioPOP.Child = stack;
-            
-            userBioPOP.StaysOpen = false;
-            userBioPOP.Placement = PlacementMode.MousePoint;
-            userBioPOP.Visibility = Visibility.Visible;
-            userBioPOP.PopupAnimation = PopupAnimation.Slide;
-            userBioPOP.MouseLeave +=Bio_LostFocus;
-            userBioPOP.IsOpen = true;
-            }            
+
+            TextBlock bio = new TextBlock();
+            bio.Text = text;
+            stack.Children.Add(bio);
+            popup.Child = stack;
+
+            popup.StaysOpen = false;
+            popup.Placement = PlacementMode.MousePoint;
+            popup.Visibility = Visibility.Visible;
+            popup.PopupAnimation = PopupAnimation.Slide;
+            popup.IsOpen = true;
+            return popup;
         }
+
         private void CloseBioPop()
         {
-            if (userBioPOP!=null)
+            if (userBioPOP != null)
             {
                 userBioPOP.IsOpen=false;
             }
         }
+
         private void Bio_LostFocus(object sender, RoutedEventArgs e)
         {
             (sender as Popup).IsOpen = false;
+            (sender as Popup).MouseLeave -= Bio_LostFocus;
         }
 
         private async void RoomInfo()
@@ -155,6 +164,8 @@ namespace WpfApp1.Pages
             Ellipse roomPhoto = new Ellipse();
             roomPhoto.Width = 50;
             roomPhoto.Height = 50;
+            //roomPhoto.Margin = new Thickness(2, 2, 2, 2);
+            roomPhoto.MouseLeftButtonUp += RoomPhoto_MouseLeftButtonUp;
             if(roomAddData!=null&&roomAddData.PhotoBytes!=null)
             using (var memstr = new MemoryStream(roomAddData.PhotoBytes))
                     {
@@ -172,9 +183,16 @@ namespace WpfApp1.Pages
             Label roomNameLabel = new Label();
             roomNameLabel.Content = this.room.roomName;
             roomNameLabel.FontSize = 20;
-            roomNameLabel.Foreground = Brushes.Pink;            
+            roomNameLabel.Foreground = Brushes.Black;
+            roomNameLabel.Margin = new Thickness(2, 2, 2, 2);
             this.roomInfo.Children.Add(roomNameLabel);
         }
+
+        private void RoomPhoto_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            roomBioPOP = CreateBioPopup(this.roomAddData.Biography);
+        }
+
         private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
         {
             if (Changed && this.chatbox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
@@ -821,11 +839,6 @@ namespace WpfApp1.Pages
             }
         }
 
-        private void Background_Changed(object sender, EventArgs e)
-        {
-            (sender as ListViewItem).Background.Changed -= Background_Changed;
-        }
-
         private void Btn_txtenter_Click(object sender, RoutedEventArgs e)
         {
             SubmitEntry();
@@ -1002,7 +1015,7 @@ namespace WpfApp1.Pages
             statusPhoto.Fill = status;
             stack.Children.Add(statusPhoto);
             return stack;
-        }   
+        }
     }
     class AddStroke : IValueConverter
     {
