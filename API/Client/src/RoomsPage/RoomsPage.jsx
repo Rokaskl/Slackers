@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { RoomPage } from '../SingleRoomPage';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { PrivateRoute } from '../_components';
-
+import {InfoCard} from '../_components/RoomsInfoCard.jsx';
 import { roomActions } from '../_actions/room.actions.js';
 import RoomCard from '../_components/RoomCard.jsx';
 import AddRoom from '../_components/AddRoom.jsx';
@@ -53,6 +53,8 @@ class RoomsPage extends React.Component {
         const { dispatch } = this.props;
         if (newRoom.roomName) {
             dispatch(roomActions.register(newRoom));
+            window.location.reload();
+
         }
     }
     
@@ -63,19 +65,48 @@ class RoomsPage extends React.Component {
         const {newRoom} =this.state;
             return (
             <div>
+
                  
-                <h1>Rooms page</h1>
+<div className="page-header page-header-small">
+          <div className="page-header-image" data-parallax="true" style={{backgroundImage: 'url("../images/bck2.jpg")', transform: 'translate3d(0px, 0px, 0px)'}}>
+          </div>
+          <div className="content-center">
+            <div className="container">
+              <h1 className="title">Rooms page</h1>
+              <div className="text-center">
+                              ...        
+
+              
+                
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="section section-tabs">
+            <div className="container">
+                 <InfoCard/>
+        
+
                  {/* Button trigger modal */}
+                
+                 <div className="row justify-content-md-center">
                  <button type="button" className="btn btn-primary btn-icon btn-round btn-lg" data-toggle="modal" data-target="#exampleModal">
                       <i className="now-ui-icons ui-1_simple-add"></i>
                  </button>
                 {rooms.loading && <em>Loading rooms...</em>}
                 {rooms.error && <span className="text-danger">ERROR: {rooms.error}</span>}
                 {rooms.items &&
-                   <div>
+                  <div className="section section-tabs">
+                      
+                  <div className="container">
+                      
+                    <div className="row">
+                    
                         
                         {rooms.items.map((room, index) =>
                             <div key={room.roomId}>
+                             <div className="col-md-10 ml-auto col-xl-6 mr-auto">
+
                              <div className="card" style={{width: '20rem'}}>
                                 {RoomCard({room})}
                             
@@ -91,11 +122,19 @@ class RoomsPage extends React.Component {
                                 }
                                 </div>
                              </div>
+                              </div>
+                              
                         )}
+                       
                    </div>
-                }
-                  
                    
+                   
+                   </div>
+                   </div>
+                   
+                }
+                </div>
+                
                     {/* Create New Room Modal */}
                  <div className="modal fade" id="exampleModal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div className="modal-dialog" role="document">
@@ -141,6 +180,9 @@ class RoomsPage extends React.Component {
                  */}
 
                     </div>
+                    </div>
+                    </div>
+                
 
         );
     }

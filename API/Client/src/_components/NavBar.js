@@ -8,12 +8,12 @@ class NavigationBar extends React.Component{
       
         return (
         <div>
-          <nav className="navbar sticky-top navbar-dark bg-primary">
+          <nav className="navbar navbar-expand-lg bg-primary fixed-top navbar-transparent" color-on-scroll={40}>
               <Navbar.Brand href="#home">Slackers</Navbar.Brand>
                 <Nav className="mr-auto">
                   <Nav.Link href="./">Home</Nav.Link>
                   <Nav.Link href="https://github.com/Rokaskl/Slackers">GIT</Nav.Link>
-                  <Nav.Link href="./about">About</Nav.Link>
+                  
                   <Nav.Link href="./rooms">Rooms</Nav.Link>
                 </Nav>
                 <ButtonsOrProfile authentication={this.props.authentication}/>

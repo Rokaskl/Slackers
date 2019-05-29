@@ -9,11 +9,12 @@ export class AboutPageTop extends React.Component{
           </div>
           <div className="content-center">
             <div className="container">
-              <h1 className="title">Join OUR comunity NOW!</h1>
-              <button className="btn btn-primary btn-round btn-lg">Join NOW!</button>
+              <h1 className="title">No More Slacking!</h1>
+              <a href="./login" className="btn btn-primary" role="button" aria-pressed="true">Join</a>
               <div className="text-center">
-                                      
-
+                                    
+                <p>Up to 5 users management platform for free</p>
+                <p>More coming soon</p>
                 <a href="#pablo" className="btn btn-primary btn-icon btn-round">
                   <i className="fab fa-facebook-square" />
                 </a>

@@ -10,6 +10,7 @@ export class AboutPage extends React.Component {
 
           <dev>
             <AboutPageTop/>
+            
             <Section2/>
           </dev>
 

@@ -1,14 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import SideBar from '../_components/RoomAdminSideBar.jsx'
+//import SideBar from '../_components/RoomAdminSideBar.jsx'
 import {AdminChart} from '../_components/RoomAdminChart'
-import { Image} from 'react-bootstrap';
-import DatePicker from "react-datepicker";
-import { Navbar, NavItem, NavDropdown, MenuItem, Nav, Form, FormControl , Button,img,Card,Jarallax} from 'react-bootstrap';
+//import { Image} from 'react-bootstrap';
+//import DatePicker from "react-datepicker";
+//import { Navbar, NavItem, NavDropdown, MenuItem, Nav, Form, FormControl , Button,img,Card,Jarallax} from 'react-bootstrap';
 import { roomActions } from '../_actions/room.actions.js';
-import Chart from 'react-apexcharts'
-import { timingSafeEqual } from 'crypto';
+//import Chart from 'react-apexcharts'
+//import { timingSafeEqual } from 'crypto';
+import Moment from 'react-moment';
 
 
  class RoomPage extends React.Component {
@@ -16,8 +17,8 @@ import { timingSafeEqual } from 'crypto';
     super(props);
     
     this.state = {
-      startDate: "2019-05-14",
-      endDate: "2019-05-21",
+      startDate: "2019-05-27",
+      endDate: "2019-06-02"
      
       
     };
@@ -77,11 +78,28 @@ import { timingSafeEqual } from 'crypto';
         
       
         return (
-      
+          <div>
+            <div className="page-header page-header-small">
+          <div className="page-header-image" data-parallax="true" style={{backgroundImage: 'url("../images/bck3.jpg")', transform: 'translate3d(0px, 0px, 0px)'}}>
+          </div>
+          <div className="content-center">
+            <div className="container">
+              <h1 className="title">Room Admin Page</h1>
+              
+              <div className="text-center">
+                                      
+
+              
+                
+              </div>
+            </div>
+          </div>
+        </div>
+          
           <div className="container-fluid">
-  <div className="row">
-  <nav className="col-md-2 d-none d-md-block bg-light sidebar">
-            <div className="sidebar-sticky">
+        <div className="row">
+        <nav className="col-md-2 d-none d-md-block bg-light sidebar">
+           {/* <div className="sidebar-sticky">
               <ul className="nav flex-column">
                 <li className="nav-item">
                   <a className="nav-link active" href="#">
@@ -120,7 +138,8 @@ import { timingSafeEqual } from 'crypto';
                       </div>
                  </a>
                 </li>
-               {/* <li className="nav-item">
+                                }
+               { <li className="nav-item">
                   <a className="nav-link" href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="feather feather-shopping-cart"><circle cx={9} cy={21} r={1} /><circle cx={20} cy={21} r={1} /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>
                     Products
@@ -143,10 +162,10 @@ import { timingSafeEqual } from 'crypto';
                     <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>
                     Integrations
                   </a>
-                                </li>*/}
+                                </li>
               </ul>
               
-            </div>
+                              </div>*/}
 
           </nav>
     <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4"><div className="chartjs-size-monitor" style={{position: 'absolute', left: '0px', top: '0px', right: '0px', bottom: '0px', overflow: 'hidden', pointerEvents: 'none', visibility: 'hidden', zIndex: -1}}><div className="chartjs-size-monitor-expand" style={{position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, overflow: 'hidden', pointerEvents: 'none', visibility: 'hidden', zIndex: -1}}><div style={{position: 'absolute', width: '1000000px', height: '1000000px', left: 0, top: 0}} /></div><div className="chartjs-size-monitor-shrink" style={{position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, overflow: 'hidden', pointerEvents: 'none', visibility: 'hidden', zIndex: -1}}><div style={{position: 'absolute', width: '200%', height: '200%', left: 0, top: 0}} /></div></div>
@@ -154,14 +173,14 @@ import { timingSafeEqual } from 'crypto';
         <h1 className="h2">Times chart</h1>
         <div className="btn-toolbar mb-2 mb-md-0">
          <div className="btn-group mr-2">
-          <form class="form-inline">
-             <div class="col-md-6">
+          <form className="form-inline">
+             <div className="col-md-6">
 					          <h4>From</h4>
-                    <input type="text" class="form-control date-picker" value={this.state.startDate} onChange={this.handleChangeStart} data-date-format="yyyy-mm-dd" data-datepicker-color="secondary"/>
+                    <input type="text" className="form-control date-picker" value={this.state.startDate} onChange={this.handleChangeStart}  onSelect={this.handleChangeStart} data-date-format="yyyy-mm-dd" data-datepicker-color="secondary"/>
               </div>
              <div class="col-md-6">
 					        <h4>To</h4>
-                   <input type="text" class="form-control date-picker"  value={this.state.endDate} onChange={this.handleChangeEnd}  data-date-format="yyyy-mm-dd" data-datepicker-color="secondary"/>
+                   <input type="text" className="form-control date-picker"  value={this.state.endDate} onChange={this.handleChangeEnd} onSelect={this.handleChangeEnd}  data-date-format="yyyy-mm-dd" data-datepicker-color="secondary"/>
               </div>
                 <button type="button" className="btn btn-primary" onClick={(e) =>this.updateTimes(
                   e,
@@ -173,7 +192,7 @@ import { timingSafeEqual } from 'crypto';
         </div>
        </div>
      </div>
-                        <h3>Room Name...</h3>
+                       
                        
                           
                         {!times.loading  ?   (
@@ -247,6 +266,7 @@ import { timingSafeEqual } from 'crypto';
      
     </main>
   </div>
+</div>
 </div>
 
 
