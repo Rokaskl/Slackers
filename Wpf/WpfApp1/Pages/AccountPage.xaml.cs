@@ -57,12 +57,15 @@ namespace WpfApp1.Pages
         private void BtnChangePhoto_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.DefaultExt = ".jpg";
-            dialog.Filter = "Text documents (.jpg)|*.jpg";
-            if (dialog.ShowDialog().HasValue && File.Exists(dialog.FileName))
+            dialog.Filter = "Picture file (.jpg)|*.jpg|(.bmp)|*.bmp|(.png)|*.png|(.tif)|*.tif";
+            if (dialog.ShowDialog().HasValue &&(File.Exists(dialog.FileName)&&dialog.FileName.EndsWith(".jpg")||File.Exists(dialog.FileName)&&dialog.FileName.EndsWith(".bmp")||File.Exists(dialog.FileName)&&dialog.FileName.EndsWith(".png")||File.Exists(dialog.FileName)&&dialog.FileName.EndsWith(".tif")))
             {
                 photo = File.ReadAllBytes(dialog.FileName);
                 ChangeData();
+            }
+            else
+            {
+                MessageBox.Show("Wrong file format");
             }
         }
 
