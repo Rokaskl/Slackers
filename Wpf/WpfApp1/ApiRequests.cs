@@ -249,6 +249,19 @@ namespace WpfApp1
             }
             return null;
         }
+        public async Task<bool> LeaveRoom(int roomId)
+        {
+            if (roomId<1)
+            {
+                return false;
+            }
+            var resp = await client.PutAsJsonAsync("Rooms/leave",new {roomId=roomId });
+            if (resp.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
         public async Task<bool> JoinGroup(string guid)
         {
             if (guid==null)

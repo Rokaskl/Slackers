@@ -16,6 +16,7 @@ using WebApi.Dtos;
 using System.Diagnostics;
 using System.Windows.Navigation;
 using System.IO;
+using System.ComponentModel;
 
 namespace WpfApp1.Forms
 {

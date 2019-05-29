@@ -12,6 +12,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="200*" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -38,5 +39,9 @@
         <TextBlock x:Name="txtName" Text="Name" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" FontSize="16"/>
         <TextBlock x:Name="txtLastName" Text="Last Name" Grid.Column="1" Grid.Row="4" VerticalAlignment="Top" FontSize="16"/>
         <Button x:Name="btnChangePass" Grid.Column="1" Grid.Row="5" Content="Change password" Width="150" HorizontalAlignment="Left" MaxHeight="24" VerticalAlignment="Stretch" Click="BtnChangePass_Click" Grid.ColumnSpan="2"/>
+
+        <TextBlock Text="Bio:" Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="16" Margin="-30,00,0,0"/>
+        <RichTextBox x:Name="bio" Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,00,0,0"></RichTextBox>
+        <Button x:Name="submitBio" Content="Change bio" Grid.Column="2" Grid.Row="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MaxWidth="180" MaxHeight="24" Click="SubmitBio_Click"></Button>
     </Grid>
 </Page>

@@ -10,8 +10,16 @@
     >
 
     <Page.Resources>
-        <Style x:Key="notesCollapsHeader" TargetType="{x:Type GridViewColumnHeader}">
-            <Setter Property="Visibility" Value="Collapsed" />
+        <Style x:Key="BorderedItem" TargetType="ListViewItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border Name="Border" BorderBrush="Transparent" BorderThickness="2">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Page.Resources>
 
@@ -66,21 +74,22 @@
                 
             </Grid.RowDefinitions>
             <!--<ListView x:Name="usersList" Grid.Column="0" Grid.Row="0" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto"/>-->
-            
+
             <ListView Grid.Row="0" Grid.Column="0" x:Name="usersListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735"   BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
-                <ListView.View >
-                    <GridView ColumnHeaderContainerStyle="{StaticResource notesCollapsHeader}">
-                        <GridViewColumn >
+                <ListView.View>
+                    
+                    <GridView >
+                        <GridViewColumn>                            
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Ellipse Fill="{Binding [photo]}" Width="30" Height="30" VerticalAlignment="Center" Tag="{Binding [bio]}" MouseLeftButtonUp="UsersListView_MouseEnter" MouseLeave="UsersListView_MouseLeave" Stroke="Black" StrokeThickness="1"/>
                                 </DataTemplate>
-                            </GridViewColumn.CellTemplate>
+                            </GridViewColumn.CellTemplate>                            
                         </GridViewColumn >
                         <GridViewColumn>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Label Content="{Binding [username]}" VerticalAlignment="Center" FontSize="15" Width="auto"/>
+                                    <Label Content="{Binding [username]}" VerticalAlignment="Center" FontSize="15" Width="auto" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn >
@@ -92,7 +101,9 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
+                        
                     </GridView>
+                    
                 </ListView.View>
             </ListView>
             
@@ -157,7 +168,7 @@
             <Button x:Name="btn_addnote" Grid.Row="1" Content="Add" VerticalAlignment="Top" Click="Btn_addnote_Click" Height="30" Width="60" HorizontalAlignment="Right" Grid.Column="1"/>
             <ListView Grid.Row="0" Grid.Column="0" x:Name="NoteListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735"   BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
                 <ListView.View>
-                    <GridView ColumnHeaderContainerStyle="{StaticResource notesCollapsHeader}">
+                    <GridView>
                         <GridViewColumn Width="30"
                                  DisplayMemberBinding="{Binding Path=Id}"/>
                         <GridViewColumn  Width="300">

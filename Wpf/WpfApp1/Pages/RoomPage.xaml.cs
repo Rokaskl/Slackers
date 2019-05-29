@@ -126,8 +126,10 @@ namespace WpfApp1.Pages
             
             TextBlock userBio = new TextBlock();
             userBio.Text = ((Ellipse)sender).Tag.ToString();
+            userBio.TextWrapping = TextWrapping.Wrap;
             stack.Children.Add(userBio);
             userBioPOP.Child = stack;
+
             
             userBioPOP.StaysOpen = false;
             userBioPOP.Placement = PlacementMode.MousePoint;
@@ -155,6 +157,7 @@ namespace WpfApp1.Pages
             Ellipse roomPhoto = new Ellipse();
             roomPhoto.Width = 50;
             roomPhoto.Height = 50;
+            roomPhoto.MouseLeftButtonUp +=UsersListView_MouseEnter;
             if(roomAddData!=null&&roomAddData.PhotoBytes!=null)
             using (var memstr = new MemoryStream(roomAddData.PhotoBytes))
                     {
@@ -166,13 +169,13 @@ namespace WpfApp1.Pages
                         ImageBrush imgBrush = new ImageBrush();
                         imgBrush.ImageSource = image;
                         roomPhoto.Fill = imgBrush;
-                        roomPhoto.Tag = roomAddData.Biography;
-            }  
+                }
+            roomPhoto.Tag = roomAddData.Biography;
             this.roomInfo.Children.Add(roomPhoto);
             Label roomNameLabel = new Label();
             roomNameLabel.Content = this.room.roomName;
             roomNameLabel.FontSize = 20;
-            roomNameLabel.Foreground = Brushes.Pink;            
+            roomNameLabel.Foreground = Brushes.Black;            
             this.roomInfo.Children.Add(roomNameLabel);
         }
         private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)

@@ -120,6 +120,27 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+                // PUT: Rooms/leave
+        [HttpPut("leave")]
+        public IActionResult LeaveRoom(JObject data)
+        {
+            try
+            {
+                int roomId = data.Value<int>("roomId");
+                int user = Int32.Parse(Request.HttpContext.User.Identity.Name);
+                _roomService.LeaveRoom(user,roomId);
+                //RoomDto room = _roomService.GetAllRooms().First(x => x.roomId == roomId);
+                List<int> usersToKick = new List<int>();
+                usersToKick.Add(user);
+                //registeredUsers.Add(room.roomAdminId);
+                App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 4, roomId = roomId, registered_room_users = usersToKick});
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
         }
         // PUT: Rooms/join_group

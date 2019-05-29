@@ -30,9 +30,17 @@ namespace WpfApp1.Pages
         {
             InitializeComponent();
             ShowInfo();
+            SetBio();
             SetProfilePhoto();
         }
-
+        private void SetBio()
+        {
+            if (Inst.ApiRequests.AdditionalData.Biography!=null)
+            {
+             this.bio.Document.Blocks.Clear();
+             this.bio.Document.Blocks.Add(new Paragraph(new Run(Inst.ApiRequests.AdditionalData.Biography)));      
+            }
+        }
         private void ShowInfo()
         {
             txtUsername.Text = Inst.ApiRequests.User.username;
@@ -95,6 +103,24 @@ namespace WpfApp1.Pages
                         }
                     }
                 }
+            }
+        }
+
+        private void SubmitBio_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateBio();
+        }
+        private async void UpdateBio()
+        {
+            if (await Inst.ApiRequests.UpdateAddDataUser(new AdditionalData(Int32.Parse(Inst.ApiRequests.User.id),true,(new TextRange(bio.Document.ContentStart,bio.Document.ContentEnd)).Text,null)))
+            {
+                await Inst.ApiRequests.UserLoginAddData();
+                SetBio();
+                //MessageBox.Show("Photo upload succsesful");
+            }
+            else
+            {
+                MessageBox.Show("Bio update failed");
             }
         }
     }
