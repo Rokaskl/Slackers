@@ -20,6 +20,7 @@ using WebApi.Dtos;
 using Newtonsoft.Json;
 using WpfApp1.Forms;
 using WpfApp1.Pages;
+using System.Diagnostics;
 
 namespace WpfApp1
 {
@@ -111,7 +112,7 @@ namespace WpfApp1
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (MessageBox.Show("Are you sure?", "Leave????", MessageBoxButton.YesNoCancel, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Logout?", "", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes)
             {
                 if (Inst.Utils.RoomPage != null)
                 {
@@ -121,8 +122,8 @@ namespace WpfApp1
             }
             else
             {
-                ((System.ComponentModel.CancelEventArgs)e).Cancel = true;
-            }            
+                e.Cancel = true;
+            }
         }
 
         private void Account_Click(object sender, RoutedEventArgs e)
@@ -130,6 +131,12 @@ namespace WpfApp1
             tabs.Visibility = Visibility.Visible;
             tabs.SelectedIndex = 3;
             accountPage.NavigationService.Navigate(new AccountPage());
+        }
+
+        private void Web_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("http://localhost:8080/login"));
+            e.Handled = true;
         }
     }
 }

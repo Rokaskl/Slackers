@@ -59,8 +59,7 @@
                     <materialDesign:PopupBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
                         <StackPanel Width="150">
                             <Button Content="Account" Click="Account_Click" />
-                            <Button Content="Settings"/>
-                            <Button Content="Help"/>
+                            <Button Content="Web" Click="Web_Click"/>
                             <Separator/>
                             <Button Content="Logout" Click="Logout_Click"/>
                         </StackPanel>
