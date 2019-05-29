@@ -90,9 +90,8 @@ namespace WpfApp1
         private void UploadPicture_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();            
-            dialog.Filter = "Picture file (.jpg)|*.jpg|(.bmp)|*.bmp|(.png)|*.png|(.tif)|*.tif";
-           
-            if(dialog.ShowDialog().HasValue&&File.Exists(dialog.FileName)&&(dialog.FileName.EndsWith(".jpg")||File.Exists(dialog.FileName)&&dialog.FileName.EndsWith(".bmp")||File.Exists(dialog.FileName)&&dialog.FileName.EndsWith(".png")||File.Exists(dialog.FileName)&&dialog.FileName.EndsWith(".tif")))
+            dialog.Filter = "Picture file (.jpg)|*.jpg|(.bmp)|*.bmp|(.png)|*.png|(.tif)|*.tif|(.jfif)|*.jfif";
+            if(dialog.ShowDialog().HasValue&&File.Exists(dialog.FileName)&&(dialog.FileName.EndsWith(".jfif")||dialog.FileName.EndsWith(".jpg")||dialog.FileName.EndsWith(".bmp")||dialog.FileName.EndsWith(".png")||dialog.FileName.EndsWith(".tif")))
             {
                 photo = File.ReadAllBytes(dialog.FileName);
                 file.Content = dialog.FileName;
