@@ -11,7 +11,7 @@ export class Section2 extends React.Component{
     <div className="row">
       <div className="col-md-8 ml-auto mr-auto text-center">
         <h2 className="title">Who we are?</h2>
-        <h5 className="description">We are "Wbies". Company of young motivated computer science students at University of Kaunas Technology </h5>
+        <h5 className="description">We are "Wbies". Company of young motivated computer science students at Kaunas University of Technology </h5>
       </div>
     </div>
     <div className="separator separator-primary" />
@@ -34,7 +34,7 @@ export class Section2 extends React.Component{
           <div className="image-container image-right" style={{backgroundImage: 'url("../images/About2.jpg")'}} />
           <h3>So what does the "SLACKERS!" is for?</h3>
           <p> 
-            Slackers platform is build for small teams and especialy for their manager.
+            Slackers platform build for small teams and especially for their manager.
           </p>
           <p> 
             In this app you can easily find who is working at the moment, get statiscs who worked the most hours etc...

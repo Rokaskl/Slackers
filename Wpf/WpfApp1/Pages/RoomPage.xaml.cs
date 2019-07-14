@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Globalization;
 using System.IO;
 using WebApi.Entities;
+using WpfApp1.ViewModels;
 
 namespace WpfApp1.Pages
 {
@@ -36,8 +37,10 @@ namespace WpfApp1.Pages
         private string prevWindow;
         private Timer timer;
         private Button btnStartStop;
-        private bool Changed;
+        //private bool Changed;
         private bool breakDaRules = false;
+        private int items_per_page = 10;
+        private ChatViewModel chatbox = new ChatViewModel();
         
 
         public RoomPage(){}
@@ -47,9 +50,17 @@ namespace WpfApp1.Pages
             this.prevWindow = prev;
             timer = new Timer();
             this.room = room;
+            Inst.Utils.Room = new Room(room.roomId, room.roomName);
             //client = Inst.Utils.HttpClient;
-           
+
+            //chatbox = new ChatViewModel();
+            
+
             InitializeComponent();
+
+            
+
+            SetupChatBox();//Nieko nedaro
             RoomInfo();
             ListUsers();
             //ListUsersStack();
@@ -57,12 +68,17 @@ namespace WpfApp1.Pages
             FillNotes();
             FillChat();
 
-            this.chatbox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+            //this.ChatControl.DataContext = chatbox;
+
+            //this.ChatControl.SetResourceReference((ChatControl.DataContext as DependencyProperty), "chatbox");
+
+            //this.chatbox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
             this.KeyDown += RoomPage_KeyDown;
             this.txt_entry.KeyUp += Txt_entry_KeyUp;
             this.NoteListView.SelectionMode = SelectionMode.Single;
             this.NoteListView.MouseLeftButtonUp += NoteListView_MouseLeftButtonUp;
             this.usersListView.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged1;
+
             //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             //{
             //    //Header = "Id",
@@ -76,13 +92,18 @@ namespace WpfApp1.Pages
             //    DisplayMemberBinding = new Binding("status"),
             //    Width = 100
             //});
-            
+
             InitCmbStatus();
             ConfigureBotStack();
             //FillMembers();//pirma karta uzkrauna iskarto.
             
 
             Task.Run(() => DisplayMembersR());//toliau naujina info kas 10secs.
+        }
+
+        private void SetupChatBox()
+        {
+            //this.chatbox.ItemTemplate =
         }
 
         private void ItemContainerGenerator_StatusChanged1(object sender, EventArgs e)
@@ -193,35 +214,35 @@ namespace WpfApp1.Pages
             roomBioPOP = CreateBioPopup(this.roomAddData.Biography);
         }
 
-        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
-        {
-            if (Changed && this.chatbox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-            {
-                foreach(ChatLine line in (sender as System.Windows.Controls.ItemContainerGenerator).Items)
-                {
-                    ListViewItem lv = (ListViewItem)chatbox.ItemContainerGenerator.ContainerFromItem(line);
-                    if (lv != null)
-                    {
-                        lv.ToolTip = line.CreateDate.ToString("HH:mm:ss yyyy/MM/dd", CultureInfo.InvariantCulture);
-                        if (line.CreatorId.ToString() == Inst.ApiRequests.User.id)
-                        {
-                            lv.Background = Brushes.LightBlue;
-                        }
-                        else
-                        {
-                            lv.Background = Brushes.LightGray;
-                        }
-                    }
-                }
-                Changed = false;
-            }
-        }
+        //private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+        //{
+        //    if (Changed && this.chatbox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+        //    {
+        //        foreach(ChatLine line in (sender as System.Windows.Controls.ItemContainerGenerator).Items)
+        //        {
+        //            ListBoxItem lv = (ListBoxItem)chatbox.ItemContainerGenerator.ContainerFromItem(line);
+        //            if (lv != null)
+        //            {
+        //                lv.ToolTip = line.CreateDate.ToString("HH:mm:ss yyyy/MM/dd", CultureInfo.InvariantCulture);
+        //                if (line.CreatorId.ToString() == Inst.ApiRequests.User.id)
+        //                {
+        //                    lv.Background = Brushes.LightBlue;
+        //                }
+        //                else
+        //                {
+        //                    lv.Background = Brushes.LightGray;
+        //                }
+        //            }
+        //        }
+        //        Changed = false;
+        //    }
+        //}
 
         private void Txt_entry_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                SubmitEntry();
+                ProcessEntry();
             }
         }
 
@@ -586,15 +607,43 @@ namespace WpfApp1.Pages
             FillNotes();
         }
 
-        public  void UpdateUsersListView()
+        public void UpdateUsersListView()
         {
-             this.Dispatcher.Invoke(ListUsers);
+            this.Dispatcher.Invoke(ListUsers);
+            Inst.Utils.Room.SetUsersList();//Galima butu naudoti is ListUsers metodo gauta info.
             //FillMembers();
         }
 
-        public void UpdateGroupChat()
+        public void UpdateGroupChat(string text, string username, string creator_id)
         {
-            FillChat();
+            AppendChatLine(text, username, CreatorId : int.Parse(creator_id));
+            //FillChat();
+        }
+
+        private void AppendChatLine(string text, string username, int CreatorId = -1)
+        {
+            ChatLine line = new ChatLine() { Id = null, CreateDate = DateTime.Now, Username = username, CreatorId = CreatorId, RoomId = this.room.roomId, Text = text };
+            this.chatbox.Add(new ChatLineViewModel(line));
+            HandleChatControlView(CreatorId == int.Parse(Inst.ApiRequests.User.id));
+        }
+
+        /// <summary>
+        /// Handles ChatControl view after a new chat entry was appended.
+        /// </summary>
+        private void HandleChatControlView(bool creator_is_local)
+        {
+            if (this.ChatControl.ScrollViewer.VerticalOffset + this.ChatControl.ScrollViewer.ViewportHeight < this.ChatControl.ScrollViewer.ExtentHeight - this.ChatControl.ScrollViewer.ViewportHeight)
+            {
+                if (!creator_is_local)
+                {
+                    System.Media.SystemSounds.Beep.Play();
+                    //Kazkokias vizualias priemones padaryti? Kontroliu mirgsejima..?
+                }
+            }
+            else
+            {
+                this.ChatControl.ScrollViewer.ScrollToEnd();
+            }
         }
 
         private async void FillNotes()
@@ -813,25 +862,42 @@ namespace WpfApp1.Pages
             try
             {
                 //var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
-                List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId);
+                List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, 0, items_per_page);
                 if (data!=null)
                 {
                     //List<ChatLine> data = response.Content.ReadAsAsync<List<ChatLine>>().Result;
-                    chatbox.Items.Clear();
+                    //chatbox.Items.Clear(); - Kadangi FillChat() metodas naudojamas tik pacioje pradzioje, Itemu dar nebus ir nereikes ju valyti.
                     
                     foreach (ChatLine line in data.OrderBy(x => x.CreateDate))
                     {
-                        chatbox.Items.Add(line);
+                        chatbox.ChatLines.Add(new ChatLineViewModel(line/*, local : line.CreatorId == int.Parse(Inst.ApiRequests.User.id)*/));
                     }
-                    Changed = true;
-                    chatbox.ScrollIntoView(data.OrderBy(x => x.CreateDate).LastOrDefault());
-                    chatbox.UpdateLayout();
+                    
+                    //Changed = true;
+                    //chatbox.ScrollIntoView(data.OrderBy(x => x.CreateDate).LastOrDefault());
+                    //chatbox.UpdateLayout();
+                    //FormatListViewItems();
+                    //this.ChatControl.scro
+                    //ScrollViewer sw = this.ChatControl.GetType().GetRuntimeProperties().First(p => p.Name == "ScrollHost").GetValue(this.ChatControl) as System.Windows.Controls.ScrollViewer;
+                    //var collection = this.ChatControl.GetType().GetRuntimeProperties().First(p => p.Name == "VisualOffset");
+                    this.ChatControl.ScrollViewer = this.ChatControl.GetChildOfType<ScrollViewer>();
+                    //this.ChatControl.ScrollViewer.RequestBringIntoView += ChatControl_RequestBringIntoView;
+                    this.ChatControl.ScrollViewer.ScrollToEnd();
+                    this.ChatControl.ScrollViewer.ScrollChanged += RoomPage_ScrollChangedAsync;
+                    //sw.ScrollToEnd();
+                    //(collection as Vector).
                 }
                 else
                 {
                     MessageBox.Show("Something went wrong! Could not populate chat");
                 }
 
+                current_page = 0;
+
+                this.ChatControl.DataContext = chatbox;
+
+                //ScrollViewer sw = chatbox.GetType().GetRuntimeProperties().First(p => p.Name == "ScrollHost").GetValue(chatbox) as System.Windows.Controls.ScrollViewer;
+                //sw.ScrollChanged += RoomPage_ScrollChanged;
             }
             catch (Exception ex)
             {
@@ -839,18 +905,86 @@ namespace WpfApp1.Pages
             }
         }
 
-        private void Btn_txtenter_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Nukelia ListViewItemu teksta ir padidina pati itema atitinkamai. Tai padaro pirmiems items_per_page itemams
+        /// </summary>
+        //private void FormatListViewItems()
+        //{
+        //    for (int i = 0; i < items_per_page; i++)
+        //    {
+        //        ListViewItem lwi = (chatbox.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem);
+        //        string visual_text = (lwi.Content as ChatLine).Username + (lwi.Content as ChatLine).Text;
+        //        lwi.
+        //    }
+        //}
+
+        //private void ChatControl_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+        //{
+
+        //}
+
+        private async void RoomPage_ScrollChangedAsync(object sender, ScrollChangedEventArgs e)
         {
-            SubmitEntry();
+            if (e.VerticalOffset == 0)
+            {
+                //this.ChatControl.ScrollViewer.ScrollChanged -= RoomPage_ScrollChangedAsync;
+                
+                //this.ChatControl.ScrollViewer.ScrollChanged += RoomPage_ScrollChangedAsync;
+                //Task.Delay(200);
+                if (e.ExtentHeightChange > 0)
+                {
+                    this.ChatControl.ScrollViewer.ScrollToVerticalOffset(e.ExtentHeightChange + e.ExtentHeightChange > 0 ? e.ViewportHeight + e.ExtentHeightChange - e.ViewportHeight : 0);
+                }
+                else
+                {
+                    await LoadPage();
+                }
+            }
         }
 
-        private async void SubmitEntry()
+        private int current_page;
+        private bool finished_loading_chat_page = true;
+
+        private async Task LoadPage()
+        {
+            if (!finished_loading_chat_page)
+            {
+                return;
+            }
+            finished_loading_chat_page = false;
+            List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, current_page + 1, items_per_page);
+            if (data != null)
+            {
+                
+                //ChatLineViewModel first = chatbox.ChatLines.First();
+                data.ForEach(x => chatbox.ChatLines.Insert(0, new ChatLineViewModel(x)));
+               
+                //Changed = true;
+                //chatbox.ScrollIntoView(data.FirstOrDefault());
+                //chatbox.UpdateLayout();
+                //this.ChatControl.ScrollViewer.scroll
+                current_page++;
+            }
+            finished_loading_chat_page = true;
+        }
+
+        private void Btn_txtenter_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessEntry();
+        }
+
+        private void ProcessEntry()
         {
             if (string.IsNullOrWhiteSpace(txt_entry.Text))
             {
                 return;
             }
+            AppendChatLine(txt_entry.Text, Inst.ApiRequests.User.username, int.Parse(Inst.ApiRequests.User.id));
+            SubmitEntry();
+        }
 
+        private async void SubmitEntry()
+        {
             try
             {
                 //var response = await client.PostAsJsonAsync<string>($"/ChatLine/create/{this.room.roomId}", txt_entry.Text);
@@ -869,7 +1003,7 @@ namespace WpfApp1.Pages
                 Console.WriteLine(ex.ToString());
             }
         }
-        public async Task<bool> ListUsers()
+        public async Task<bool> ListUsers()//Neefektyviai atnaujinamas listas. Reiketu po viena prideti/ismesti, kaip daroma kitur.
         {
             List<Newtonsoft.Json.Linq.JObject> users = await Inst.ApiRequests.GetGroupMembers(this.room.roomId);
             if (users == null)
@@ -888,7 +1022,8 @@ namespace WpfApp1.Pages
                 else
                     usersList.Add(UsersStatus(userAddData, item["value"].ToObject<string>(), temp.Username,temp.Id.ToString()));
             }
-            this.usersListView.ItemsSource = usersList;            
+            this.usersListView.ItemsSource = usersList;
+            this.usersListView.UpdateLayout();
             return true;
         }
         private Dictionary<string,object> UsersStatus(AdditionalData addData,string statusChar,string userName,string id)
@@ -1017,6 +1152,7 @@ namespace WpfApp1.Pages
             return stack;
         }
     }
+
     class AddStroke : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

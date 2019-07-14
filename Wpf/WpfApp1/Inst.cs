@@ -7,7 +7,9 @@ using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using WpfApp1.Forms;
 using WpfApp1.Pages;
 
@@ -23,6 +25,21 @@ namespace WpfApp1
             Utils = new Utils();
             ApiRequests = new ApiRequests();
         }
+
+        public static T GetChildOfType<T>(this DependencyObject depObj)
+    where T : DependencyObject
+        {
+            if (depObj == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+
+                var result = (child as T) ?? GetChildOfType<T>(child);
+                if (result != null) return result;
+            }
+            return null;
+        }
     }
 
     public class Utils
@@ -37,6 +54,7 @@ namespace WpfApp1
         private Page userPage;
         private Page adminPage;
         private TcpDock tcp_client;
+        private Room room;
 
         public Utils()
         {
@@ -111,6 +129,12 @@ namespace WpfApp1
         {
             get => adminPage;
             set => adminPage = value;
+        }
+
+        public Room Room
+        {
+            get => room;
+            set => room = value;
         }
 
         //private async void Ping()
@@ -207,6 +231,30 @@ namespace WpfApp1
         public override string ToString()
         {
             return String.Format($"{Username}: {Text}");
+        }
+    }
+
+    public class Room
+    {
+        public int Id;
+        public List<User> users;//Joininus naujam useriui, listas lieka senas
+        public string Room_Name;
+
+        public Room(int id, string name)
+        {
+            this.Id = id;
+            this.Room_Name = name;
+            SetUsersList();
+        }
+
+        public async void SetUsersList()
+        {
+            users = await Inst.ApiRequests.GetUsersList(Id, true);
+        }
+
+        public string GetUsername(int id)
+        {
+            return users.FirstOrDefault(x => x.id == id.ToString())?.username;
         }
     }
 }

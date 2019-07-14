@@ -52,17 +52,18 @@ namespace WebApi.Controllers
                 registeredUsers.AddRange(room.users);
             }
             registeredUsers.Add(room.roomAdminId);
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 1, roomId = roomId, registered_room_users = registeredUsers });
+            registeredUsers.Remove(requesterId);//Isimamas eilutes kurejas, jam atnaujinama lokaliai.
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 1, roomId = roomId, registered_room_users = registeredUsers, data = text, senderId = requesterId });
             return Ok();
         }
 
-        [Route("lines/{roomId:int}")]
-        public IActionResult GetChat(int roomId)
+        [Route("lines/{roomId:int}/{page:int}/{items_per_page:int}")]
+        public IActionResult GetChat(int roomId, int page, int items_per_page)
         {
             int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
 
             //return Ok(_chatLineService.GetRoomChat(roomId).Select(x => new { key = x, value = _userService.GetById(x.CreatorId).Username}));
-            List<Dictionary<string, object>> lines = _chatLineService.GetRoomChat(roomId).Select(x => x.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).ToDictionary(prop => prop.Name, prop => prop.GetValue(x, null))).ToList();
+            List<Dictionary<string, object>> lines = _chatLineService.GetRoomChat(roomId, page, items_per_page).Select(x => x.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).ToDictionary(prop => prop.Name, prop => prop.GetValue(x, null))).ToList();
             foreach (Dictionary<string, object> line in lines){
                 line.Add("Username", _userService.GetById(int.Parse(line["CreatorId"].ToString())).Username);
             }

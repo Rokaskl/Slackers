@@ -90,9 +90,11 @@ class RoomsPage extends React.Component {
                  {/* Button trigger modal */}
                 
                  <div className="row justify-content-md-center">
+                 <div className="section section-tabs">
                  <button type="button" className="btn btn-primary btn-icon btn-round btn-lg" data-toggle="modal" data-target="#exampleModal">
                       <i className="now-ui-icons ui-1_simple-add"></i>
                  </button>
+                 </div>
                 {rooms.loading && <em>Loading rooms...</em>}
                 {rooms.error && <span className="text-danger">ERROR: {rooms.error}</span>}
                 {rooms.items &&

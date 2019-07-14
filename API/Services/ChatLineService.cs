@@ -9,7 +9,7 @@ namespace WebApi.Services
 {
     public interface IChatLineService
     {
-        List<ChatLine> GetRoomChat(int roomId);
+        List<ChatLine> GetRoomChat(int roomId, int page, int items_per_page);
         void Create(int roomId, int creatorId, string text);
     }
     public class ChatLineService : IChatLineService
@@ -33,9 +33,28 @@ namespace WebApi.Services
             _context.SaveChanges();
         }
 
-        public List<ChatLine> GetRoomChat(int roomId)
+        public List<ChatLine> GetRoomChat(int roomId, int page, int items_per_page)
         {
-            return _context.ChatLines.Where(x => x.RoomId == roomId).ToList();
+            List<ChatLine> chatlines = _context.ChatLines.Where(x => x.RoomId == roomId).OrderByDescending(y => y.CreateDate).ToList();
+            if (chatlines.Count < ((page + 1) * items_per_page))
+            {
+                //Nera tiek irasu...
+                if (chatlines.Count < page * items_per_page)
+                {
+                    return new List<ChatLine>();
+                }
+                else
+                {
+                    return chatlines.GetRange(page * items_per_page, chatlines.Count - page * items_per_page);
+                }
+                
+            }
+            else
+            {
+                //Irasu pakanka.
+                return chatlines.GetRange(page * items_per_page, items_per_page);
+            }
+            
         }
     }
 }
