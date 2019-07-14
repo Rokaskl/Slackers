@@ -34,7 +34,7 @@ namespace WpfApp1
 
         private TcpClient client;
 
-        public TcpDock(int port = 6969)
+        public TcpDock(int port = 10103)
         {
             client = new TcpClient("localhost", port);
             MessageChanged += HandleChange;

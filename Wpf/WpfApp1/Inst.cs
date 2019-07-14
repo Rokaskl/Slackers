@@ -59,7 +59,8 @@ namespace WpfApp1
         public Utils()
         {
             this.client = new HttpClient();
-            this.url = new Uri("http://localhost:4000");
+            //this.url = new Uri("http://localhost:4000");
+            this.url = new Uri("http://192.168.0.142:10102");
             client.BaseAddress = this.url;
             roomPage = null;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

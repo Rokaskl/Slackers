@@ -624,7 +624,24 @@ namespace WpfApp1.Pages
         {
             ChatLine line = new ChatLine() { Id = null, CreateDate = DateTime.Now, Username = username, CreatorId = CreatorId, RoomId = this.room.roomId, Text = text };
             this.chatbox.Add(new ChatLineViewModel(line));
-            HandleChatControlView(CreatorId == int.Parse(Inst.ApiRequests.User.id));
+            if (this.ChatControl.ScrollViewer != null)
+            {
+                HandleChatControlView(CreatorId == int.Parse(Inst.ApiRequests.User.id));
+            }
+            else
+            {
+                GetScrollViewer();
+            }
+        }
+
+        private void GetScrollViewer()
+        {
+            this.ChatControl.ScrollViewer = this.ChatControl.GetChildOfType<ScrollViewer>();
+            if (this.ChatControl.ScrollViewer != null)
+            {
+                this.ChatControl.ScrollViewer.ScrollToEnd();
+                this.ChatControl.ScrollViewer.ScrollChanged += RoomPage_ScrollChangedAsync;
+            }  
         }
 
         /// <summary>
@@ -864,28 +881,13 @@ namespace WpfApp1.Pages
                 //var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
                 List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, 0, items_per_page);
                 if (data!=null)
-                {
-                    //List<ChatLine> data = response.Content.ReadAsAsync<List<ChatLine>>().Result;
-                    //chatbox.Items.Clear(); - Kadangi FillChat() metodas naudojamas tik pacioje pradzioje, Itemu dar nebus ir nereikes ju valyti.
-                    
+                { 
                     foreach (ChatLine line in data.OrderBy(x => x.CreateDate))
                     {
-                        chatbox.ChatLines.Add(new ChatLineViewModel(line/*, local : line.CreatorId == int.Parse(Inst.ApiRequests.User.id)*/));
+                        chatbox.ChatLines.Add(new ChatLineViewModel(line));
                     }
-                    
-                    //Changed = true;
-                    //chatbox.ScrollIntoView(data.OrderBy(x => x.CreateDate).LastOrDefault());
-                    //chatbox.UpdateLayout();
-                    //FormatListViewItems();
-                    //this.ChatControl.scro
-                    //ScrollViewer sw = this.ChatControl.GetType().GetRuntimeProperties().First(p => p.Name == "ScrollHost").GetValue(this.ChatControl) as System.Windows.Controls.ScrollViewer;
-                    //var collection = this.ChatControl.GetType().GetRuntimeProperties().First(p => p.Name == "VisualOffset");
-                    this.ChatControl.ScrollViewer = this.ChatControl.GetChildOfType<ScrollViewer>();
-                    //this.ChatControl.ScrollViewer.RequestBringIntoView += ChatControl_RequestBringIntoView;
-                    this.ChatControl.ScrollViewer.ScrollToEnd();
-                    this.ChatControl.ScrollViewer.ScrollChanged += RoomPage_ScrollChangedAsync;
-                    //sw.ScrollToEnd();
-                    //(collection as Vector).
+
+                    GetScrollViewer();
                 }
                 else
                 {
@@ -895,9 +897,6 @@ namespace WpfApp1.Pages
                 current_page = 0;
 
                 this.ChatControl.DataContext = chatbox;
-
-                //ScrollViewer sw = chatbox.GetType().GetRuntimeProperties().First(p => p.Name == "ScrollHost").GetValue(chatbox) as System.Windows.Controls.ScrollViewer;
-                //sw.ScrollChanged += RoomPage_ScrollChanged;
             }
             catch (Exception ex)
             {
@@ -927,10 +926,6 @@ namespace WpfApp1.Pages
         {
             if (e.VerticalOffset == 0)
             {
-                //this.ChatControl.ScrollViewer.ScrollChanged -= RoomPage_ScrollChangedAsync;
-                
-                //this.ChatControl.ScrollViewer.ScrollChanged += RoomPage_ScrollChangedAsync;
-                //Task.Delay(200);
                 if (e.ExtentHeightChange > 0)
                 {
                     this.ChatControl.ScrollViewer.ScrollToVerticalOffset(e.ExtentHeightChange + e.ExtentHeightChange > 0 ? e.ViewportHeight + e.ExtentHeightChange - e.ViewportHeight : 0);
@@ -955,14 +950,7 @@ namespace WpfApp1.Pages
             List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, current_page + 1, items_per_page);
             if (data != null)
             {
-                
-                //ChatLineViewModel first = chatbox.ChatLines.First();
                 data.ForEach(x => chatbox.ChatLines.Insert(0, new ChatLineViewModel(x)));
-               
-                //Changed = true;
-                //chatbox.ScrollIntoView(data.FirstOrDefault());
-                //chatbox.UpdateLayout();
-                //this.ChatControl.ScrollViewer.scroll
                 current_page++;
             }
             finished_loading_chat_page = true;
