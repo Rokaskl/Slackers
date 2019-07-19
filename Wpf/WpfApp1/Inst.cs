@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using WpfApp1.Forms;
 using WpfApp1.Pages;
 
@@ -20,10 +22,10 @@ namespace WpfApp1
         public static Utils Utils;
         public static ApiRequests ApiRequests;
 
-        public static void CreateInstance()
+        public static void CreateInstance(KeyValuePair<string,int> ip_port)
         {
-            Utils = new Utils();
-            ApiRequests = new ApiRequests();
+            Utils = new Utils(ip_port);
+            ApiRequests = new ApiRequests(ip_port);
         }
 
         public static T GetChildOfType<T>(this DependencyObject depObj)
@@ -40,6 +42,40 @@ namespace WpfApp1
             }
             return null;
         }
+
+        public static BitmapImage PhotoBytes_to_Image(byte[] PhotoBytes)
+        {
+            try
+            {
+                BitmapImage image = new BitmapImage();
+                using (var memstr = new MemoryStream(PhotoBytes))
+                {
+
+                    image.BeginInit();
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.StreamSource = memstr;
+                    image.EndInit();
+                }
+                return image;
+            }
+            catch (Exception exception) { }
+            return null;
+        }
+
+        public static KeyValuePair<string, int> Ip_selection_debugmode()
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                IpSelectionForm form = new IpSelectionForm();
+                form.ShowDialog();
+                string[] ip_port = form.txt_ip.Text.Split(new char[] { ':' });
+                return new KeyValuePair<string, int>(ip_port[0], int.Parse(ip_port[1]));
+            }
+            else
+            {
+                return new KeyValuePair<string, int>( "192.168.0.129", 10102);
+            }
+        }
     }
 
     public class Utils
@@ -55,12 +91,16 @@ namespace WpfApp1
         private Page adminPage;
         private TcpDock tcp_client;
         private Room room;
+        private string ip;
+        private int port;
 
-        public Utils()
+        public Utils(KeyValuePair<string, int> ip_port)
         {
             this.client = new HttpClient();
             //this.url = new Uri("http://localhost:4000");
-            this.url = new Uri("http://192.168.0.142:10102");
+            this.ip = ip_port.Key;
+            this.port = ip_port.Value;
+            this.url = new Uri($"http://{ip_port.Key}:{ip_port.Value}");
             client.BaseAddress = this.url;
             roomPage = null;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -136,6 +176,18 @@ namespace WpfApp1
         {
             get => room;
             set => room = value;
+        }
+
+        public string Ip
+        {
+            get => ip;
+            set => ip = value;
+        }
+
+        public int Port
+        {
+            get => port;
+            set => port = value;
         }
 
         //private async void Ping()
@@ -228,6 +280,7 @@ namespace WpfApp1
         public DateTime CreateDate { get; set; }
         public string Text { get; set; }
         public string Username { get; set; }
+        public BitmapImage Image { get; set; }
 
         public override string ToString()
         {

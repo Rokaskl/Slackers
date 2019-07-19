@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:WpfApp1.Controls.Chat"
              xmlns:local1="clr-namespace:WpfApp1.Controls.Chat.DesignTimeStaticClasses"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="500">
+             d:DesignHeight="450" d:DesignWidth="500"
+             BorderBrush="Black" BorderThickness="1">
     <Grid Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <!--<Grid.Background>
             <ImageBrush ImageSource="C:\Users\Justas\Desktop\bluebackground.png" Stretch="UniformToFill"/>

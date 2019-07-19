@@ -30,14 +30,17 @@ namespace WpfApp1
     public partial class MainWindow : Window
     {
         //private HttpClient client;
+        private KeyValuePair<string, int> ip_port;
 
         public MainWindow()
         {
+            ip_port = Inst.Ip_selection_debugmode();
+
             InitializeComponent();
             
             this.MinHeight = 400;
             this.MinWidth = 800;
-            Inst.CreateInstance();
+            Inst.CreateInstance(ip_port);
             Inst.Utils.MainWindow = this;
             //client = Inst.Utils.HttpClient;
             LoginForm loginForm = new LoginForm();            
@@ -72,7 +75,7 @@ namespace WpfApp1
             Task<bool> x = Logout();
             Inst.Utils.StopTcpServer();
             this.Hide();
-            Inst.CreateInstance();
+            Inst.CreateInstance(ip_port);
             Inst.Utils.MainWindow = this;
             this.Closing -=Window_Closing;
             //client = Inst.Utils.HttpClient;

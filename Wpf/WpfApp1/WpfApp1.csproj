@@ -106,9 +106,13 @@
     </Compile>
     <Compile Include="Controls\Chat\DesignTimeStaticClasses\DesignTimeChatLineStatic.cs" />
     <Compile Include="Controls\Chat\DesignTimeStaticClasses\DesignTimeChatStatic.cs" />
+    <Compile Include="Converters\ChatLineWidthConverter.cs" />
     <Compile Include="Entities\AdditionalData.cs" />
     <Compile Include="Forms\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\IpSelectionForm.xaml.cs">
+      <DependentUpon>IpSelectionForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\PassChangingForm.xaml.cs">
       <DependentUpon>PassChangingForm.xaml</DependentUpon>
@@ -148,6 +152,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Chat\ChatLineControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\IpSelectionForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

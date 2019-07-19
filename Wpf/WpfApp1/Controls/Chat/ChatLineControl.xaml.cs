@@ -11,10 +11,5 @@ namespace WpfApp1.Controls.Chat
         {
             InitializeComponent();
         }
-
-        private void Grid_RequestBringIntoView(object sender, System.Windows.RequestBringIntoViewEventArgs e)
-        {
-
-        }
     }
 }

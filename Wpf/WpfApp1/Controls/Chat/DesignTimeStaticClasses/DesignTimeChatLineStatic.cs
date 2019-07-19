@@ -18,8 +18,8 @@ namespace WpfApp1.Controls.Chat.DesignTimeStaticClasses
         public DesignTimeChatLineStatic()
         {
             this.NickName = "tim";
-            this.Text = "hello world!";
-            this.Brush = Brushes.LightGray;
+            this.Text = "hello world! blah blah blah blah";
+            this.Brush = Brushes.White;
             this.CreateDate = DateTime.Now.ToString("hh:mm:ss yyyy-MM-dd");
         }
 

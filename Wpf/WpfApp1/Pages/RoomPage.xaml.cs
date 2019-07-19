@@ -41,7 +41,8 @@ namespace WpfApp1.Pages
         private bool breakDaRules = false;
         private int items_per_page = 10;
         private ChatViewModel chatbox = new ChatViewModel();
-        
+        private Dictionary<int, BitmapImage> User_images;
+
 
         public RoomPage(){}
         public RoomPage(RoomDto room,string prev)
@@ -51,6 +52,8 @@ namespace WpfApp1.Pages
             timer = new Timer();
             this.room = room;
             Inst.Utils.Room = new Room(room.roomId, room.roomName);
+
+            this.User_images = new Dictionary<int, BitmapImage>(){ { int.Parse(Inst.ApiRequests.User.id), Inst.PhotoBytes_to_Image(Inst.ApiRequests.AdditionalData.PhotoBytes) } };
             //client = Inst.Utils.HttpClient;
 
             //chatbox = new ChatViewModel();
@@ -607,6 +610,24 @@ namespace WpfApp1.Pages
             FillNotes();
         }
 
+        private async Task<BitmapImage> FindImageOf(int id)
+        {
+            if (User_images.Keys.Contains(id))
+            {
+                return User_images[id];
+            }
+            else
+            {
+                //Task.Delay(20);
+                AdditionalData addata = await Inst.ApiRequests.GetUserAddData(id);
+                byte[] result = addata.PhotoBytes;
+                //BitmapImage image = Inst.PhotoBytes_to_Image(Inst.ApiRequests.GetUserAddData(id).Result?.PhotoBytes);//Problem
+                BitmapImage image = Inst.PhotoBytes_to_Image(result);
+                User_images.Add(id, image);
+                return image;
+            }
+        }
+
         public void UpdateUsersListView()
         {
             this.Dispatcher.Invoke(ListUsers);
@@ -620,9 +641,9 @@ namespace WpfApp1.Pages
             //FillChat();
         }
 
-        private void AppendChatLine(string text, string username, int CreatorId = -1)
+        private async void AppendChatLine(string text, string username, int CreatorId = -1)
         {
-            ChatLine line = new ChatLine() { Id = null, CreateDate = DateTime.Now, Username = username, CreatorId = CreatorId, RoomId = this.room.roomId, Text = text };
+            ChatLine line = new ChatLine() { Id = null, CreateDate = DateTime.Now, Username = username, CreatorId = CreatorId, RoomId = this.room.roomId, Text = text, Image = await FindImageOf(CreatorId)};
             this.chatbox.Add(new ChatLineViewModel(line));
             if (this.ChatControl.ScrollViewer != null)
             {
@@ -884,9 +905,11 @@ namespace WpfApp1.Pages
                 { 
                     foreach (ChatLine line in data.OrderBy(x => x.CreateDate))
                     {
+                        line.Image = await FindImageOf(line.CreatorId);
                         chatbox.ChatLines.Add(new ChatLineViewModel(line));
                     }
-
+                    await Task.Delay(1);
+                    this.ChatControl.UpdateLayout();
                     GetScrollViewer();
                 }
                 else
@@ -950,7 +973,12 @@ namespace WpfApp1.Pages
             List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, current_page + 1, items_per_page);
             if (data != null)
             {
-                data.ForEach(x => chatbox.ChatLines.Insert(0, new ChatLineViewModel(x)));
+                data.ForEach(async x =>
+                        {
+                            x.Image = await FindImageOf(x.CreatorId);
+                            chatbox.ChatLines.Insert(0, new ChatLineViewModel(x));
+                        }
+                            );
                 current_page++;
             }
             finished_loading_chat_page = true;
@@ -1030,10 +1058,14 @@ namespace WpfApp1.Pages
                         ImageBrush imgBrush = new ImageBrush();
                         imgBrush.ImageSource = image;
                         temp.Add("photo",imgBrush);
+                    if (!User_images.Keys.Contains(int.Parse(id)))//Should replace existing if found...
+                    {
+                        User_images.Add(int.Parse(id), image);
+                    }
             }
             else
             {
-                temp.Add("photo",Brushes.LightGray);
+                temp.Add("photo", Brushes.LightGray);
             }
             Brush status;          
              switch (statusChar)

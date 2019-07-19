@@ -18,11 +18,11 @@ namespace WpfApp1
         private User user;
         private AdditionalData additionalData;
 
-        public ApiRequests()
+        public ApiRequests(KeyValuePair<string, int> ip_port)
         {
             this.client = new HttpClient();
             //this.url = new Uri("http://localhost:4000");
-            this.url = new Uri("http://192.168.0.142:10102");
+            this.url = new Uri($"http://{ip_port.Key}:{ip_port.Value}");
             this.client.BaseAddress = url;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }

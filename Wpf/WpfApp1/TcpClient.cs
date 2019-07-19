@@ -36,7 +36,7 @@ namespace WpfApp1
 
         public TcpDock(int port = 10103)
         {
-            client = new TcpClient("localhost", port);
+            client = new TcpClient(Inst.Utils.Ip, port);
             MessageChanged += HandleChange;
             ConnectToServer();
         }
