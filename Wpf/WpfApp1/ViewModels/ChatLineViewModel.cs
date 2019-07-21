@@ -12,6 +12,7 @@ namespace WpfApp1.ViewModels
         public string CreateDate { get; set; }
         public string Time { get; set; }
         public object Photo { get; set; }
+        public int CreatorId { get; set; }
 
 
         public ChatLineViewModel(string NickName, string Text, SolidColorBrush Brush, DateTime CreateDate, BitmapImage Image)
@@ -31,12 +32,15 @@ namespace WpfApp1.ViewModels
             {
                 (this.Photo as ImageBrush).ImageSource = Image;
             }
+
+            this.CreatorId = -1;
         }
 
         public ChatLineViewModel(ChatLine chatline, bool local = false)
         {
             this.NickName = chatline.Username;
             this.Text = chatline.Text;
+            this.CreatorId = chatline.CreatorId;
             if (chatline.CreatorId == int.Parse(Inst.ApiRequests.User.id) || local)
             {
                 this.Brush = Brushes.White;
@@ -49,13 +53,13 @@ namespace WpfApp1.ViewModels
             this.Time = chatline.CreateDate.ToString("hh:mm");
             this.Photo = new ImageBrush();
 
-            if (chatline.Image == null)
+            if (chatline.Profile_image == null)
             {
                 this.Photo = Brushes.LightGray;
             }
             else
             {
-                (this.Photo as ImageBrush).ImageSource = chatline.Image;
+                (this.Photo as ImageBrush).ImageSource = chatline.Profile_image;
             }
         }
 

@@ -42,6 +42,10 @@ namespace WpfApp1.Pages
         private int items_per_page = 10;
         private ChatViewModel chatbox = new ChatViewModel();
         private Dictionary<int, BitmapImage> User_images;
+        /// <summary>
+        /// This flag indicates that all the existing chatlines are loaded or scrollviewer is obtained. Default = false; when done = true;
+        /// </summary>
+        private bool chat_flag;
 
 
         public RoomPage(){}
@@ -618,7 +622,6 @@ namespace WpfApp1.Pages
             }
             else
             {
-                //Task.Delay(20);
                 AdditionalData addata = await Inst.ApiRequests.GetUserAddData(id);
                 byte[] result = addata.PhotoBytes;
                 //BitmapImage image = Inst.PhotoBytes_to_Image(Inst.ApiRequests.GetUserAddData(id).Result?.PhotoBytes);//Problem
@@ -637,17 +640,76 @@ namespace WpfApp1.Pages
 
         public void UpdateGroupChat(string text, string username, string creator_id)
         {
-            AppendChatLine(text, username, CreatorId : int.Parse(creator_id));
+            AppendChatLine(text, username, DateTime.Now, pCreatorId : int.Parse(creator_id));
             //FillChat();
         }
 
-        private async void AppendChatLine(string text, string username, int CreatorId = -1)
+        private void AppendChatLine(string text, string username, DateTime CreateDate, BitmapImage pImage = null, int pCreatorId = -1, bool Insert = false)
         {
-            ChatLine line = new ChatLine() { Id = null, CreateDate = DateTime.Now, Username = username, CreatorId = CreatorId, RoomId = this.room.roomId, Text = text, Image = await FindImageOf(CreatorId)};
-            this.chatbox.Add(new ChatLineViewModel(line));
+            if (this.chatbox.ChatLines.Count > 0)
+            {
+                ChatLineViewModel chatline_vm;
+                if (Insert)
+                {
+                    chatline_vm = this.chatbox.ChatLines.First();
+                }
+                else
+                {
+                    chatline_vm = this.chatbox.ChatLines.Last();
+                }
+                 
+                DateTime last_chatline_createtime = DateTime.Parse(chatline_vm.CreateDate);
+                DateTime added_chatline_createtime = CreateDate;
+                if (chatline_vm.CreatorId == pCreatorId && last_chatline_createtime.Date == added_chatline_createtime.Date && last_chatline_createtime.Hour + 12/*Laikinai, reikia sutvarkyti*/ == added_chatline_createtime.Hour && last_chatline_createtime.Minute == added_chatline_createtime.Minute)
+                {
+                    this.chatbox.ChatLines.Remove(chatline_vm);
+                    
+                    if (Insert)
+                    {
+                        this.chatbox.ChatLines.Insert(0, chatline_vm);
+                        chatline_vm.Text = text + Environment.NewLine + chatline_vm.Text;
+                    }
+                    else
+                    {
+                        chatline_vm.Text += Environment.NewLine + text;
+                        this.chatbox.ChatLines.Add(chatline_vm);
+                    }
+                }
+                else
+                {
+                    AddChatLine();
+                }
+            }
+            else
+            {
+                AddChatLine();
+            }
+
+            async void AddChatLine()
+            {
+                ChatLine line = new ChatLine() { Id = null, CreateDate = CreateDate, Username = username, CreatorId = pCreatorId, RoomId = this.room.roomId, Text = text};
+                if (pImage == null)
+                {
+                    line.Profile_image = await FindImageOf(pCreatorId);
+                }
+                else
+                {
+                    line.Profile_image = pImage;
+                }
+
+                if (Insert)
+                {
+                    this.chatbox.ChatLines.Insert(0, new ChatLineViewModel(line));
+                }
+                else
+                {
+                    this.chatbox.Add(new ChatLineViewModel(line));
+                }
+            }
+
             if (this.ChatControl.ScrollViewer != null)
             {
-                HandleChatControlView(CreatorId == int.Parse(Inst.ApiRequests.User.id));
+                HandleChatControlView(pCreatorId == int.Parse(Inst.ApiRequests.User.id));
             }
             else
             {
@@ -662,7 +724,17 @@ namespace WpfApp1.Pages
             {
                 this.ChatControl.ScrollViewer.ScrollToEnd();
                 this.ChatControl.ScrollViewer.ScrollChanged += RoomPage_ScrollChangedAsync;
-            }  
+
+            }
+
+            if (!chat_flag && this.ChatControl.ScrollViewer.ScrollableHeight == 0)
+            {
+                LoadPage();
+                if (this.ChatControl.ScrollViewer.ScrollableHeight > 0)
+                {
+                    chat_flag = true;
+                }
+            }
         }
 
         /// <summary>
@@ -902,11 +974,16 @@ namespace WpfApp1.Pages
                 //var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
                 List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, 0, items_per_page);
                 if (data!=null)
-                { 
+                {
+                    data.ForEach(async x => 
+                    {
+                        x.Profile_image = await FindImageOf(x.CreatorId);
+                    });
                     foreach (ChatLine line in data.OrderBy(x => x.CreateDate))
                     {
-                        line.Image = await FindImageOf(line.CreatorId);
-                        chatbox.ChatLines.Add(new ChatLineViewModel(line));
+                        //line.Image = await FindImageOf(line.CreatorId);
+                        AppendChatLine(line.Text, line.Username, line.CreateDate, pImage: line.Profile_image, pCreatorId : line.CreatorId);
+                        //chatbox.ChatLines.Add(new ChatLineViewModel(line));
                     }
                     await Task.Delay(1);
                     this.ChatControl.UpdateLayout();
@@ -973,13 +1050,23 @@ namespace WpfApp1.Pages
             List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, current_page + 1, items_per_page);
             if (data != null)
             {
+                //data.ForEach(async x =>
+                //        {
+                //            x.Image = await FindImageOf(x.CreatorId);
+                //            chatbox.ChatLines.Insert(0, new ChatLineViewModel(x));
+                //        }
+                //            );
                 data.ForEach(async x =>
-                        {
-                            x.Image = await FindImageOf(x.CreatorId);
-                            chatbox.ChatLines.Insert(0, new ChatLineViewModel(x));
-                        }
-                            );
+                {
+                    x.Profile_image = await FindImageOf(x.CreatorId);
+                });
+                data.ForEach(x => AppendChatLine(x.Text, x.Username, x.CreateDate, pImage : x.Profile_image, pCreatorId : x.CreatorId, Insert: true));
                 current_page++;
+            }
+            else
+            {
+                //All chatline were loaded.
+                chat_flag = true;
             }
             finished_loading_chat_page = true;
         }
@@ -995,7 +1082,7 @@ namespace WpfApp1.Pages
             {
                 return;
             }
-            AppendChatLine(txt_entry.Text, Inst.ApiRequests.User.username, int.Parse(Inst.ApiRequests.User.id));
+            AppendChatLine(txt_entry.Text, Inst.ApiRequests.User.username, DateTime.Now, pCreatorId : int.Parse(Inst.ApiRequests.User.id));
             SubmitEntry();
         }
 

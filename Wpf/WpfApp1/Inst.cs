@@ -64,7 +64,7 @@ namespace WpfApp1
 
         public static KeyValuePair<string, int> Ip_selection_debugmode()
         {
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (true || System.Diagnostics.Debugger.IsAttached)
             {
                 IpSelectionForm form = new IpSelectionForm();
                 form.ShowDialog();
@@ -280,7 +280,7 @@ namespace WpfApp1
         public DateTime CreateDate { get; set; }
         public string Text { get; set; }
         public string Username { get; set; }
-        public BitmapImage Image { get; set; }
+        public BitmapImage Profile_image { get; set; }
 
         public override string ToString()
         {
