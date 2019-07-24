@@ -20,8 +20,8 @@ namespace WpfApp1.ViewModels
             this.NickName = NickName;
             this.Text = Text;
             this.Brush = Brush;
-            this.CreateDate = CreateDate.ToString("hh:mm:ss yyyy-MM-dd");
-            this.Time = CreateDate.ToString("hh:mm");
+            this.CreateDate = CreateDate.ToString("HH:mm:ss yyyy-MM-dd");
+            this.Time = CreateDate.ToString("HH:mm");
             this.Photo = new ImageBrush();
 
             if (Image == null)
@@ -49,8 +49,8 @@ namespace WpfApp1.ViewModels
             {
                 this.Brush = Brushes.AliceBlue;
             }
-            this.CreateDate = chatline.CreateDate.ToString("hh:mm:ss yyyy-MM-dd");
-            this.Time = chatline.CreateDate.ToString("hh:mm");
+            this.CreateDate = chatline.CreateDate.ToString("HH:mm:ss yyyy-MM-dd");
+            this.Time = chatline.CreateDate.ToString("HH:mm");
             this.Photo = new ImageBrush();
 
             if (chatline.Profile_image == null)
