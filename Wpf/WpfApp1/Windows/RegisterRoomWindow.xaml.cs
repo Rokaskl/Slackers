@@ -18,19 +18,19 @@ using WebApi.Dtos;
 using WebApi.Entities;
 using WpfApp1.Forms;
 
-namespace WpfApp1
+namespace WpfApp1.Windows
 {
     /// <summary>
-    /// Interaction logic for RegisterRoomForm.xaml
+    /// Interaction logic for RegisterRoomWindow.xaml
     /// </summary>
-    public partial class RegisterRoomForm : Window
+    public partial class RegisterRoomWindow : Window
     {
         private int userId = -1;
         private byte[] photo = null;
         private int rooomId = -1;
         private Admin adminPage;
 
-        public RegisterRoomForm(int userId, Admin adminPage)
+        public RegisterRoomWindow(int userId, Admin adminPage)
         {
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.userId = userId;
@@ -39,7 +39,7 @@ namespace WpfApp1
             this.adminPage = adminPage;
         }
 
-        public RegisterRoomForm(RoomDto room, Admin adminPage)
+        public RegisterRoomWindow(RoomDto room, Admin adminPage)
         {
             this.adminPage = adminPage;
             this.userId = 0;

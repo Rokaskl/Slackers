@@ -20,14 +20,14 @@ using System.Diagnostics;
 using WpfApp1.TimerControl;
 using System.Reflection;
 
-namespace WpfApp1.Forms
+namespace WpfApp1.Windows
 {
     /// <summary>
-    /// Interaction logic for PassChangingForm.xaml
+    /// Interaction logic for PassChangingWindow.xaml
     /// </summary>
-    public partial class PassChangingForm : Window
+    public partial class PassChangingWindow : Window
     {
-        public PassChangingForm()
+        public PassChangingWindow()
         {
             InitializeComponent();
             newPassword.Focus();

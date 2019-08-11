@@ -122,11 +122,9 @@
     </Compile>
     <Compile Include="Windows\PassChangingWindow.xaml.cs">
       <DependentUpon>PassChangingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IpSelectionForm.xaml.cs">
       <DependentUpon>IpSelectionForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\PassChangingForm.xaml.cs">
-      <DependentUpon>PassChangingForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\UserPage.xaml.cs">
       <DependentUpon>UserPage.xaml</DependentUpon>
@@ -169,6 +167,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Compile Include="ViewModels\ChatLineViewModel.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
     <Page Include="Controls\Chat\ChatControl.xaml">
@@ -180,10 +181,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Forms\IpSelectionForm.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Forms\LoginForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -255,9 +252,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="FodyWeavers.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

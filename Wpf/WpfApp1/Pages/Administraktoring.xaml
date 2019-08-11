@@ -61,7 +61,6 @@
                     <DVS:BarSeries Title="Spent minutes" Background="Red" Foreground="Red" AnimationSequence="Simultaneous" 
                                IndependentValueBinding="{Binding Path=Key}"
                                DependentValueBinding="{Binding Path=Value}" >
-
                     </DVS:BarSeries>
                 </DVS:Chart.Series>
             </DVS:Chart>
@@ -95,7 +94,7 @@
                     <GridViewColumn>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <ddd:ButtonCornering ButtonText="Kick" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [user]}" Click="kickFromRoom_Click"></ddd:ButtonCornering>
+                                <ddd:ButtonCornering ButtonText="Kick" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [user]}" Click="kickFromRoom_Click" FirstColor="{StaticResource Bad}" SecondColor="{StaticResource BadSecond}"></ddd:ButtonCornering>
                                 <!--<Button Content="Kick" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [user]}" Click="kickFromRoom_Click"/>-->
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

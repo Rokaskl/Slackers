@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using WebApi.Dtos;
 using WebApi.Entities;
 using WpfApp1.Forms;
+using WpfApp1.Windows;
 
 namespace WpfApp1.Pages
 {
@@ -50,7 +51,7 @@ namespace WpfApp1.Pages
 
         private void BtnChangePass_Click(object sender, RoutedEventArgs e)
         {
-            PassChangingForm passform = new PassChangingForm();
+            PassChangingWindow passform = new PassChangingWindow();
             passform.Show();
         }
 

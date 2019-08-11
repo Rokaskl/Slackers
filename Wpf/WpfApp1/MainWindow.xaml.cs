@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Windows;
-using WpfApp1.Forms;
 using WpfApp1.Pages;
 using System.Diagnostics;
 using WpfApp1.Windows;
+using System.Collections.Generic;
+using WpfApp1.Forms;
 
 namespace WpfApp1
 {
@@ -28,7 +29,7 @@ namespace WpfApp1
             Inst.CreateInstance(ip_port);
             Inst.Utils.MainWindow = this;
             //client = Inst.Utils.HttpClient;
-            LoginForm loginForm = new LoginForm();            
+            LoginWindow loginForm = new LoginWindow();            
             loginForm.Closing -= Window_Closing;
             if (!(loginForm.ShowDialog() ?? false))
             {
@@ -63,7 +64,7 @@ namespace WpfApp1
             Inst.Utils.MainWindow = this;
             this.Closing -=Window_Closing;
             //client = Inst.Utils.HttpClient;
-            LoginForm loginForm = new LoginForm();
+            LoginWindow loginForm = new LoginWindow();
             if (!(loginForm.ShowDialog() ?? false))
             {
                 this.Close();

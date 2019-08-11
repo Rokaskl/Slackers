@@ -9,16 +9,16 @@ using System.Windows.Navigation;
 using System.IO;
 using WpfApp1.Controls;
 
-namespace WpfApp1.Forms
+namespace WpfApp1.Windows
 {
     /// <summary>
-    /// Interaction logic for LoginForm.xaml
+    /// Interaction logic for LoginWindow.xaml
     /// </summary>
-    public partial class LoginForm : Window
+    public partial class LoginWindow : Window
     {
         private bool isRegisterWindowOpend = false;
 
-        public LoginForm()
+        public LoginWindow()
         {           
             InitializeComponent();
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
