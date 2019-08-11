@@ -4,14 +4,14 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:DVS="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
-      xmlns:local="clr-namespace:WpfApp1.Pages"
+      xmlns:ddd="clr-namespace:WpfApp1.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Administraktoring">
-    <Grid>
+    <Grid Margin="10 10 10 10">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*" />
             
         </Grid.ColumnDefinitions>
@@ -20,22 +20,33 @@
             <RowDefinition Height="*" />
             <!--<RowDefinition Height="*" />-->
         </Grid.RowDefinitions>
-        <Grid Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Width="Auto">
+        
+        <Grid Grid.Column="0" Grid.Row="0" >
+            
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" MinWidth="50"/>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*" MinWidth="0" MaxWidth="154"/>
-                <ColumnDefinition Width="*" MinWidth="75"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Ellipse x:Name="elipsePhoto" Width="50" Height="50" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0"></Ellipse>
+
+            <Ellipse x:Name="elipsePhoto" Grid.Column="0" Width="50" Height="50" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <!--<Image x:Name="roomPhoto"></Image>-->
-            <Label x:Name="Name" Foreground="Black"  Content="" Margin="5,0,10,0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0"/>
-            <Button x:Name="Back" Content="Back" Click="Back_Click" Width="40" Margin="2,2,2,2" HorizontalAlignment="Left" Grid.Column="2" Grid.Row="0"></Button>
-            <Button x:Name="Copyguid" Content="Copy guid to clipboard" Margin="2,2,2,2" Click="Copy_guid_Click" MinWidth="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3" Grid.Row="0"></Button>
-            <Button x:Name="btn_guidChange" Content="Change guid" Width="75" MinWidth="75" Click="Btn_guidChange_Click" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="2,2,2,2" Grid.Column="4" Grid.Row="0"/>
+            <Label x:Name="Name" Grid.Column="1" Foreground="Black"  Content="" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+
+            <ddd:ButtonCornering Grid.Column="2" Margin="1" ButtonText="Back" Click="Back_Click" VerticalAlignment="Center"/>
+            <!--<Button x:Name="Back" Content="Back" Click="Back_Click" Width="40" Margin="2,2,2,2" HorizontalAlignment="Left" Grid.Column="2" Grid.Row="0"></Button>-->
+            <ddd:ButtonCornering Grid.Column="3" Margin="1" ButtonText="Copy guid to clipboard" Click="Copy_guid_Click" VerticalAlignment="Center" />
+            <!--<Button x:Name="Copyguid" Content="Copy guid to clipboard" Margin="2,2,2,2" Click="Copy_guid_Click" MinWidth="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3" Grid.Row="0"></Button>-->
+            <ddd:ButtonCornering Grid.Column="4" ButtonText="Change guid" Click="Btn_guidChange_Click" VerticalAlignment="Center"/>
+            
+            <!--<Button x:Name="btn_guidChange" Content="Change guid" Width="75" MinWidth="75" Click="Btn_guidChange_Click" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="2,2,2,2" Grid.Column="4" Grid.Row="0"/>-->
         </Grid>
-        <Button x:Name="btnLogin" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click" Style="{DynamicResource enable}"/>
+
+        <ddd:ButtonCornering Grid.Column="1" Grid.Row="0" ButtonText="Login" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right" Width="100" Click="Login_Click" IsEnabledButton="{Binding IsEnabled}"/>
+        <!--<Button x:Name="btnLogin" Grid.Column="1" Grid.Row="0" Content="Login" Margin="0" VerticalAlignment="Bottom"  Click="Login_Click" Style="{DynamicResource enable}"/>-->
+        
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -57,12 +68,54 @@
             <StackPanel Grid.Row="1" Orientation="Horizontal">
                 <DatePicker Name="fromDate" Margin="10"></DatePicker>
                 <DatePicker Name="toDate" Margin="10"></DatePicker>
-                <Button Name="getStats" Content="Get stats" Click="GetStats_Click" Width="80" Margin="10"></Button>
+                <ddd:ButtonCornering ButtonText="Get stats" Click="GetStats_Click"  Margin="10"></ddd:ButtonCornering>
+                <!--<Button Name="getStats" Content="Get stats" Click="GetStats_Click" Width="80" Margin="10"></Button>-->
             </StackPanel>
         </Grid>
-        <ListView x:Name="usersList" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            
+        <MediaElement x:Name="gif" Grid.Column="1" Grid.Row="1" MediaEnded="Gif_MediaEnded" UnloadedBehavior="Manual" LoadedBehavior="Play" Stretch="None" Source="pack://siteoforigin:,,,/Media/496.gif" Margin="10 10 10 10"/>
+        <ListView Grid.Row="1" Grid.Column="1" x:Name="usersListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735"   BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
+            <ListView.View>
+
+                <GridView >
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Fill="{Binding [photo]}" Width="30" Height="30" Stroke="Black" StrokeThickness="1"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn >
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding [username]}" VerticalAlignment="Center" FontSize="15" Width="auto" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn >
+
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ddd:ButtonCornering ButtonText="Kick" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [user]}" Click="kickFromRoom_Click"></ddd:ButtonCornering>
+                                <!--<Button Content="Kick" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [user]}" Click="kickFromRoom_Click"/>-->
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn >
+
+                    <!--<GridViewColumn >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Fill="{Binding [status]}" Width="10" Height="10" VerticalAlignment="Center" Margin="0,10"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>-->
+
+                </GridView>
+
+            </ListView.View>
         </ListView>
+        <!--<ListView x:Name="usersList" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            
+        </ListView>-->
         <!--<ListView x:Name="roomUsers" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0">
             <ListView.View>
                 <GridView>

@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="WpfApp1.Controls.ButtonCornering"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Background="Transparent"
+             x:Name="MainButtonCornering">
+    <UserControl.Resources>
+        <Style x:Key="disabled" TargetType="Button">
+            <Setter Property="IsEnabled" Value="False"/>
+        </Style>
+
+        <Style x:Key="enabled" TargetType="Button">
+            <Setter Property="IsEnabled" Value="true"/>
+        </Style>
+        
+    </UserControl.Resources>
+    
+        <Border x:Name="MainBorder" CornerRadius="5" MouseLeave="MainBorder_LostFocus" MouseEnter="MainBorder_GotFocus" BorderThickness="0">
+            <Button x:Name="MainButton" Content="Button" Background="Transparent" Foreground="White" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderThickness="0" Click="MainButton_Click" Width="auto" IsEnabledChanged="MainButton_IsEnabledChanged"></Button>
+        </Border>    
+</UserControl>

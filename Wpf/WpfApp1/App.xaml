@@ -1,8 +1,8 @@
 ﻿<Application x:Class="WpfApp1.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:WpfApp1"
              StartupUri="MainWindow.xaml">
+    
     <Application.Resources>
         <ResourceDictionary>            
             <ResourceDictionary.MergedDictionaries>
@@ -10,82 +10,24 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Indigo.xaml" />
-            </ResourceDictionary.MergedDictionaries>            
-            <Style x:Name="elipseFill" TargetType="Ellipse">
+            </ResourceDictionary.MergedDictionaries>  
+            
+            <!--#region Colors-->
+            <Brush x:Key="Main">#ffb236</Brush>
+            <Brush x:Key="MainSecond">#f7bf65</Brush>
+            <Brush x:Key="Edit">#7883D3</Brush>
+            <Brush x:Key="EditSecond">#939cd9</Brush>
+            <Brush x:Key="Bad">#fa7a50</Brush>
+            <Brush x:Key="BadSecond">#ed8968</Brush>
+            <!--#endregion-->
+            
+            <!--#region Elipse fill(photo)-->
+            <!--Generic for all empty elipses-->
+            <Style x:Name="GenericEmptyFill" TargetType="Ellipse">
                 <Setter Property="Fill" Value="LightGray"></Setter>
             </Style>
-            <Style x:Name="StyliukasButtons" TargetType="Button">
-                <Setter Property="Background" Value="#ffb236"></Setter>
-                <Setter Property="Foreground" Value="White"></Setter>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#ffb236">
-                                <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            <Style x:Key="edit" TargetType="Button">
-                <Setter Property="Background" Value="#7883D3"></Setter>
-            <Setter Property="Foreground" Value="White"></Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#7883D3">
-                            <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            </Style>
-            <Style x:Key="enable" TargetType="Button">
-                <Setter Property="IsEnabled" Value="True"></Setter>
-                <Setter Property="Background" Value="#ffb236"></Setter>
-                <Setter Property="Foreground" Value="White"></Setter>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#ffb236">
-                                <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsEnabled" Value="false">
-                        <Setter Property="Foreground" Value="Black"></Setter>
-                        <Setter Property="Background" Value="#fa7a50"></Setter>
-                        <Setter Property="BorderBrush" Value="#fa7a50"></Setter>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border CornerRadius="5" Background="#fa7a50">
-                                        <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
+            <!--#endregion-->
 
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-            <Style x:Key="bad" TargetType="Button">
-                <Setter Property="Background" Value="#fa7a50"></Setter>
-                <Setter Property="Margin" Value="2,2,2,2"></Setter>
-                <Setter Property="Foreground" Value="Black"></Setter>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#fa7a50">
-                                <ContentPresenter Margin="2,2,2,2" HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            
         </ResourceDictionary>        
          
     </Application.Resources>

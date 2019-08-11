@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
+        xmlns:ddd="clr-namespace:WpfApp1.Controls"
         Title="RegisterRoomForm" Height="400" Width="500" Background="White" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -13,23 +14,25 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="263" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Orientation="Horizontal">
             <Label Content="*Room name:" HorizontalAlignment="Left"></Label>
             <TextBox x:Name="RoomName" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="380"></TextBox>
         </StackPanel>
-        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 2 0 0">
             <Label Content="Room bio:" HorizontalAlignment="Left"></Label>
-            <RichTextBox x:Name="RoomBio" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="400"></RichTextBox>
+            <RichTextBox x:Name="RoomBio" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="400" Height="auto" Margin="2 2 2 2"></RichTextBox>
         </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 1 0 1">
             <Label Content="Picure:" VerticalAlignment="Center" HorizontalAlignment="Right" ></Label>
             <Label x:Name="file"></Label>
-            <Button x:Name="UploadPicture" Content="Picure" Click="UploadPicture_Click" VerticalAlignment="Center"></Button>
+            <!--<Button x:Name="UploadPicture" Content="Picure" Click="UploadPicture_Click" VerticalAlignment="Center"></Button>-->
+            <ddd:ButtonCornering ButtonText="Pick picture" Click="UploadPicture_Click"></ddd:ButtonCornering>
         </StackPanel>
-        <Button Grid.Row="3" x:Name="create" Content="Create room" Click="Create_Click"></Button>
+        <ddd:ButtonCornering Grid.Row="3" ButtonText="Create room" Click="Create_Click" HorizontalAlignment="Stretch" Margin="0 0 0 0"></ddd:ButtonCornering>
+        <!--<Button Grid.Row="3" x:Name="create" Content="Create room" Click="Create_Click"></Button>-->
     </Grid>
 </Window>

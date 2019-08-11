@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using WebApi.Dtos;
 using System.Diagnostics;
 using System.Windows.Navigation;
 using System.IO;
-using System.ComponentModel;
+using WpfApp1.Controls;
 
 namespace WpfApp1.Forms
 {
@@ -25,11 +16,12 @@ namespace WpfApp1.Forms
     /// </summary>
     public partial class LoginForm : Window
     {
-        //private HttpClient client = Inst.Utils.HttpClient;
+        private bool isRegisterWindowOpend = false;
 
         public LoginForm()
-        {
+        {           
             InitializeComponent();
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.KeyDown += LoginForm_KeyDown;
             Username.Focus();
             Username.GotFocus += txtGotFocus;
@@ -45,13 +37,18 @@ namespace WpfApp1.Forms
         {
             if (e.Key == Key.Enter)
             {
-                btnLogin.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Login();
                 e.Handled = true;
             }
-            if (e.Key == Key.F12)
+            if (e.Key == Key.F12&&!isRegisterWindowOpend)
             {
-                new RegisterUser().Show();
-                e.Handled = true;
+                isRegisterWindowOpend = true;
+                var registerWindow = new RegisterUser();
+                if (registerWindow.ShowDialog() == false)
+                {   
+                    isRegisterWindowOpend = false;
+                    e.Handled = true;
+                }                
             }
         }
 

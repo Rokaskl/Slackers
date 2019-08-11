@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
+        xmlns:ddd="clr-namespace:WpfApp1.Controls"
         mc:Ignorable="d"  ResizeMode="NoResize"
         Title="RegisterUser" Height="400" Width="400" >
     <Window.Resources>
@@ -37,8 +38,8 @@
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
             
         </Grid.RowDefinitions>
         
@@ -99,8 +100,11 @@
         <StackPanel Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Label Content="Profile picture:" VerticalAlignment="Center" HorizontalAlignment="Right" ></Label>
             <Label x:Name="file"></Label>
-            <Button x:Name="UploadPicture" Content="Picure" Click="UploadPicture_Click" VerticalAlignment="Center"></Button>
-        </StackPanel>        
-        <Button Grid.Row="7" x:Name="registerUser" Content="Register" Click="Register_Click"></Button>
+            <!--<Button x:Name="UploadPicture" Content="Picure" Click="UploadPicture_Click" VerticalAlignment="Center"></Button>-->
+            <ddd:ButtonCornering ButtonText="Picture" Click="UploadPicture_Click" Margin="0 2 0 2" Height="Auto"></ddd:ButtonCornering>
+        </StackPanel>    
+        
+        <!--<Button Grid.Row="7" x:Name="registerUser" Content="Register" Click="Register_Click"></Button>-->
+        <ddd:ButtonCornering Grid.Row="7" ButtonText="Register" Click="Register_Click" Margin="0 2 0 0"></ddd:ButtonCornering>
     </Grid>
 </Window>

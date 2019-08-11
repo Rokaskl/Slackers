@@ -1,44 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 //using Json.Net;
 using WebApi.Dtos;
-using Newtonsoft.Json;
-using WpfApp1.Forms;
-using System.Globalization;
 using WpfApp1.Pages;
-using Newtonsoft.Json.Linq;
 using WebApi.Entities;
+using WpfApp1.Windows;
+using WpfApp1.Controls;
+using System.Threading.Tasks;
 
 namespace WpfApp1.Forms
 {
     /// <summary>
-    
+
     /// </summary>
     public partial class Admin : Page
     {
         //private HttpClient client;
-        private RoomDto SelectedRoom;
+        //private RoomDto SelectedRoom;
 
         public Admin()
         {
             //client = Inst.Utils.HttpClient;
             InitializeComponent();
+            gif.Source = Inst.LoadingGifSource;
             Inst.Utils.AdminPage = this;
             ShowRooms();
             //adminRooms.SelectionMode = SelectionMode.Single;
@@ -48,11 +38,11 @@ namespace WpfApp1.Forms
             //adminRooms.Items.
         }
 
-        private void UserRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
-            //SelectedRoom = (e.AddedItems[0] as RoomDto);
-        }
+        //private void UserRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    //btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
+        //    //SelectedRoom = (e.AddedItems[0] as RoomDto);
+        //}
 
         private void AdminRooms_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -60,17 +50,19 @@ namespace WpfApp1.Forms
             if ((sender as ListView).SelectedItem != null)
             {
                 Clipboard.SetText(((sender as ListView).SelectedItem as RoomDto).guid);
-                MessageBox.Show(String.Format("Guid copied to clipboard",((sender as ListView).SelectedItem as RoomDto).guid));
+                var WarningWindow = new WarningWindow("Guid copied to clipboard");
+                WarningWindow.ShowDialog();
+                //MessageBox.Show(String.Format("Guid copied to clipboard",((sender as ListView).SelectedItem as RoomDto).guid));
             }
         }
 
-        private void AdminRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //MessageBox.Show((e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString());
-            //btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
-            SelectedRoom = (e.AddedItems[0] as RoomDto);
+        //private void AdminRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    //MessageBox.Show((e.AddedItems[0] as Dictionary<string, object>)["roomName"].ToString());
+        //    //btnLoginRoom.Content = "Login " + (e.AddedItems[0] as RoomDto).roomName;
+        //    SelectedRoom = (e.AddedItems[0] as RoomDto);
             
-        }
+        //}
 
         
         //private void BtnLoginRoom_Click(object sender, RoutedEventArgs e)
@@ -83,7 +75,8 @@ namespace WpfApp1.Forms
 
         private void BtnRegisterRoom_Click(object sender, RoutedEventArgs e)
         {
-            new RegisterRoomForm(Int32.Parse(Inst.ApiRequests.User.id), this).Show();
+            var registerWindow = new RegisterRoomForm(Int32.Parse(Inst.ApiRequests.User.id), this);
+            registerWindow.ShowDialog();
             //if (roomNameText.Text != "")
             //RegisterRoom(roomNameText.Text);
             //else
@@ -93,7 +86,12 @@ namespace WpfApp1.Forms
 
         private void BtnEditRoom_Click(object sender, RoutedEventArgs e)
         {
-            new RegisterRoomForm((RoomDto)((Button)sender).Tag, this).Show();
+            var registerWindow = new RegisterRoomForm(Int32.Parse(Inst.ApiRequests.User.id), this);
+            ((ButtonCornering)sender).IsEnabledButton = false;
+            if (registerWindow.ShowDialog() == false)
+            {
+                ((ButtonCornering)sender).IsEnabledButton = true;
+            }
             //if (roomNameText.Text != "")
             //RegisterRoom(roomNameText.Text);
             //else
@@ -102,56 +100,28 @@ namespace WpfApp1.Forms
         }
 
         private async void ShowRooms()
-        {            
+        {
+            this.roomsListView.Visibility = Visibility.Hidden;
+            gif.Visibility = Visibility.Visible;
+            gif.Play();
             try
             {
                 //var res2 = await client.GetAsync("Rooms/admin_get_rooms");
-                //List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;                
-                List<RoomDto> userR = await Inst.ApiRequests.AdminGetRooms();//res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
+                //List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;     
+                List<Dictionary<string,object>> roomsListviewList = new List<Dictionary<string, object>>();
+                List<RoomDto> userR = await Inst.ApiRequests.AdminGetRooms();//res2.Content.ReadAsAsync<List<RoomDto>>().Result;   
+                
                 if(userR!=null)
                 foreach (var item in userR)
                 {
-                    
-                    Button btn = new Button();
-                    btn.Content = "More";
-                    btn.Click += LoginAsAdmin_Click;
-                    btn.Tag = item;
-                    btn.Margin = new Thickness(2,2,2,2);
-                    btn.HorizontalAlignment = HorizontalAlignment.Center;
-                    btn.VerticalAlignment = VerticalAlignment.Center;
-
-                    Button edit = new Button();
-                    edit.Content = "Edit";
-                    edit.Click += BtnEditRoom_Click;
-                    edit.Tag = item;
-                    edit.Margin = new Thickness(2,2,2,2);
-                    edit.HorizontalAlignment = HorizontalAlignment.Center;
-                    edit.VerticalAlignment = VerticalAlignment.Center;
-                    edit.Style = (Style)App.Current.Resources["edit"];
-
-                    Button btnDelete = new Button();
-                    btnDelete.Content = "Delete";
-                    btnDelete.Click += RemoveRoom_Click;
-                    btnDelete.Tag = item;
-                    btnDelete.Margin = new Thickness(2,2,2,2);
-                    btnDelete.HorizontalAlignment = HorizontalAlignment.Center;
-                    btnDelete.VerticalAlignment = VerticalAlignment.Center;
-                    btnDelete.Style = (Style)App.Current.Resources["bad"];
-                    
-                    Label name = new Label();
-                    name.Content = item.roomName;
-                    name.Margin = new Thickness(2,2,2,2);
-                    name.VerticalAlignment = VerticalAlignment.Center;
-                    name.HorizontalAlignment = HorizontalAlignment.Center;
-
-                    Ellipse roomElipse = new Ellipse();
-                    roomElipse.Width = 50;
-                    roomElipse.Height = 50;
-
-                    AdditionalData data = await Inst.ApiRequests.GetRoomAddData(item.roomId);                    
+                    Dictionary<string,object> tempRoom = new Dictionary<string, object>();
+                    tempRoom.Add("roomName",item.roomName);
+                    AdditionalData data = await Inst.ApiRequests.GetRoomAddData(item.roomId);     
+                     
                     ImageBrush imgBrush = new ImageBrush();
                     if (data!=null)
                     {
+                         tempRoom.Add("bio",data.Biography);
                         if (data.PhotoBytes!=null)  
                         {                 
                             using (var memstr = new MemoryStream(data.PhotoBytes))
@@ -162,28 +132,112 @@ namespace WpfApp1.Forms
                                 image.StreamSource = memstr;
                                 image.EndInit();  
                                 imgBrush.ImageSource = image;
-                                roomElipse.Fill = imgBrush;
+                                tempRoom.Add("photo",imgBrush);
                             } 
-                        }                        
-                    }
-                    
-                    StackPanel roomPanel = new StackPanel();
-                    roomPanel.Orientation = Orientation.Horizontal;
-
-                    roomPanel.Children.Add(roomElipse);
-                    roomPanel.Children.Add(name);
-                    roomPanel.Children.Add(btn);
-                    roomPanel.Children.Add(edit);
-                    roomPanel.Children.Add(btnDelete);
-
-                    RoomsList.Items.Add(roomPanel);
+                        }
+                            else
+                            {
+                                tempRoom.Add("photo",Brushes.LightGray);
+                            }
+                        tempRoom.Add("room",item);
+                        roomsListviewList.Add(tempRoom);
+                    }                    
                 }
+                this.roomsListView.ItemsSource = roomsListviewList;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
+            gif.Visibility = Visibility.Hidden;
+            this.roomsListView.Visibility = Visibility.Visible;
+            gif.Stop();
+            gif.Pause();
         }
+        #region Old code
+        //private async void ShowRooms()
+        //{            
+        //    try
+        //    {
+        //        //var res2 = await client.GetAsync("Rooms/admin_get_rooms");
+        //        //List<Dictionary<string, string>> userR = res2.Content.ReadAsAsync<List<Dictionary<string, string>>>().Result;                
+        //        List<RoomDto> userR = await Inst.ApiRequests.AdminGetRooms();//res2.Content.ReadAsAsync<List<RoomDto>>().Result;                
+        //        if(userR!=null)
+        //        foreach (var item in userR)
+        //        {
+
+        //            Button btn = new Button();
+        //            btn.Content = "More";
+        //            btn.Click += LoginAsAdmin_Click;
+        //            btn.Tag = item;
+        //            btn.Margin = new Thickness(2,2,2,2);
+        //            btn.HorizontalAlignment = HorizontalAlignment.Center;
+        //            btn.VerticalAlignment = VerticalAlignment.Center;
+
+        //            Button edit = new Button();
+        //            edit.Content = "Edit";
+        //            edit.Click += BtnEditRoom_Click;
+        //            edit.Tag = item;
+        //            edit.Margin = new Thickness(2,2,2,2);
+        //            edit.HorizontalAlignment = HorizontalAlignment.Center;
+        //            edit.VerticalAlignment = VerticalAlignment.Center;
+        //            edit.Style = (Style)App.Current.Resources["edit"];
+
+        //            Button btnDelete = new Button();
+        //            btnDelete.Content = "Delete";
+        //            btnDelete.Click += RemoveRoom_Click;
+        //            btnDelete.Tag = item;
+        //            btnDelete.Margin = new Thickness(2,2,2,2);
+        //            btnDelete.HorizontalAlignment = HorizontalAlignment.Center;
+        //            btnDelete.VerticalAlignment = VerticalAlignment.Center;
+        //            btnDelete.Style = (Style)App.Current.Resources["bad"];
+
+        //            Label name = new Label();
+        //            name.Content = item.roomName;
+        //            name.Margin = new Thickness(2,2,2,2);
+        //            name.VerticalAlignment = VerticalAlignment.Center;
+        //            name.HorizontalAlignment = HorizontalAlignment.Center;
+
+        //            Ellipse roomElipse = new Ellipse();
+        //            roomElipse.Width = 50;
+        //            roomElipse.Height = 50;
+
+        //            AdditionalData data = await Inst.ApiRequests.GetRoomAddData(item.roomId);                    
+        //            ImageBrush imgBrush = new ImageBrush();
+        //            if (data!=null)
+        //            {
+        //                if (data.PhotoBytes!=null)  
+        //                {                 
+        //                    using (var memstr = new MemoryStream(data.PhotoBytes))
+        //                    {
+        //                        var image = new BitmapImage();
+        //                        image.BeginInit();
+        //                        image.CacheOption = BitmapCacheOption.OnLoad;
+        //                        image.StreamSource = memstr;
+        //                        image.EndInit();  
+        //                        imgBrush.ImageSource = image;
+        //                        roomElipse.Fill = imgBrush;
+        //                    } 
+        //                }                        
+        //            }
+
+        //            StackPanel roomPanel = new StackPanel();
+        //            roomPanel.Orientation = Orientation.Horizontal;
+
+        //            roomPanel.Children.Add(roomElipse);
+        //            roomPanel.Children.Add(name);
+        //            roomPanel.Children.Add(btn);
+        //            roomPanel.Children.Add(edit);
+        //            roomPanel.Children.Add(btnDelete);
+
+        //            RoomsList.Items.Add(roomPanel);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.ToString());
+        //    }
+        //}
         //private async Task<AdditionalData> GetAddData(int id)
         //{
         //    var resp = await client.GetAsync($"AdditionalDatas/{id}/{false}");
@@ -281,12 +335,14 @@ namespace WpfApp1.Forms
 
         //}
 
+        #endregion
+
         private void LoginAsAdmin_Click(object sender, RoutedEventArgs e)
         {
-            RoomDto roomId = (RoomDto)((Button)sender).Tag;
+            RoomDto roomId = (RoomDto)((ButtonCornering)sender).Tag;
             //SelectedRoom = adminRooms.Items.Cast<RoomDto>().Where(x =>x.roomId==roomId).ToList<RoomDto>().First();
-            SelectedRoom = roomId;
-            Administraktoring adm_page = new Administraktoring(SelectedRoom);
+            //SelectedRoom = roomId;
+            Administraktoring adm_page = new Administraktoring(roomId);
             Inst.Utils.MainWindow.frame2.NavigationService.Navigate(adm_page);
             Inst.Utils.Administraktoring = adm_page;
             //LoginRoom();
@@ -294,56 +350,20 @@ namespace WpfApp1.Forms
         
         private void RemoveRoom_Click(object sender, RoutedEventArgs e)
         {
-            RoomDto temp = (RoomDto)((Button)sender).Tag;
-            SelectedRoom = temp;
-            
-            Window confirm = new Window();
-            confirm.Title = "Delete room";
-            confirm.Width = 250;
-            confirm.Height = 250;
-            
-
-            StackPanel pan = new StackPanel{ Orientation = Orientation.Vertical};
-            StackPanel pan2 = new StackPanel{Orientation = Orientation.Horizontal};
-            
-            Button ok = new Button();
-            ok.Margin = new Thickness(10,15,15,10);
-            ok.Content = "Yes";
-            ok.Width = 50;
-            ok.Click += (s,ev)=>
+            var confirm = new ConfirmWindow($"Delete room: {((RoomDto)((ButtonCornering)sender).Tag).roomName} ?");
+            if (confirm.ShowDialog()==false)
             {
-                DeleteRoom();
-                confirm.Close();
-            };
-            
-            Button cancer = new Button();
-            cancer.Content = "No";   
-            cancer.Style = (Style)App.Current.Resources["bad"];
-            cancer.Margin = new Thickness(10,15,15,10);
-            cancer.Width = 50;
-            cancer.Click += (s,ev) =>
-            {
-                confirm.Close();
-            };
-            
-            pan2.Children.Add(ok);
-            pan2.Children.Add(cancer);
-                        
-            pan.VerticalAlignment = VerticalAlignment.Center;
-            pan.HorizontalAlignment = HorizontalAlignment.Center;
-            Label lab = new Label();
-            lab.Content = $"Are you sure?\nDelete {SelectedRoom.roomName.Replace(" ",string.Empty)} room?";
-            lab.HorizontalAlignment = HorizontalAlignment.Center;
-            pan.Children.Add(lab);
-            pan.Children.Add(pan2);
-
-            confirm.Content = pan;
-            confirm.ShowDialog();
+                if (confirm.Rezult)
+                {
+                    DeleteRoom((RoomDto)((ButtonCornering)sender).Tag);
+                }
+            }
         }
-        private async void DeleteRoom()
+
+        private async void DeleteRoom(RoomDto room)
         {
             //var res = await client.DeleteAsync($"Rooms/{SelectedRoom.roomId}");
-            if (/*res.IsSuccessStatusCode*/await Inst.ApiRequests.DeleteRoom(SelectedRoom.roomId))
+            if (/*res.IsSuccessStatusCode*/await Inst.ApiRequests.DeleteRoom(room.roomId))
             {
                 //MessageBox.Show($"Room {SelectedRoom.roomName} successfully deleted");
 
@@ -354,7 +374,10 @@ namespace WpfApp1.Forms
                 //adminRooms.ItemsSource = rooms;
             }
             else
-                MessageBox.Show("Delete failed");
+            {
+                var warninig = new WarningWindow("Delete failed");
+                warninig.ShowDialog();
+            }
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
@@ -364,8 +387,14 @@ namespace WpfApp1.Forms
 
         public void UpdateRoomView()
         {
-            RoomsList.Items.Clear();
+            //RoomsList.Items.Clear();
             ShowRooms();
+        }
+
+        private void Gif_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            gif.Position = new TimeSpan(0,0,0,1);
+            gif.Play();
         }
     }
 }

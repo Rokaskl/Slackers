@@ -1,0 +1,34 @@
+﻿<Window x:Class="WpfApp1.Forms.PassChangingForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ddd="clr-namespace:WpfApp1.Controls"
+        
+        mc:Ignorable="d"
+        
+        Title="New password" Height="180" Width="400">
+    
+    <Grid Margin="15">
+        
+        <Grid.ColumnDefinitions>            
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="New password:" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" FontSize="16"/>
+        <TextBlock Text="Reapeat new password:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" FontSize="16"/>
+        
+        <!--<Button x:Name="btnChangePass" Grid.Column="1" Grid.Row="3" Content="Change password" Width="120" HorizontalAlignment="Left" Margin="0,15,5,8" Height="Auto" Click="BtnChangePass_Click"/>-->
+        <ddd:ButtonCornering x:Name="btnChangePass" ButtonText="Change password" Grid.Column="0" Grid.Row="2"/>
+        
+        <PasswordBox x:Name="newPassword" Grid.Column="1" Grid.Row="0" FontSize="16"/>
+        <PasswordBox x:Name="repeatedNewPassword" Grid.Column="1" Grid.Row="1" FontSize="16"/>
+    </Grid>
+</Window>

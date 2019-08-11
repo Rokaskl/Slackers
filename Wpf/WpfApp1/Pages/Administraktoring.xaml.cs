@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,8 +10,8 @@ using System.Windows.Controls.DataVisualization.Charting;
 using System.IO;
 using WebApi.Entities;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Threading;
+using WpfApp1.Windows;
+using WpfApp1.Controls;
 
 namespace WpfApp1.Pages
 {
@@ -23,8 +22,9 @@ namespace WpfApp1.Pages
     {
         //private HttpClient client;
         private RoomDto room;
-        private List<User> users = new List<User>();
-        
+        private List<User> users = new List<User>();  
+        //private EnableChangeHandle kkk = new EnableChangeHandle();
+
 
         public Administraktoring(RoomDto room)
         {
@@ -32,6 +32,8 @@ namespace WpfApp1.Pages
             //client = Inst.Utils.HttpClient;
 
             InitializeComponent();
+            gif.Source = Inst.LoadingGifSource;
+            this.DataContext = Inst.ApiRequests.disable_enable;
             ListUsers();
             this.IsVisibleChanged += Administraktoring_IsVisibleChanged;
             this.Name.Content = room.roomName.Replace(" ",string.Empty);
@@ -83,8 +85,7 @@ namespace WpfApp1.Pages
         }
 
         public void UpdateMembersListView()
-        {
-            this.usersList.Items.Clear();
+        {            
             ListUsers();
         }
 
@@ -171,49 +172,15 @@ namespace WpfApp1.Pages
         }
         private void kickFromRoom_Click(object sender, RoutedEventArgs e)
         {
-            int kickingUserId = Int32.Parse(((User)((Button)sender).Tag).id);
-            Window confirm = new Window();
-            confirm.Title = "Kick user";
-            confirm.Width = 250;
-            confirm.Height = 250;
-            
-
-            StackPanel pan = new StackPanel{ Orientation = Orientation.Vertical};
-            StackPanel pan2 = new StackPanel{Orientation = Orientation.Horizontal};
-            
-            Button ok = new Button();
-            ok.Margin = new Thickness(10,15,15,10);
-            ok.Content = "Yes";
-            ok.Width = 50;
-            ok.Click += (s,ev)=>
+            User kickingUser = ((User)((ButtonCornering)sender).Tag);
+            var confirm = new ConfirmWindow($"Are you sure?\nKick {kickingUser.username} from room?");
+            if (confirm.ShowDialog() == false)
             {
-                Kick(kickingUserId);
-                confirm.Close();
-            };
-            
-            Button cancer = new Button();
-            cancer.Content = "No";            
-            cancer.Width = 50;
-            cancer.Margin = new Thickness(10,15,15,10);
-            cancer.Click += (s,ev) =>
-            {
-                confirm.Close();
-            };
-            cancer.Style = (Style)App.Current.Resources["bad"];
-
-            pan2.Children.Add(ok);
-            pan2.Children.Add(cancer);
-                        
-            pan.VerticalAlignment = VerticalAlignment.Center;
-            pan.HorizontalAlignment = HorizontalAlignment.Center;
-            Label lab = new Label();
-            lab.Content = "Are you sure?\nKick from room?";
-            lab.HorizontalAlignment = HorizontalAlignment.Center;
-            pan.Children.Add(lab);
-            pan.Children.Add(pan2);
-
-            confirm.Content = pan;
-            confirm.ShowDialog();
+                if (confirm.Rezult)
+                {
+                    Kick(Int32.Parse(kickingUser.id));
+                }
+            }
         }
         private async void Kick(int user)
         {
@@ -231,7 +198,6 @@ namespace WpfApp1.Pages
                     //room.users = temp.ToArray();
                     
                 }
-                this.usersList.Items.Clear();
                 ListUsers();
             }
             catch (Exception)
@@ -241,6 +207,9 @@ namespace WpfApp1.Pages
         }
         private async void ListUsers()
         {
+            this.usersListView.Visibility = Visibility.Hidden;
+            gif.Visibility = Visibility.Visible;
+            gif.Play();
             try
             {
                 //var usersIds = new {ids= room.users.ToList()};
@@ -249,31 +218,14 @@ namespace WpfApp1.Pages
                 users = await Inst.ApiRequests.GetUsersList(room.roomId);
                 if (users != null)
                 {
+                    List<Dictionary<string,object>> usersListview = new List<Dictionary<string, object>>();
                     foreach (var item in users.ToList())
-                    {
-                        Button btn = new Button();
-                        btn.Content = "Kick";
-                        btn.Click += kickFromRoom_Click;
-                        btn.Tag = item;
-                        btn.Margin = new Thickness(2, 2, 2, 2);
-                        btn.HorizontalAlignment = HorizontalAlignment.Center;
-                        btn.VerticalAlignment = VerticalAlignment.Center;
-                        btn.Style = (Style)App.Current.Resources["bad"];
-
-                        Label name = new Label();
-                        name.Content = item.username;
-                        name.Margin = new Thickness(2, 2, 2, 2);
-                        name.VerticalAlignment = VerticalAlignment.Center;
-                        name.HorizontalAlignment = HorizontalAlignment.Center;
-
-                        Ellipse roomElipse = new Ellipse();
-                        roomElipse.Width = 50;
-                        roomElipse.Height = 50;
-
-                        //AdditionalData data = await GetAddDataUser(Int32.Parse(item.id));
+                    {                        
+                        Dictionary<string,object> tempUser = new Dictionary<string, object>();
+                        tempUser.Add("username",item.username);
                         AdditionalData data = await Inst.ApiRequests.GetUserAddData(Int32.Parse(item.id));
+                        tempUser.Add("bio",data.Biography);
                         ImageBrush imgBrush = new ImageBrush();
-                        roomElipse.Fill = Brushes.LightGray;
                         if (data != null)
                         {
                             if (data.PhotoBytes != null)
@@ -286,21 +238,18 @@ namespace WpfApp1.Pages
                                     image.StreamSource = memstr;
                                     image.EndInit();
                                     imgBrush.ImageSource = image;
-                                    roomElipse.Fill = imgBrush;
+                                    tempUser.Add("photo",imgBrush);
                                 }
                             }
+                            else
+                            {
+                                tempUser.Add("photo",Brushes.LightGray);
+                            }
                         }
-
-                        StackPanel roomPanel = new StackPanel();
-                        roomPanel.Orientation = Orientation.Horizontal;
-                        roomPanel.Children.Add(roomElipse);
-                        roomPanel.Children.Add(name);
-                        roomPanel.Children.Add(btn);
-                        if (!usersList.Items.Contains(roomPanel))
-                        {
-                            usersList.Items.Add(roomPanel);
-                        }                        
+                        tempUser.Add("user",item);
+                        usersListview.Add(tempUser);
                     }
+                    this.usersListView.ItemsSource = usersListview;
                 }
                 else
                 {
@@ -310,7 +259,83 @@ namespace WpfApp1.Pages
             catch (Exception exception)
             {               
             }
+            gif.Visibility = Visibility.Hidden;
+            this.usersListView.Visibility = Visibility.Visible;
+            gif.Stop();
+            gif.Pause();
         }
+        //private async void ListUsers()
+        //{
+        //    try
+        //    {
+        //        //var usersIds = new {ids= room.users.ToList()};
+        //        //var res = await client.PostAsJsonAsync("Users/get_list",usersIds);
+        //        //users = res.Content.ReadAsAsync<List<User>>().Result;
+        //        users = await Inst.ApiRequests.GetUsersList(room.roomId);
+        //        if (users != null)
+        //        {
+        //            foreach (var item in users.ToList())
+        //            {
+        //                Button btn = new Button();
+        //                btn.Content = "Kick";
+        //                btn.Click += kickFromRoom_Click;
+        //                btn.Tag = item;
+        //                btn.Margin = new Thickness(2, 2, 2, 2);
+        //                btn.HorizontalAlignment = HorizontalAlignment.Center;
+        //                btn.VerticalAlignment = VerticalAlignment.Center;
+        //                btn.Style = (Style)App.Current.Resources["bad"];
+
+        //                Label name = new Label();
+        //                name.Content = item.username;
+        //                name.Margin = new Thickness(2, 2, 2, 2);
+        //                name.VerticalAlignment = VerticalAlignment.Center;
+        //                name.HorizontalAlignment = HorizontalAlignment.Center;
+
+        //                Ellipse roomElipse = new Ellipse();
+        //                roomElipse.Width = 50;
+        //                roomElipse.Height = 50;
+
+        //                //AdditionalData data = await GetAddDataUser(Int32.Parse(item.id));
+        //                AdditionalData data = await Inst.ApiRequests.GetUserAddData(Int32.Parse(item.id));
+        //                ImageBrush imgBrush = new ImageBrush();
+        //                roomElipse.Fill = Brushes.LightGray;
+        //                if (data != null)
+        //                {
+        //                    if (data.PhotoBytes != null)
+        //                    {
+        //                        using (var memstr = new MemoryStream(data.PhotoBytes))
+        //                        {
+        //                            var image = new BitmapImage();
+        //                            image.BeginInit();
+        //                            image.CacheOption = BitmapCacheOption.OnLoad;
+        //                            image.StreamSource = memstr;
+        //                            image.EndInit();
+        //                            imgBrush.ImageSource = image;
+        //                            roomElipse.Fill = imgBrush;
+        //                        }
+        //                    }
+        //                }
+
+        //                StackPanel roomPanel = new StackPanel();
+        //                roomPanel.Orientation = Orientation.Horizontal;
+        //                roomPanel.Children.Add(roomElipse);
+        //                roomPanel.Children.Add(name);
+        //                roomPanel.Children.Add(btn);
+        //                if (!usersList.Items.Contains(roomPanel))
+        //                {
+        //                    usersList.Items.Add(roomPanel);
+        //                }                        
+        //            }
+        //        }
+        //        else
+        //        {
+        //            users = new List<User>();
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {               
+        //    }
+        //}
         //private async void ListUsers()
         //{
         //    try
@@ -327,13 +352,12 @@ namespace WpfApp1.Pages
         //}
 
         private void Login_Click(object sender, RoutedEventArgs e)
-        {
+        {            
             LoginRoom(room.roomId);
         }
         
         private async void LoginRoom(int roomid)
-        {
-            
+        {            
             try
             {
                 //var response = await client.GetAsync($"/Rooms/login_group/{room.roomId}");
@@ -344,7 +368,7 @@ namespace WpfApp1.Pages
                     Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
                     Inst.Utils.MainWindow.tabs.SelectedIndex = 2;
                     Inst.Utils.IsLoginEnabled = false;
-                    disableButton();
+                    //disableButton();
                 }
                 else
                 {
@@ -357,14 +381,14 @@ namespace WpfApp1.Pages
                 Console.WriteLine(ex.ToString());
             }
         }
-        private void disableButton()
-        {
-            Style style = new Style();
-            style.TargetType = typeof(Button);
-            style.BasedOn = (Style)App.Current.FindResource("enable");;
-            style.Setters.Add(new Setter(Button.IsEnabledProperty,false));
-            App.Current.Resources["enable"] = style;
-        }
+        //private void disableButton()
+        //{
+        //    Style style = new Style();
+        //    style.TargetType = typeof(Button);
+        //    style.BasedOn = (Style)App.Current.FindResource("enable");;
+        //    style.Setters.Add(new Setter(Button.IsEnabledProperty,false));
+        //    App.Current.Resources["enable"] = style;
+        //}
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Forms.Admin());
@@ -418,6 +442,12 @@ namespace WpfApp1.Pages
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+        private void Gif_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            gif.Position = new TimeSpan(0, 0, 0, 1);
+            gif.Play();
         }
     }
 }

@@ -4,10 +4,13 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WpfApp1.Forms"
+      xmlns:controls="clr-namespace:WpfApp1.Controls"
       mc:Ignorable="d" 
+      xmlns:ddd="clr-namespace:WpfApp1.Controls"
+      
       d:DesignHeight="500" d:DesignWidth="1000"
       Title="Admin">
-    <Grid>
+    <Grid Margin="10 10 10 10">
         
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200*"/>
@@ -18,14 +21,74 @@
             <RowDefinition Height="100" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-            <Button x:Name="btnRefresh" Content="Refresh" Grid.Column="0" Grid.Row="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,35,20,35" Click="BtnRefresh_Click"></Button>
-            <Button x:Name="btnRegisterRoom" Grid.Column="1" Grid.Row="0" Content="Register room" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnRegisterRoom_Click" Margin="1,35,0,35" Height="Auto" />
+            <ddd:ButtonCornering ButtonText="Refresh" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,32,20,35" Click="BtnRefresh_Click"></ddd:ButtonCornering>
+            <!--<Button x:Name="btnRefresh" Content="Refresh"  Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,35,20,35" Click="BtnRefresh_Click"></Button>-->
+            <ddd:ButtonCornering ButtonText="Register room" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="1,32,0,35" Click="BtnRegisterRoom_Click"></ddd:ButtonCornering>
+            <!--<Button x:Name="btnRegisterRoom" Content="Register room" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="1,35,0,35" Click="BtnRegisterRoom_Click"/>-->
         </StackPanel>
-          <!--<Button x:Name="btnLoginRoom" Grid.Column="1" Grid.Row="1" Content="Login" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="BtnLoginRoom_Click" Margin="0,0,0,0" Height="40" />-->
-        <ListView x:Name="RoomsList" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False">
-            
+        <MediaElement x:Name="gif" Grid.Column="0" Grid.Row="1" MediaEnded="Gif_MediaEnded" UnloadedBehavior="Manual" LoadedBehavior="Play" Stretch="None" />
+        <ListView Grid.Row="1" Grid.Column="0" x:Name="roomsListView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFD4F735" BorderThickness="10" BorderBrush="Black" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
+            <ListView.View>
+                <GridView >
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Fill="{Binding [photo]}" Width="30" Height="30" Stroke="Black" StrokeThickness="1"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn >
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding [roomName]}" VerticalAlignment="Center" FontSize="15" Width="auto" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn >
+
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ddd:ButtonCornering ButtonText="More" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [room]}" Click="LoginAsAdmin_Click" />
+                                <!--<Button Content="More" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [room]}" Click="LoginAsAdmin_Click"/>-->
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn >
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ddd:ButtonCornering ButtonText="Edit" FirstColor="{StaticResource Edit}" SecondColor="{StaticResource EditSecond}" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [room]}" Click="BtnEditRoom_Click"></ddd:ButtonCornering>
+                                <!--<Button Content="Edit" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [room]}" Click="BtnEditRoom_Click" />-->
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn >
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ddd:ButtonCornering ButtonText="Delete" FirstColor="{StaticResource Bad}" SecondColor="{StaticResource BadSecond}" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [room]}" Click="RemoveRoom_Click"></ddd:ButtonCornering>
+                                <!--<Button Content="Delete" VerticalAlignment="Center" FontSize="15" Width="auto" Tag="{Binding [room]}" Click="RemoveRoom_Click"/>-->
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn >
+
+                    <!--<GridViewColumn >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Fill="{Binding [status]}" Width="10" Height="10" VerticalAlignment="Center" Margin="0,10"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>-->
+
+                </GridView>
+
+            </ListView.View>
         </ListView>
+      
+        <!--#region Old code-->
+        <!--<ListView x:Name="RoomsList" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False">
+            
+        </ListView>-->
         <!--<ListView x:Name="adminRooms" Grid.Row="1" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ListView.View>
                 <GridView >
@@ -44,5 +107,6 @@
                 </GridView>
             </ListView.View>
         </ListView>-->
+        <!--#endregion-->
     </Grid>
 </Page>

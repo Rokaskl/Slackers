@@ -50,7 +50,6 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-
             _context.Entry(additionalData).State = EntityState.Modified;
 
             try
@@ -85,12 +84,10 @@ namespace WebApi.Controllers
                         additionalData.PhotoBytes = _context.AdditionalDatas.FirstOrDefault(x=>x.IsUser==additionalData.IsUser&&x.Ownerid==additionalData.Ownerid).PhotoBytes;
                     }
                     await DeleteAdditionalData(additionalData.Ownerid,additionalData.IsUser);
-                    }
-               
-                    _context.AdditionalDatas.Add(additionalData); 
+                    }               
                     
-
-                _context.SaveChanges();
+                _context.AdditionalDatas.Add(additionalData);                    
+                await _context.SaveChangesAsync();
 
                 return Ok(_context.AdditionalDatas.First(x=>x.Ownerid==additionalData.Ownerid&&x.IsUser==additionalData.IsUser));
             }
@@ -99,7 +96,6 @@ namespace WebApi.Controllers
                 return BadRequest();
                 throw new AppException(ex.Message);
             }
-
         }
 
         // DELETE: AdditionalDatas/5
@@ -117,7 +113,6 @@ namespace WebApi.Controllers
 
             return additionalData;
         }
-
         private bool AdditionalDataExists(int id,bool isUser)
         {
             return _context.AdditionalDatas.Any(e => e.Ownerid == id&&e.IsUser==isUser);

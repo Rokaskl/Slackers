@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using Microsoft.Win32;
+using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
-using WpfApp1.Forms;
-using WpfApp1.Pages;
 
 namespace WpfApp1
 {
@@ -17,6 +12,8 @@ namespace WpfApp1
     {
         public static Utils Utils;
         public static ApiRequests ApiRequests;
+        public static Uri LoadingGifSource = new Uri(Directory.GetCurrentDirectory()+@"\..\..\Media/496.gif");
+        
 
         public static void CreateInstance()
         {
@@ -112,7 +109,28 @@ namespace WpfApp1
             get => adminPage;
             set => adminPage = value;
         }
-
+        public byte[] UploadPhoto(ref string fileName)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();            
+            dialog.Filter = "Picture file (.jpg)|*.jpg|(.bmp)|*.bmp|(.png)|*.png|(.tif)|*.tif|(.jfif)|*.jfif|(.gif)|*.gif";
+            if(dialog.ShowDialog().HasValue&&File.Exists(dialog.FileName)&&(dialog.FileName.EndsWith(".jfif")||dialog.FileName.EndsWith(".jpg")||dialog.FileName.EndsWith(".bmp")||dialog.FileName.EndsWith(".png")||dialog.FileName.EndsWith(".tif")||dialog.FileName.EndsWith(".gif")))
+            {
+                if ( (new FileInfo(dialog.FileName).Length)/1024/1024<1)
+                {
+                    fileName = dialog.FileName;
+                    return File.ReadAllBytes(dialog.FileName);
+                }
+                else
+                {
+                    MessageBox.Show("Photo too big");
+                    return null;
+                }
+            }
+             else
+            {
+                return null;
+            }
+        }
         //private async void Ping()
         //{            
         //    try

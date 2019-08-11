@@ -8,23 +8,33 @@ using System.Threading.Tasks;
 using WebApi.Dtos;
 using WebApi.Entities;
 using WpfApp1.Forms;
+using WpfApp1.Helpers;
+using WpfApp1.Windows;
 
 namespace WpfApp1
 {
     public class ApiRequests
     {
+        #region 
         private HttpClient client;
         private Uri url;
         private User user;
         private AdditionalData additionalData;
+        public EnableChangeHandle disable_enable;
+        #endregion
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ApiRequests()
         {
             this.client = new HttpClient();
             this.url = new Uri("http://localhost:4000");
             this.client.BaseAddress = url;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            disable_enable = new EnableChangeHandle();
         }
+
         #region Chat
         public async Task<List<ChatLine>> GetChat(int roomId)
         {
@@ -53,6 +63,7 @@ namespace WpfApp1
             return false;
         }
         #endregion
+
         #region Notes requests
         public async Task<bool> SubmitNote(Dictionary<string, string> info)
         {
@@ -107,6 +118,7 @@ namespace WpfApp1
             return null;
         }
         #endregion
+
         #region Room requests, time marks
         public async Task<bool> LogoutGroup(int roomId)
         {
@@ -115,6 +127,7 @@ namespace WpfApp1
             var response = await client.GetAsync($"/Rooms/logout_group/{roomId}");
             if (response.IsSuccessStatusCode)
             {
+                disable_enable.IsEnabled = true;
                 return true;
             }
             return false;
@@ -168,11 +181,13 @@ namespace WpfApp1
             var response = await client.GetAsync($"/Rooms/login_group/{id}");
             if (response.IsSuccessStatusCode)
             {
+                disable_enable.IsEnabled = false;
                 return true;
             }
             return false;
         }
         #endregion
+
         #region User, account
         public async Task<bool> UpdateAddDataUser(AdditionalData data)
         {
@@ -198,6 +213,8 @@ namespace WpfApp1
             {
                 return resp.Content.ReadAsAsync<User>().Result;
             }
+            var warning = new WarningWindow(resp.Content.ReadAsAsync<string>().Result);
+            warning.ShowDialog();
             return null;
         }
         public async Task<bool> Logout()
@@ -230,7 +247,7 @@ namespace WpfApp1
                 return false;
             }
             var response = await this.client.PostAsJsonAsync("/Users/authenticate/0", credentials);
-             if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 User = response.Content.ReadAsAsync<User>().Result;
                 return true;
@@ -286,7 +303,8 @@ namespace WpfApp1
             return false;
         }
         #endregion
-        #region Admin
+
+        #region Admin room
         public async Task<bool> DeleteRoom(int roomId)
         {
             if (roomId<1)
@@ -320,6 +338,7 @@ namespace WpfApp1
                 return null;
             }
             var response = await client.PostAsJsonAsync("/rooms/register", new{roomName=roomName });
+            
             if (response.IsSuccessStatusCode)
             {
                 return response.Content.ReadAsAsync<RoomDto>().Result;
@@ -414,6 +433,8 @@ namespace WpfApp1
         }
 
         #endregion
+
+        #region Helpers
         public AdditionalData AdditionalData
         {
             get =>additionalData;
@@ -448,5 +469,6 @@ namespace WpfApp1
                 return;
             }
         }
+        #endregion
     }
 }

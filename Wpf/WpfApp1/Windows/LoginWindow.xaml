@@ -5,10 +5,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1.Forms"
+        xmlns:ddd="clr-namespace:WpfApp1.Controls"
         mc:Ignorable="d"
-        Title="Login" Height="319" Width="300"
-        >
-    
+        Title="Login" Height="320" Width="300"
+        >    
     <StackPanel Margin="20,20,20,7">
         <Label Content="Slackers" Foreground="Black" FontSize="25" HorizontalAlignment="Center" Margin="78,0"/>
         <Label x:Name="lb_error" Content="Login failed!" Visibility="Hidden" Foreground="Red" Margin="0,0,0,0" HorizontalAlignment="Center"/>
@@ -16,7 +16,8 @@
         <TextBox x:Name="Username"/>
         <Label Content="Password"/>
         <PasswordBox x:Name="Password"/>
-        <Button x:Name="btnLogin" Content="Login" Margin="15" Click="btnLogin_Click" IsDefault="True" Height="30" Width="150"/>
+        <ddd:ButtonCornering x:Name="btnLogin" ButtonText="Login" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="btnLogin_Click" Margin="0 2 0 4"></ddd:ButtonCornering>
+        <!--<Button x:Name="btnLogin" Content="Login" Margin="15" Click="btnLogin_Click" IsDefault="True" Height="30" Width="150" Style="{StaticResource Generic}"/>-->
         <TextBlock><Hyperlink Foreground="#ffb236" NavigateUri="http://localhost:8081" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Not registered?"/></Hyperlink></TextBlock>
     </StackPanel>
 </Window>

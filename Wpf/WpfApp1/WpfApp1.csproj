@@ -29,6 +29,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -98,19 +100,26 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ApiRequests.cs" />
+    <Compile Include="Controls\ButtonCornering.xaml.cs">
+      <DependentUpon>ButtonCornering.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\EnableChangeHandle.cs" />
+    <Compile Include="Windows\ConfirmWindow.xaml.cs">
+      <DependentUpon>ConfirmWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Entities\AdditionalData.cs" />
     <Compile Include="Forms\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\PassChangingForm.xaml.cs">
-      <DependentUpon>PassChangingForm.xaml</DependentUpon>
+    <Compile Include="Windows\PassChangingWindow.xaml.cs">
+      <DependentUpon>PassChangingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\UserPage.xaml.cs">
       <DependentUpon>UserPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Inst.cs" />
-    <Compile Include="Forms\LoginForm.xaml.cs">
-      <DependentUpon>LoginForm.xaml</DependentUpon>
+    <Compile Include="Windows\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="NameLenghtRangeRule.cs" />
     <Compile Include="Pages\AccountPage.xaml.cs">
@@ -122,18 +131,30 @@
     <Compile Include="Pages\RoomPage.xaml.cs">
       <DependentUpon>RoomPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RegisterRoomForm.xaml.cs">
-      <DependentUpon>RegisterRoomForm.xaml</DependentUpon>
+    <Compile Include="Windows\RegisterRoomWindow.xaml.cs">
+      <DependentUpon>RegisterRoomWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Entities\RoomDto.cs" />
     <Compile Include="RegisterUser.xaml.cs">
       <DependentUpon>RegisterUser.xaml</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="TcpClient.cs" />
     <Compile Include="TimerControl\Timer.cs" />
     <Compile Include="Entities\UserDto.cs" />
     <Compile Include="ValidationBinding.cs" />
-    <Page Include="Forms\LoginForm.xaml">
+    <Compile Include="Windows\WarningWindow.xaml.cs">
+      <DependentUpon>WarningWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Controls\ButtonCornering.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ConfirmWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -141,7 +162,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Forms\PassChangingForm.xaml">
+    <Page Include="Windows\PassChangingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,13 +194,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="RegisterRoomForm.xaml">
+    <Page Include="Windows\RegisterRoomWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="RegisterUser.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Windows\WarningWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +226,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="FodyWeavers.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

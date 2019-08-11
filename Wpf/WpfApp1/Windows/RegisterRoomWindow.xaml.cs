@@ -32,9 +32,10 @@ namespace WpfApp1
 
         public RegisterRoomForm(int userId, Admin adminPage)
         {
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.userId = userId;
             InitializeComponent();
-            this.Closed += RegisterRoomForm_Closed;
+            //this.Closed += RegisterRoomForm_Closed;
             this.adminPage = adminPage;
         }
 
@@ -44,19 +45,19 @@ namespace WpfApp1
             this.userId = 0;
             this.rooomId = room.roomId;
             InitializeComponent();
-            this.Closed += RegisterRoomForm_Closed;
+            //this.Closed += RegisterRoomForm_Closed;
             this.RoomName.Text = room.roomName;
-            this.RoomName.IsEnabled = false;
+            this.RoomName.IsReadOnly = true;
             this.RoomBio.Document.Blocks.Clear();
             getAddData(room.roomId);
-            this.create.Content = "Submit edit";
+            //this.create.Content = "Submit edit";
 
         }
 
-        private void RegisterRoomForm_Closed(object sender, EventArgs e)
-        {
-            //this.adminPage.UpdateRoomView();
-        }
+        //private void RegisterRoomForm_Closed(object sender, EventArgs e)
+        //{
+        //    //this.adminPage.UpdateRoomView();
+        //}
 
         public async void getAddData(int roomId)
         {
@@ -70,17 +71,9 @@ namespace WpfApp1
         }
         private void UploadPicture_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();            
-            dialog.Filter = "Picture file (.jpg)|*.jpg|(.bmp)|*.bmp|(.png)|*.png|(.tif)|*.tif|(.jfif)|*.jfif";
-            if(dialog.ShowDialog().HasValue&&File.Exists(dialog.FileName)&&(dialog.FileName.EndsWith(".jfif")||dialog.FileName.EndsWith(".jpg")||dialog.FileName.EndsWith(".bmp")||dialog.FileName.EndsWith(".png")||dialog.FileName.EndsWith(".tif")))
-            {
-                photo = File.ReadAllBytes(dialog.FileName);
-                file.Content = dialog.FileName;
-            }
-             else
-            {
-                MessageBox.Show("Wrong file format");
-            }
+            string fileName = "";
+            photo = Inst.Utils.UploadPhoto(ref fileName);
+            file.Content = fileName;
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
