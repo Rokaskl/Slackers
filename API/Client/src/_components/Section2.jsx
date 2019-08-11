@@ -11,7 +11,7 @@ export class Section2 extends React.Component{
     <div className="row">
       <div className="col-md-8 ml-auto mr-auto text-center">
         <h2 className="title">Who we are?</h2>
-        <h5 className="description">We are "Wbies". Company of young motivated computer science students at University of Kaunas Technology </h5>
+        <h5 className="description">We are "Wbies". Company of young motivated computer science students at Kaunas University of Technology </h5>
       </div>
     </div>
     <div className="separator separator-primary" />
@@ -32,15 +32,12 @@ export class Section2 extends React.Component{
         <div className="col-md-5">
           {/* First image on the right side, above the article */}
           <div className="image-container image-right" style={{backgroundImage: 'url("../images/About2.jpg")'}} />
-          <h3>So what does the "SLACKERS" is for?</h3>
-          <p>The Arctic Ocean freezes every winter and much of the sea-ice
-            then thaws every summer, and that process will continue whatever happens with climate change. Even if the Arctic continues to be one of the fastest-warming regions of the world, it will always be plunged into bitterly cold polar dark every winter. And year-by-year, for all kinds of natural reasons, there’s huge variety of the state of the ice.
+          <h3>So what does the "SLACKERS!" is for?</h3>
+          <p> 
+            Slackers platform build for small teams and especially for their manager.
           </p>
-          <p>
-            For a start, it does not automatically do the job for your, but it definetly helps to track your working time.
-          </p>
-          <p>The Arctic Ocean freezes every winter and much of the sea-ice
-            then thaws every summer, and that process will continue whatever happens with climate change. Even if the Arctic continues to be one of the fastest-warming regions of the world, it will always be plunged into bitterly cold polar dark every winter. And year-by-year, for all kinds of natural reasons, there’s huge variety of the state of the ice.
+          <p> 
+            In this app you can easily find who is working at the moment, get statiscs who worked the most hours etc...
           </p>
         </div>
       </div>

@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Globalization;
 using System.IO;
 using WebApi.Entities;
+using WpfApp1.ViewModels;
 
 namespace WpfApp1.Pages
 {
@@ -36,9 +37,16 @@ namespace WpfApp1.Pages
         private string prevWindow;
         private Timer timer;
         private Button btnStartStop;
-        private bool Changed;
+        //private bool Changed;
         private bool breakDaRules = false;
-        
+        private int items_per_page = 10;
+        private ChatViewModel chatbox = new ChatViewModel();
+        private List<Tuple<int, BitmapImage>> User_images;
+        /// <summary>
+        /// This flag indicates that all the existing chatlines are loaded or scrollviewer is obtained. Default = false; when done = true;
+        /// </summary>
+        private bool chat_flag;
+
 
         public RoomPage(){}
         public RoomPage(RoomDto room,string prev)
@@ -47,9 +55,18 @@ namespace WpfApp1.Pages
             this.prevWindow = prev;
             timer = new Timer();
             this.room = room;
+            Inst.Utils.Room = new Room(room.roomId, room.roomName);
+            this.User_images = new List<Tuple<int, BitmapImage>>() { new Tuple<int, BitmapImage>(int.Parse(Inst.ApiRequests.User.id), Inst.PhotoBytes_to_Image(Inst.ApiRequests.AdditionalData.PhotoBytes)) };
             //client = Inst.Utils.HttpClient;
-           
+
+            //chatbox = new ChatViewModel();
+            
+
             InitializeComponent();
+
+            
+
+            SetupChatBox();//Nieko nedaro
             RoomInfo();
             ListUsers();
             //ListUsersStack();
@@ -57,12 +74,17 @@ namespace WpfApp1.Pages
             FillNotes();
             FillChat();
 
-            this.chatbox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+            //this.ChatControl.DataContext = chatbox;
+
+            //this.ChatControl.SetResourceReference((ChatControl.DataContext as DependencyProperty), "chatbox");
+
+            //this.chatbox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
             this.KeyDown += RoomPage_KeyDown;
             this.txt_entry.KeyUp += Txt_entry_KeyUp;
             this.NoteListView.SelectionMode = SelectionMode.Single;
             this.NoteListView.MouseLeftButtonUp += NoteListView_MouseLeftButtonUp;
             this.usersListView.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged1;
+
             //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             //{
             //    //Header = "Id",
@@ -76,13 +98,18 @@ namespace WpfApp1.Pages
             //    DisplayMemberBinding = new Binding("status"),
             //    Width = 100
             //});
-            
+
             InitCmbStatus();
             ConfigureBotStack();
             //FillMembers();//pirma karta uzkrauna iskarto.
             
 
             Task.Run(() => DisplayMembersR());//toliau naujina info kas 10secs.
+        }
+
+        private void SetupChatBox()
+        {
+            //this.chatbox.ItemTemplate =
         }
 
         private void ItemContainerGenerator_StatusChanged1(object sender, EventArgs e)
@@ -193,35 +220,35 @@ namespace WpfApp1.Pages
             roomBioPOP = CreateBioPopup(this.roomAddData.Biography);
         }
 
-        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
-        {
-            if (Changed && this.chatbox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-            {
-                foreach(ChatLine line in (sender as System.Windows.Controls.ItemContainerGenerator).Items)
-                {
-                    ListViewItem lv = (ListViewItem)chatbox.ItemContainerGenerator.ContainerFromItem(line);
-                    if (lv != null)
-                    {
-                        lv.ToolTip = line.CreateDate.ToString("HH:mm:ss yyyy/MM/dd", CultureInfo.InvariantCulture);
-                        if (line.CreatorId.ToString() == Inst.ApiRequests.User.id)
-                        {
-                            lv.Background = Brushes.LightBlue;
-                        }
-                        else
-                        {
-                            lv.Background = Brushes.LightGray;
-                        }
-                    }
-                }
-                Changed = false;
-            }
-        }
+        //private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+        //{
+        //    if (Changed && this.chatbox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+        //    {
+        //        foreach(ChatLine line in (sender as System.Windows.Controls.ItemContainerGenerator).Items)
+        //        {
+        //            ListBoxItem lv = (ListBoxItem)chatbox.ItemContainerGenerator.ContainerFromItem(line);
+        //            if (lv != null)
+        //            {
+        //                lv.ToolTip = line.CreateDate.ToString("HH:mm:ss yyyy/MM/dd", CultureInfo.InvariantCulture);
+        //                if (line.CreatorId.ToString() == Inst.ApiRequests.User.id)
+        //                {
+        //                    lv.Background = Brushes.LightBlue;
+        //                }
+        //                else
+        //                {
+        //                    lv.Background = Brushes.LightGray;
+        //                }
+        //            }
+        //        }
+        //        Changed = false;
+        //    }
+        //}
 
         private void Txt_entry_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                SubmitEntry();
+                ProcessEntry();
             }
         }
 
@@ -423,9 +450,14 @@ namespace WpfApp1.Pages
             while (true)
             {
                 await Task.Delay(10000);
-                
+
+                await this.Dispatcher.Invoke(async () =>
+                {
+                    await ListUsers();
+                });
                 //ListUsersStack();
-                if (!ListUsers().Result/*!FillMembers().Result*/)
+                
+                if (this.usersListView.Items.Count == 0/*!FillMembers().Result*/)
                 {
                     break;
                 }
@@ -586,15 +618,147 @@ namespace WpfApp1.Pages
             FillNotes();
         }
 
-        public  void UpdateUsersListView()
+        private async Task<BitmapImage> FindImageOf(int id)
         {
-             this.Dispatcher.Invoke(ListUsers);
+            Tuple<int, BitmapImage> item;
+            if ((item = User_images.FirstOrDefault(x => x.Item1 == id)) != null)
+            {
+                return item.Item2;
+            }
+            else
+            {
+                AdditionalData addata = await Inst.ApiRequests.GetUserAddData(id);
+                byte[] result = addata.PhotoBytes;
+                //BitmapImage image = Inst.PhotoBytes_to_Image(Inst.ApiRequests.GetUserAddData(id).Result?.PhotoBytes);//Problem
+                BitmapImage image = Inst.PhotoBytes_to_Image(result);
+                User_images.Add(new Tuple<int, BitmapImage>(id, image));
+                return image;
+            }
+        }
+
+        public void UpdateUsersListView()
+        {
+            this.Dispatcher.Invoke(ListUsers);
+            Inst.Utils.Room.SetUsersList();//Galima butu naudoti is ListUsers metodo gauta info.
             //FillMembers();
         }
 
-        public void UpdateGroupChat()
+        public void UpdateGroupChat(string text, string username, string creator_id)
         {
-            FillChat();
+            AppendChatLine(text, username, DateTime.Now, pCreatorId : int.Parse(creator_id));
+            //FillChat();
+        }
+
+        private async Task AppendChatLine(string text, string username, DateTime CreateDate, BitmapImage pImage = null, int pCreatorId = -1, bool Insert = false)
+        {
+            if (this.chatbox.ChatLines.Count > 0)
+            {
+                ChatLineViewModel chatline_vm;
+                if (Insert)
+                {
+                    chatline_vm = this.chatbox.ChatLines.First();
+                }
+                else
+                {
+                    chatline_vm = this.chatbox.ChatLines.Last();
+                }
+                 
+                DateTime last_chatline_createtime = DateTime.Parse(chatline_vm.CreateDate);
+                DateTime added_chatline_createtime = CreateDate;
+                if (chatline_vm.CreatorId == pCreatorId && last_chatline_createtime.Date == added_chatline_createtime.Date && last_chatline_createtime.Hour == added_chatline_createtime.Hour && last_chatline_createtime.Minute == added_chatline_createtime.Minute)
+                {
+                    this.chatbox.ChatLines.Remove(chatline_vm);
+                    
+                    if (Insert)
+                    {
+                        this.chatbox.ChatLines.Insert(0, chatline_vm);
+                        chatline_vm.Text = text + Environment.NewLine + chatline_vm.Text;
+                    }
+                    else
+                    {
+                        chatline_vm.Text += Environment.NewLine + text;
+                        this.chatbox.ChatLines.Add(chatline_vm);
+                    }
+                }
+                else
+                {
+                    await AddChatLine();
+                }
+            }
+            else
+            {
+                await AddChatLine();
+            }
+
+            async Task AddChatLine()
+            {
+                ChatLine line = new ChatLine() { Id = null, CreateDate = CreateDate, Username = username, CreatorId = pCreatorId, RoomId = this.room.roomId, Text = text};
+                if (pImage == null)
+                {
+                    line.Profile_image = await FindImageOf(pCreatorId);
+                }
+                else
+                {
+                    line.Profile_image = pImage;
+                }
+
+                if (Insert)
+                {
+                    this.chatbox.ChatLines.Insert(0, new ChatLineViewModel(line));
+                }
+                else
+                {
+                    this.chatbox.Add(new ChatLineViewModel(line));
+                }
+            }
+
+            if (this.ChatControl.ScrollViewer != null)
+            {
+                HandleChatControlView(pCreatorId == int.Parse(Inst.ApiRequests.User.id), was_inserted : Insert);
+            }
+            else
+            {
+                GetScrollViewer();
+            }
+        }
+
+        private void GetScrollViewer()
+        {
+            this.ChatControl.ScrollViewer = this.ChatControl.GetChildOfType<ScrollViewer>();
+            if (this.ChatControl.ScrollViewer != null)
+            {
+                this.ChatControl.ScrollViewer.ScrollToEnd();
+                this.ChatControl.ScrollViewer.ScrollChanged += RoomPage_ScrollChangedAsync;
+
+            }
+
+            if (!chat_flag && this.ChatControl.ScrollViewer.ScrollableHeight == 0)
+            {
+                LoadPage();
+                if (this.ChatControl.ScrollViewer.ScrollableHeight > 0)
+                {
+                    chat_flag = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles ChatControl view after a new chat entry was appended.
+        /// </summary>
+        private void HandleChatControlView(bool creator_is_local, bool was_inserted = false)
+        {
+            if (this.ChatControl.ScrollViewer.VerticalOffset + this.ChatControl.ScrollViewer.ViewportHeight < this.ChatControl.ScrollViewer.ExtentHeight - this.ChatControl.ScrollViewer.ViewportHeight)
+            {
+                if (!creator_is_local && !was_inserted)
+                {
+                    System.Media.SystemSounds.Beep.Play();
+                    //Kazkokias vizualias priemones padaryti? Kontroliu mirgsejima..?
+                }
+            }
+            else
+            {
+                this.ChatControl.ScrollViewer.ScrollToEnd();
+            }
         }
 
         private async void FillNotes()
@@ -813,25 +977,31 @@ namespace WpfApp1.Pages
             try
             {
                 //var response = await client.GetAsync($"/ChatLine/lines/{this.room.roomId}");
-                List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId);
+                List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, 0, items_per_page);
                 if (data!=null)
                 {
-                    //List<ChatLine> data = response.Content.ReadAsAsync<List<ChatLine>>().Result;
-                    chatbox.Items.Clear();
-                    
+                    data.ForEach(async x => 
+                    {
+                        x.Profile_image = await FindImageOf(x.CreatorId);
+                    });
                     foreach (ChatLine line in data.OrderBy(x => x.CreateDate))
                     {
-                        chatbox.Items.Add(line);
+                        //line.Image = await FindImageOf(line.CreatorId);
+                        await AppendChatLine(line.Text, line.Username, line.CreateDate, pImage: line.Profile_image, pCreatorId : line.CreatorId);
+                        //chatbox.ChatLines.Add(new ChatLineViewModel(line));
                     }
-                    Changed = true;
-                    chatbox.ScrollIntoView(data.OrderBy(x => x.CreateDate).LastOrDefault());
-                    chatbox.UpdateLayout();
+                    await Task.Delay(1);
+                    this.ChatControl.UpdateLayout();
+                    GetScrollViewer();
                 }
                 else
                 {
                     MessageBox.Show("Something went wrong! Could not populate chat");
                 }
 
+                current_page = 0;
+
+                this.ChatControl.DataContext = chatbox;
             }
             catch (Exception ex)
             {
@@ -839,18 +1009,90 @@ namespace WpfApp1.Pages
             }
         }
 
-        private void Btn_txtenter_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Nukelia ListViewItemu teksta ir padidina pati itema atitinkamai. Tai padaro pirmiems items_per_page itemams
+        /// </summary>
+        //private void FormatListViewItems()
+        //{
+        //    for (int i = 0; i < items_per_page; i++)
+        //    {
+        //        ListViewItem lwi = (chatbox.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem);
+        //        string visual_text = (lwi.Content as ChatLine).Username + (lwi.Content as ChatLine).Text;
+        //        lwi.
+        //    }
+        //}
+
+        //private void ChatControl_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+        //{
+
+        //}
+
+        private async void RoomPage_ScrollChangedAsync(object sender, ScrollChangedEventArgs e)
         {
-            SubmitEntry();
+            if (e.VerticalOffset == 0)
+            {
+                if (e.ExtentHeightChange > 0)
+                {
+                    this.ChatControl.ScrollViewer.ScrollToVerticalOffset(e.ExtentHeightChange + e.ExtentHeightChange > 0 ? e.ViewportHeight + e.ExtentHeightChange - e.ViewportHeight : 0);
+                }
+                else
+                {
+                    await LoadPage();
+                }
+            }
         }
 
-        private async void SubmitEntry()
+        private int current_page;
+        private bool finished_loading_chat_page = true;
+
+        private async Task LoadPage()
+        {
+            if (!finished_loading_chat_page)
+            {
+                return;
+            }
+            finished_loading_chat_page = false;
+            List<ChatLine> data = await Inst.ApiRequests.GetChat(this.room.roomId, current_page + 1, items_per_page);
+            if (data != null)
+            {
+                //data.ForEach(async x =>
+                //        {
+                //            x.Image = await FindImageOf(x.CreatorId);
+                //            chatbox.ChatLines.Insert(0, new ChatLineViewModel(x));
+                //        }
+                //            );
+                data.ForEach(async x =>
+                {
+                    x.Profile_image = await FindImageOf(x.CreatorId);
+                });
+                data.ForEach(async x => await AppendChatLine(x.Text, x.Username, x.CreateDate, pImage : x.Profile_image, pCreatorId : x.CreatorId, Insert: true));
+                current_page++;
+            }
+            else
+            {
+                //All chatline were loaded.
+                chat_flag = true;
+            }
+            finished_loading_chat_page = true;
+        }
+
+        private void Btn_txtenter_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessEntry();
+        }
+
+        private void ProcessEntry()
         {
             if (string.IsNullOrWhiteSpace(txt_entry.Text))
             {
                 return;
             }
+            AppendChatLine(txt_entry.Text, Inst.ApiRequests.User.username, DateTime.Now, pCreatorId : int.Parse(Inst.ApiRequests.User.id));
+            SubmitEntry();
+        }
 
+        private async void SubmitEntry()
+        {
             try
             {
                 //var response = await client.PostAsJsonAsync<string>($"/ChatLine/create/{this.room.roomId}", txt_entry.Text);
@@ -869,7 +1111,7 @@ namespace WpfApp1.Pages
                 Console.WriteLine(ex.ToString());
             }
         }
-        public async Task<bool> ListUsers()
+        public async Task<bool> ListUsers()//Neefektyviai atnaujinamas listas. Reiketu po viena prideti/ismesti, kaip daroma kitur.
         {
             List<Newtonsoft.Json.Linq.JObject> users = await Inst.ApiRequests.GetGroupMembers(this.room.roomId);
             if (users == null)
@@ -888,7 +1130,8 @@ namespace WpfApp1.Pages
                 else
                     usersList.Add(UsersStatus(userAddData, item["value"].ToObject<string>(), temp.Username,temp.Id.ToString()));
             }
-            this.usersListView.ItemsSource = usersList;            
+            this.usersListView.ItemsSource = usersList;
+            this.usersListView.UpdateLayout();
             return true;
         }
         private Dictionary<string,object> UsersStatus(AdditionalData addData,string statusChar,string userName,string id)
@@ -907,10 +1150,14 @@ namespace WpfApp1.Pages
                         ImageBrush imgBrush = new ImageBrush();
                         imgBrush.ImageSource = image;
                         temp.Add("photo",imgBrush);
+                    if (User_images.All(x => x.Item1 != int.Parse(id)))//Should replace existing if found...
+                    {
+                        User_images.Add(new Tuple<int, BitmapImage>(int.Parse(id), image));
+                    }
             }
             else
             {
-                temp.Add("photo",Brushes.LightGray);
+                temp.Add("photo", Brushes.LightGray);
             }
             Brush status;          
              switch (statusChar)
@@ -1017,6 +1264,7 @@ namespace WpfApp1.Pages
             return stack;
         }
     }
+
     class AddStroke : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

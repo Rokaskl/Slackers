@@ -11,7 +11,7 @@ namespace WebApi
     public class TcpServer
     {
         private TcpListener server;
-        public TcpServer(int port = 6969)
+        public TcpServer(int port = 10103)
         {
             server = new TcpListener(Dns.GetHostAddresses("localhost")[0], port);
             Start();
@@ -35,12 +35,23 @@ namespace WebApi
             Task.Run(() => RunServer());
         }
 
-        public bool SendInfo(int userId, string message)
+        public bool SendInfo(int userId, string message_number, string text_data, int senderId)
         {
             UserInfo user = App.Inst.users.Find(x => x.id == userId);
             if (user != null)
             {
-                byte[] buffer = BitConverter.GetBytes(0).Concat(BitConverter.GetBytes(int.Parse(message))).ToArray();
+                byte[] buffer;
+
+                if (!string.IsNullOrWhiteSpace(text_data))
+                {
+                   buffer = BitConverter.GetBytes(int.Parse(message_number)).Concat(BitConverter.GetBytes(senderId)).Concat(Encoding.UTF8.GetBytes(text_data)).ToArray();
+                }
+                else
+                {
+                    buffer = BitConverter.GetBytes(int.Parse(message_number)).ToArray();
+                }
+               
+                
                 while (true)
                 {
                     try

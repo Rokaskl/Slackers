@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { userActions } from '../_actions';
-
 import { roomActions } from '../_actions/room.actions.js';
 import RoomCard from '../_components/RoomCard.jsx';
 import {button,btn} from 'react-bootstrap';

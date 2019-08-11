@@ -80,6 +80,7 @@ export class AdminChart extends React.Component {
       return (
          <div> 
         <Chart options={options} series={series} type="bar" height="550" />
+         <h2>In Total</h2>
         <Chart options={options2} series={series2} type="donut" height="450"  />
          </div> 
       );

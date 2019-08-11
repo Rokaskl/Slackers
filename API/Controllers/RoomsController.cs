@@ -279,15 +279,32 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        [Route("group_members/{RoomId:int}")]
-        public IActionResult GroupMembersInfo(int RoomId)
+        [Route("group_members/{RoomId:int}/{Format:bool}")]
+        public IActionResult GroupMembersInfo(int RoomId, bool Format)
         {
-            var userList = _roomService.GetRoom(RoomId)?.users?.Select(x =>
+            RoomDto room = _roomService.GetRoom(RoomId);
+            if (room != null)
             {
-                User user = _userService.GetById(x);
-                return new { id = user.Id, username = user.Username, firstName = user.FirstName, lastName = user.LastName, token = "" };
-            });
-            return Ok(userList);
+                List<int> users = room.users;
+
+                if (Format)
+                {
+                    if (users == null)
+                    {
+                        users = new List<int>();
+                    }
+                    users.Add(room.roomAdminId);
+                }
+
+                var userList = users?.Select(x =>
+                {
+                    User user = _userService.GetById(x);
+                    return new { id = user.Id, username = user.Username, firstName = user.FirstName, lastName = user.LastName, token = "" };
+                });
+
+                return Ok(userList);
+            }
+            return BadRequest();
         }
 
         [AllowAnonymous]//Pratestuoti

@@ -93,7 +93,7 @@ namespace WebApi
             {
                 foreach (int user in e.registered_room_users)
                 {
-                    this.Server.SendInfo(user, e.change.ToString());
+                    this.Server.SendInfo(user, e.change.ToString(), e.data, e.senderId);
                 }
             } 
         }
@@ -136,5 +136,7 @@ namespace WebApi
         public int change;
         public int roomId;
         public List<int> registered_room_users;
+        public string data;
+        public int senderId;
     }
 }

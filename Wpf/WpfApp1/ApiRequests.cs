@@ -23,26 +23,24 @@ namespace WpfApp1
         public EnableChangeHandle disable_enable;
         #endregion
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public ApiRequests()
+        public ApiRequests(KeyValuePair<string, int> ip_port)
         {
             this.client = new HttpClient();
-            this.url = new Uri("http://localhost:4000");
+            //this.url = new Uri("http://localhost:4000");
+            this.url = new Uri($"http://{ip_port.Key}:{ip_port.Value}");
             this.client.BaseAddress = url;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             disable_enable = new EnableChangeHandle();
         }
 
         #region Chat
-        public async Task<List<ChatLine>> GetChat(int roomId)
+        public async Task<List<ChatLine>> GetChat(int roomId, int page, int items_per_page)
         {
             if (roomId<1)
             {
                 return null;
             }
-            var response = await client.GetAsync($"/ChatLine/lines/{roomId}");
+            var response = await client.GetAsync($"/ChatLine/lines/{roomId}/{page}/{items_per_page}");
             if (response.IsSuccessStatusCode)
             {
                 return response.Content.ReadAsAsync<List<ChatLine>>().Result;
@@ -186,6 +184,19 @@ namespace WpfApp1
             }
             return false;
         }
+
+        //public async Task<List<User>> GetRoomUserList(int id)
+        //{
+        //    var response = await client.GetAsync($"/Rooms/group_members/{id}");
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        return await response.Content.ReadAsAsync<List<User>>();
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
         #endregion
 
         #region User, account
@@ -354,9 +365,9 @@ namespace WpfApp1
             }
             return null;
         }
-        public async Task<List<User>> GetUsersList(int roomId)
+        public async Task<List<User>> GetUsersList(int roomId, bool get_with_admin = false)
         {
-            var res = await client.GetAsync($"Rooms/group_members/{roomId}");
+            var res = await client.GetAsync($"Rooms/group_members/{roomId}/{get_with_admin}");
             if (res.IsSuccessStatusCode)
             {
                 return res.Content.ReadAsAsync<List<User>>().Result;

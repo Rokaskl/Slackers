@@ -29,13 +29,14 @@ namespace WpfApp1
         public class ChangesEventArgs : EventArgs
         {
             public int change_number;
+            public List<string> data;
         }
 
         private TcpClient client;
 
-        public TcpDock(int port = 6969)
+        public TcpDock(int port = 10103)
         {
-            client = new TcpClient("localhost", port);
+            client = new TcpClient(Inst.Utils.Ip, port);
             MessageChanged += HandleChange;
             ConnectToServer();
         }
@@ -56,7 +57,7 @@ namespace WpfApp1
                     {
                         (Inst.Utils.RoomPage as RoomPage)?.Dispatcher.Invoke(() =>
                         {
-                            (Inst.Utils.RoomPage as RoomPage)?.UpdateGroupChat();
+                            (Inst.Utils.RoomPage as RoomPage)?.UpdateGroupChat(e.data[1], e.data[0], e.data[2]);
                         });
                         break;
                     }
@@ -128,22 +129,35 @@ namespace WpfApp1
 
         public async void Start(byte[] prevbuffer)
         {
-            byte[] prev = prevbuffer;
+            //byte[] prev = prevbuffer;
 
             while (Continue)
             {
                 await Task.Delay(2);
                 try
                 {
-                    if (client.GetStream().CanRead && client.Available >= 8)
+                    if (client.GetStream().CanRead && client.Available >= 4)
                     {
-                        byte[] buffer = new byte[8];
-                        client.GetStream().Read(buffer, 0, 8);
-                        if (!buffer.Equals(prev))
+                        byte[] buffer = new byte[client.Available];
+                        int Available = client.Available;
+                        client.GetStream().Read(buffer, 0, client.Available);
+                        //if (!buffer.Equals(prev))
+                        //{
+                         //   prev = buffer.ToArray();
+                            int change_number = BitConverter.ToInt32(buffer, 0);
+                        ChangesEventArgs args = new ChangesEventArgs() { change_number = change_number, data = new List<string>() };
+                        if (buffer.Length > 4)
                         {
-                            prev = buffer.ToArray();
-                            OnMessageChanged(new ChangesEventArgs() { change_number = BitConverter.ToInt32(buffer, 4) });
+                            int user_id = BitConverter.ToInt32(buffer, 4);
+                            //string data = BitConverter.ToString(buffer, 8, Available - 8);
+                            string data = Encoding.UTF8.GetString(buffer, 8, Available - 8);
+
+                            args.data.Add(Inst.Utils.Room?.GetUsername(user_id));//Reikia gauti user nickname is user id.
+                            args.data.Add(data);
+                            args.data.Add(user_id.ToString());
                         }
+                        OnMessageChanged(args);
+                        //}
                     }
                 }
                 catch(Exception ex)
