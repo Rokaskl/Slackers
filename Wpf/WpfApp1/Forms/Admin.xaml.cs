@@ -86,7 +86,7 @@ namespace WpfApp1.Forms
 
         private void BtnEditRoom_Click(object sender, RoutedEventArgs e)
         {
-            var registerWindow = new RegisterRoomWindow(Int32.Parse(Inst.ApiRequests.User.id), this);
+            var registerWindow = new RegisterRoomWindow((RoomDto)((ButtonCornering)sender).Tag, this);
             ((ButtonCornering)sender).IsEnabledButton = false;
             if (registerWindow.ShowDialog() == false)
             {

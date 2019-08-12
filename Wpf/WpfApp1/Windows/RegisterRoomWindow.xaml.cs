@@ -50,7 +50,7 @@ namespace WpfApp1.Windows
             this.RoomName.IsReadOnly = true;
             this.RoomBio.Document.Blocks.Clear();
             getAddData(room.roomId);
-            //this.create.Content = "Submit edit";
+            this.submit.ButtonText = "Submit edit";
 
         }
 

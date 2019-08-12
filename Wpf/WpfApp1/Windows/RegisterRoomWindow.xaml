@@ -32,7 +32,7 @@
             <!--<Button x:Name="UploadPicture" Content="Picure" Click="UploadPicture_Click" VerticalAlignment="Center"></Button>-->
             <ddd:ButtonCornering ButtonText="Pick picture" Click="UploadPicture_Click"></ddd:ButtonCornering>
         </StackPanel>
-        <ddd:ButtonCornering Grid.Row="3" ButtonText="Create room" Click="Create_Click" HorizontalAlignment="Stretch" Margin="0 0 0 0"></ddd:ButtonCornering>
+        <ddd:ButtonCornering x:Name="submit" Grid.Row="3" ButtonText="Create room" Click="Create_Click" HorizontalAlignment="Stretch" Margin="0 0 0 0"></ddd:ButtonCornering>
         <!--<Button Grid.Row="3" x:Name="create" Content="Create room" Click="Create_Click"></Button>-->
     </Grid>
 </Window>

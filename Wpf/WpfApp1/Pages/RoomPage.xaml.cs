@@ -589,7 +589,6 @@ namespace WpfApp1.Pages
                 StopTimer();
             }
             Inst.Utils.MainWindow.room.Visibility = Visibility.Hidden;
-            enableButton();
             Inst.Utils.MainWindow.frame1.Refresh();
             Inst.Utils.MainWindow.frame2.Refresh();
             if (prevWindow == "admin")
@@ -601,16 +600,6 @@ namespace WpfApp1.Pages
                 Inst.Utils.MainWindow.tabs.SelectedIndex = 1;
             //Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new UserPage());
             Inst.Utils.RoomPage = null;
-        }
-
-        private void enableButton()
-        {
-            Inst.Utils.IsLoginEnabled = true;
-            Style style = new Style();
-            style.TargetType = typeof(Button);            
-            style.BasedOn = (Style)App.Current.FindResource("enable");
-            style.Setters.Add(new Setter(Button.IsEnabledProperty,true));
-            App.Current.Resources["enable"] = style;
         }
 
         public void UpdateNoteListView()
