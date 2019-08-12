@@ -17,6 +17,7 @@ namespace WebApi.Services
         List<User> GetList(List<int> users);
         void Update(User user, string password = null);
         void Delete(int id);
+        List<Dictionary<string, object>> UserViewModel_dict(List<int> ids);
 
     }
 
@@ -211,6 +212,9 @@ namespace WebApi.Services
             return _users;
         }
 
-
+        public List<Dictionary<string, object>> UserViewModel_dict(List<int> ids)
+        {
+            return ids.Select(x => new Dictionary<string, object>() { { "photobytes", _context.AdditionalDatas.FirstOrDefault(z => z.Id == x)?.PhotoBytes }, { "username", _context.Users.FirstOrDefault(z => z.Id == x)?.Username }, { "id", x }, { "status", App.Inst.OnlineStatusUsers.Contains(x) ? 1 : 0 } })?.ToList();
+        }
     }
 }

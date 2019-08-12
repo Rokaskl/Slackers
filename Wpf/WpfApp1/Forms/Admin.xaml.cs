@@ -358,6 +358,22 @@ namespace WpfApp1.Forms
                     DeleteRoom((RoomDto)((ButtonCornering)sender).Tag);
                 }
             }
+            //     confirm.Close();
+            // };
+            
+            // pan2.Children.Add(ok);
+            // pan2.Children.Add(cancer);
+                        
+            // pan.VerticalAlignment = VerticalAlignment.Center;
+            // pan.HorizontalAlignment = HorizontalAlignment.Center;
+            // Label lab = new Label();
+            // lab.Content = $"Are you sure?\nDelete {SelectedRoom.roomName.Replace(" ",string.Empty)} room?";//Nafik tarpus isimti?
+            // lab.HorizontalAlignment = HorizontalAlignment.Center;
+            // pan.Children.Add(lab);
+            // pan.Children.Add(pan2);
+
+            // confirm.Content = pan;
+            // confirm.ShowDialog();
         }
 
         private async void DeleteRoom(RoomDto room)

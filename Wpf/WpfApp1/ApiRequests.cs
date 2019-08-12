@@ -5,11 +5,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using WebApi.Dtos;
 using WebApi.Entities;
 using WpfApp1.Forms;
 using WpfApp1.Helpers;
 using WpfApp1.Windows;
+using WpfApp1.ViewModels;
 
 namespace WpfApp1
 {
@@ -435,6 +437,69 @@ namespace WpfApp1
             {
                 Guid new_guid = resp.Content.ReadAsAsync<Guid>().Result;
                 room.guid = new_guid.ToString();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Friends List
+
+        public async Task<List<UsersListLineViewModel>> GetFriends(int UserId)//Should be Image, Username, id, status.
+        {
+            List<UsersListLineViewModel> friends_list = new List<UsersListLineViewModel>();
+            var resp = await this.client.GetAsync($"Friends/{UserId}");
+            if (resp.IsSuccessStatusCode)
+            {
+                resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.ForEach(x => friends_list.Add(new UsersListLineViewModel(x["photobytes"], null, null, x["username"].ToString(), int.Parse(x["status"].ToString()) == 1 ? Brushes.Green : Brushes.Gray, int.Parse(x["id"].ToString()), null)));
+                return friends_list;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<UsersListLineViewModel>> GetFriendRequests(int UserId, string direction_command)
+        {
+            List<UsersListLineViewModel> requests_list = new List<UsersListLineViewModel>();
+            var resp = await this.client.GetAsync($"Friends/requests/{UserId}/{direction_command}");
+            if (resp.IsSuccessStatusCode)
+            {
+                resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.ForEach(x => requests_list.Add(new UsersListLineViewModel(x["photobytes"], null, null, x["username"].ToString(), int.Parse(x["status"].ToString()) == 1 ? Brushes.Green : Brushes.Gray, int.Parse(x["id"].ToString()), null)));
+                return requests_list;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<UsersListLineViewModel>> SearchFriends(string search_string)
+        {
+            List<UsersListLineViewModel> found_list = new List<UsersListLineViewModel>();
+            var resp = await this.client.GetAsync($"Friends/search/{this.User.id}/{search_string}");
+            if (resp.IsSuccessStatusCode)
+            {
+                resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.ForEach(x => found_list.Add(new UsersListLineViewModel(x["photobytes"], null, null, x["username"].ToString(), int.Parse(x["status"].ToString()) == 1 ? Brushes.Green : Brushes.Gray, int.Parse(x["id"].ToString()), null)));
+                return found_list;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> SendRequest(string command, int other_user_id)
+        {
+            var resp = await this.client.GetAsync($"Friends/request/{this.User.id}/{other_user_id}/{command}");
+            if (resp.IsSuccessStatusCode)
+            {
+                //resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.ForEach(x => found_list.Add(new UsersListLineViewModel(x["photobytes"], null, null, x["username"].ToString(), int.Parse(x["status"].ToString()) == 1 ? Brushes.Green : Brushes.Gray, int.Parse(x["id"].ToString()), null)));
                 return true;
             }
             else

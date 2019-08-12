@@ -64,6 +64,7 @@ namespace WebApi
         public List<UserInfo> users;
         public TcpServer Server;
         public Dictionary<DateTime, int> User_TimeOut_List;
+        public List<int> OnlineStatusUsers;
 
         
         public Inst()
@@ -71,6 +72,7 @@ namespace WebApi
             RoomChanged += Inst_RoomChanged;    
             tempRooms = new List<TempRoom>();
             User_TimeOut_List = new Dictionary<DateTime, int>();
+            OnlineStatusUsers = new List<int>();
             (new TimeOutControl()).Start();
             //users = new Dictionary<int, Tuple<int, int>>();
             users = new List<UserInfo>();

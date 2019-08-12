@@ -81,6 +81,8 @@ namespace WebApi
             services.AddScoped<ITimeMarkService, TimeMarkService>();
             services.AddScoped<INoteService, NoteService>();
             services.AddScoped<IChatLineService, ChatLineService>();
+            services.AddScoped<IFriendshipService, FriendshipService>();
+            services.AddScoped<IFriendshipRequestService, FriendshipRequestService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

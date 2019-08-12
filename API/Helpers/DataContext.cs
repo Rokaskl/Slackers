@@ -13,5 +13,7 @@ namespace WebApi.Helpers
         public DbSet<Note> Notes { get; set; }
         public DbSet<AdditionalData> AdditionalDatas {get;set;}
         public DbSet<ChatLine> ChatLines { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<FriendshipRequest> FriendshipRequests { get; set; }
     }
 }
