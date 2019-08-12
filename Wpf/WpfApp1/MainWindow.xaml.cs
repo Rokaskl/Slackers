@@ -5,6 +5,8 @@ using System.Diagnostics;
 using WpfApp1.Windows;
 using System.Collections.Generic;
 using WpfApp1.Forms;
+using WpfApp1.ViewModels;
+using System.Windows.Media;
 
 namespace WpfApp1
 {
@@ -120,6 +122,26 @@ namespace WpfApp1
         {
             Process.Start(new ProcessStartInfo("http://localhost:8080/login"));
             e.Handled = true;
+        }
+
+        public FriendsListForm Fl_form;
+
+        private void FriendsList_Button_Click(object sender, RoutedEventArgs e)
+        {
+            //(new FriendsListForm(Inst.ApiRequests.AdditionalData.)).Show();
+            if (this.Fl_form == null)
+            {
+                ImageBrush img = new ImageBrush();
+                img.ImageSource = Inst.PhotoBytes_to_Image(Inst.ApiRequests.AdditionalData.PhotoBytes);
+                FriendsListViewModel fl_vm = new FriendsListViewModel(img, Inst.ApiRequests.User.username, int.Parse(Inst.ApiRequests.User.id), Inst.ApiRequests.AdditionalData.Biography);
+                FriendsListForm fl_form = new FriendsListForm(fl_vm);
+                this.Fl_form = fl_form;
+                fl_form.Show();
+            }
+            else
+            {
+                this.Fl_form.Focus();
+            }
         }
     }
 }

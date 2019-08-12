@@ -70,6 +70,12 @@ namespace WebApi.Controllers
             //prideda sekmingai prisijungusi vartotoja prie serverio loggedin useriu saraso.
             //App.Inst.loggedin.Add(user.Id);
             App.Inst.Add(user.Id);
+
+            if (!App.Inst.OnlineStatusUsers.Contains(user.Id))
+            {
+                App.Inst.OnlineStatusUsers.Add(user.Id);
+            }
+
             // return basic user info (without password) and token to store client side
             return Ok(new {
                 Id = user.Id,
@@ -147,6 +153,7 @@ namespace WebApi.Controllers
         {
             int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
             App.Inst.Remove(requesterId);
+            App.Inst.OnlineStatusUsers.Remove(requesterId);
             return Ok();
         }
 

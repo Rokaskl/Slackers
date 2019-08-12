@@ -63,7 +63,10 @@ namespace WpfApp1
                     }
                 case 2://users listview
                     {
-                        (Inst.Utils.RoomPage as RoomPage)?.UpdateUsersListView();
+                        (Inst.Utils.RoomPage as RoomPage)?.Dispatcher.Invoke(() =>
+                        {
+                            (Inst.Utils.RoomPage as RoomPage)?.UpdateUsersListView();
+                        });
                         break;
                     }
                 case 3://room members

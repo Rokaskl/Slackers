@@ -365,7 +365,8 @@ namespace WpfApp1.Pages
                 {
                     //MessageBox.Show($"Joined {room.roomName}");
                     Inst.Utils.MainWindow.roomPage.NavigationService.Navigate(new RoomPage(room,"admin"));
-                    Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;                    
+                    Inst.Utils.MainWindow.room.Visibility = Visibility.Visible;
+                    Inst.Utils.MainWindow.room.Header = $"Room {room.roomName}";
                     Inst.Utils.MainWindow.tabs.SelectedIndex = 2;
                     Inst.Utils.IsLoginEnabled = false;
                     //disableButton();

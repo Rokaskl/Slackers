@@ -41,6 +41,7 @@ namespace WpfApp1.Pages
         private bool breakDaRules = false;
         private int items_per_page = 10;
         private ChatViewModel chatbox = new ChatViewModel();
+        private UsersListViewModel usersbox = new UsersListViewModel();
         private List<Tuple<int, BitmapImage>> User_images;
         /// <summary>
         /// This flag indicates that all the existing chatlines are loaded or scrollviewer is obtained. Default = false; when done = true;
@@ -83,7 +84,7 @@ namespace WpfApp1.Pages
             this.txt_entry.KeyUp += Txt_entry_KeyUp;
             this.NoteListView.SelectionMode = SelectionMode.Single;
             this.NoteListView.MouseLeftButtonUp += NoteListView_MouseLeftButtonUp;
-            this.usersListView.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged1;
+            //this.usersListView.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged1;
 
             //(this.MembersListView.View as GridView).Columns.Add(new GridViewColumn
             //{
@@ -112,39 +113,39 @@ namespace WpfApp1.Pages
             //this.chatbox.ItemTemplate =
         }
 
-        private void ItemContainerGenerator_StatusChanged1(object sender, EventArgs e)
-        {
-            if (this.usersListView.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-            {
-                foreach(Dictionary<string,object> line in (sender as System.Windows.Controls.ItemContainerGenerator).Items)
-                {
-                    ListViewItem lv = (ListViewItem)usersListView.ItemContainerGenerator.ContainerFromItem(line);
-                    if (lv != null)
-                    {
-                        if (line["userId"].ToString() == Inst.ApiRequests.User.id)
-                        {
-                            lv.Background = Brushes.AliceBlue;
-                        }
-                    }
-                }
-            }
-        }
+        //private void ItemContainerGenerator_StatusChanged1(object sender, EventArgs e)
+        //{
+        //    if (this.usersListView.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+        //    {
+        //        foreach(Dictionary<string,object> line in (sender as System.Windows.Controls.ItemContainerGenerator).Items)
+        //        {
+        //            ListViewItem lv = (ListViewItem)usersListView.ItemContainerGenerator.ContainerFromItem(line);
+        //            if (lv != null)
+        //            {
+        //                if (line["userId"].ToString() == Inst.ApiRequests.User.id)
+        //                {
+        //                    lv.Background = Brushes.AliceBlue;
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
-        private void UsersListView_MouseLeave(object sender, MouseEventArgs e)
-        {
-            //CloseBioPop();
-        }
+        //private void UsersListView_MouseLeave(object sender, MouseEventArgs e)
+        //{
+        //    //CloseBioPop();
+        //}
 
         private Popup userBioPOP;
         private Popup roomBioPOP;
 
-        private void UsersListView_MouseEnter(object sender, RoutedEventArgs e)
-        {
-            if ((string)((Ellipse)sender).Tag!=null )
-            {
-                userBioPOP = CreateBioPopup(((Ellipse)sender).Tag.ToString());
-            }            
-        }
+        //private void UsersListView_MouseEnter(object sender, RoutedEventArgs e)
+        //{
+        //    if ((string)((Ellipse)sender).Tag!=null )
+        //    {
+        //        userBioPOP = CreateBioPopup(((Ellipse)sender).Tag.ToString());
+        //    }            
+        //}
 
         private Popup CreateBioPopup(string text)
         {
@@ -204,6 +205,9 @@ namespace WpfApp1.Pages
                         ImageBrush imgBrush = new ImageBrush();
                         imgBrush.ImageSource = image;
                         roomPhoto.Fill = imgBrush;
+                    //Test
+                    this.room_page_background_imgbrush.ImageSource = image;
+                    //Test
                 }
             roomPhoto.Tag = roomAddData.Biography;
             this.roomInfo.Children.Add(roomPhoto);
@@ -213,6 +217,8 @@ namespace WpfApp1.Pages
             roomNameLabel.Foreground = Brushes.Black;
             roomNameLabel.Margin = new Thickness(2, 2, 2, 2);
             this.roomInfo.Children.Add(roomNameLabel);
+
+            
         }
 
         private void RoomPhoto_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -457,10 +463,10 @@ namespace WpfApp1.Pages
                 });
                 //ListUsersStack();
                 
-                if (this.usersListView.Items.Count == 0/*!FillMembers().Result*/)
-                {
-                    break;
-                }
+                //if (this.usersListView.Items.Count == 0/*!FillMembers().Result*/)
+                //{
+                //    break;
+                //}
             }
         }
         //private async Task<bool> FillMembers()
@@ -1119,8 +1125,11 @@ namespace WpfApp1.Pages
                 else
                     usersList.Add(UsersStatus(userAddData, item["value"].ToObject<string>(), temp.Username,temp.Id.ToString()));
             }
-            this.usersListView.ItemsSource = usersList;
-            this.usersListView.UpdateLayout();
+            this.usersbox = new UsersListViewModel();//Laikinai
+            usersList.ForEach(x => usersbox.Users.Add(new UsersListLineViewModel(x["photo"], null, null, x["username"]?.ToString(), x["status"] as Brush, int.Parse(x["userId"]?.ToString()), x["bio"].ToString())));
+            this.usersList.DataContext = this.usersbox;
+            //this.usersList. = usersList;
+            //this.usersListView.UpdateLayout();
             return true;
         }
         private Dictionary<string,object> UsersStatus(AdditionalData addData,string statusChar,string userName,string id)

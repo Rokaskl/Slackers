@@ -115,13 +115,25 @@
     </Compile>
     <Compile Include="Controls\Chat\DesignTimeStaticClasses\DesignTimeChatLineStatic.cs" />
     <Compile Include="Controls\Chat\DesignTimeStaticClasses\DesignTimeChatStatic.cs" />
+    <Compile Include="Controls\UsersList\UsersListControl.xaml.cs">
+      <DependentUpon>UsersListControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\UsersList\UsersListLineControl.xaml.cs">
+      <DependentUpon>UsersListLineControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\ChatLineWidthConverter.cs" />
     <Compile Include="Entities\AdditionalData.cs" />
     <Compile Include="Forms\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
     </Compile>
+<!---->
     <Compile Include="Windows\PassChangingWindow.xaml.cs">
       <DependentUpon>PassChangingWindow.xaml</DependentUpon>
+    </Compile>
+<!---->
+    <Compile Include="Forms\FriendsListForm.xaml.cs">
+      <DependentUpon>FriendsListForm.xaml</DependentUpon>
+<!---->
     </Compile>
     <Compile Include="Forms\IpSelectionForm.xaml.cs">
       <DependentUpon>IpSelectionForm.xaml</DependentUpon>
@@ -155,6 +167,7 @@
     <Compile Include="Controls\TimerControl\Timer.cs" />
     <Compile Include="Entities\UserDto.cs" />
     <Compile Include="ValidationBinding.cs" />
+<!---->
     <Compile Include="Windows\WarningWindow.xaml.cs">
       <DependentUpon>WarningWindow.xaml</DependentUpon>
     </Compile>
@@ -170,13 +183,30 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+<!---->
+    <Compile Include="ViewModels\FriendsListViewModel.cs" />
+<!---->
     <Compile Include="ViewModels\ChatLineViewModel.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
+    <Compile Include="ViewModels\UsersListLineViewModel.cs" />
+    <Compile Include="ViewModels\UsersListViewModel.cs" />
     <Page Include="Controls\Chat\ChatControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Chat\ChatLineControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\UsersList\UsersListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\UsersList\UsersListLineControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\FriendsListForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -276,7 +306,9 @@
   <ItemGroup>
     <Resource Include="favicon.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Controls\UsersList\DesignTimeStaticClasses\" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\bluebackground.png" />
   </ItemGroup>
