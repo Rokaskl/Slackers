@@ -25,12 +25,14 @@ namespace WebApi.Controllers
         private IUserService _userService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private IFriendshipService _friendshipService;
 
-        public UsersController(IUserService userService,IMapper mapper,IOptions<AppSettings> appSettings)
+        public UsersController(IUserService userService,IMapper mapper,IOptions<AppSettings> appSettings, IFriendshipService friendshipService)
         {
             _userService = userService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+            _friendshipService = friendshipService;
             //TestSeed(20); // Kiek randomu sugeneruoti testavimui
         }
 
@@ -75,6 +77,8 @@ namespace WebApi.Controllers
             {
                 App.Inst.OnlineStatusUsers.Add(user.Id);
             }
+
+            App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = user.Id, change = 6, receivers = new List<int>(_friendshipService.Friends_and_RequestReceivers_Of(user.Id)), data = "4" });
 
             // return basic user info (without password) and token to store client side
             return Ok(new {
@@ -154,6 +158,7 @@ namespace WebApi.Controllers
             int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
             App.Inst.Remove(requesterId);
             App.Inst.OnlineStatusUsers.Remove(requesterId);
+            App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = requesterId, change = 6, receivers = new List<int>(_friendshipService.Friends_and_RequestReceivers_Of(requesterId)), data = "5" });
             return Ok();
         }
 

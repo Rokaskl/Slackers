@@ -12,6 +12,8 @@ using WpfApp1.Forms;
 using WpfApp1.Helpers;
 using WpfApp1.Windows;
 using WpfApp1.ViewModels;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace WpfApp1
 {
@@ -36,26 +38,26 @@ namespace WpfApp1
         }
 
         #region Chat
-        public async Task<List<ChatLine>> GetChat(int roomId, int page, int items_per_page)
+        public async Task<List<ChatLine>> GetChat(int context_Id, int page, int items_per_page, bool room)
         {
-            if (roomId<1)
+            if (room && context_Id < 1)
             {
                 return null;
             }
-            var response = await client.GetAsync($"/ChatLine/lines/{roomId}/{page}/{items_per_page}");
+            var response = await client.GetAsync($"/ChatLine/lines/{context_Id}/{page}/{items_per_page}/" + (room ? "room" : "user"));
             if (response.IsSuccessStatusCode)
             {
                 return response.Content.ReadAsAsync<List<ChatLine>>().Result;
             }
             return null;
         }
-        public async Task<bool> CreateEntry(string entry,int roomId)
+        public async Task<bool> CreateEntry(string entry, int roomId, bool room)
         {
             if (entry==null)
             {
                 return false;
             }
-            var response = await client.PostAsJsonAsync<string>($"/ChatLine/create/{roomId}", entry);
+            var response = await client.PostAsJsonAsync<string>($"/ChatLine/create/{roomId}/" + (room ? "room" : "user"), entry);
             if (response.IsSuccessStatusCode)
             {
                 return true;
@@ -199,6 +201,19 @@ namespace WpfApp1
         //        return null;
         //    }
         //}
+
+        public async Task<string> GetRoomName(int roomId)
+        {
+            var resp = await this.client.GetAsync($"Rooms/roomname/{roomId}");
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp.Content.ReadAsAsync<string>().Result;
+            }
+            else
+            {
+                return null;
+            }
+        }
         #endregion
 
         #region User, account
@@ -505,6 +520,133 @@ namespace WpfApp1
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<bool> ChangeStatus(int status)
+        {
+            var resp = await this.client.GetAsync($"Friends/status/{this.User.id}/{status}");
+            if (resp.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<UsersListLineViewModel> GetUser(int id)
+        {
+            var resp = await this.client.GetAsync($"Friends/user/{id}");
+            if (resp.IsSuccessStatusCode)
+            {
+                //AdditionalData ad_data = await this.GetUserAddData(id);
+                Dictionary<string, object> user = resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.First();
+                return new UsersListLineViewModel(user["photobytes"], null, null, user["username"].ToString(), user["status"].ToString() == "1" ? Brushes.Green : Brushes.Gray, int.Parse(user["id"].ToString()), null);
+                //resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.ForEach(x => found_list.Add(new UsersListLineViewModel(x["photobytes"], null, null, x["username"].ToString(), int.Parse(x["status"].ToString()) == 1 ? Brushes.Green : Brushes.Gray, int.Parse(x["id"].ToString()), null)));
+               
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<KeyValuePair<int, bool>>> GetUserStatuses(List<int> ids)
+        {
+            var resp = await this.client.PostAsJsonAsync($"Friends/statuses", ids);
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp.Content.ReadAsAsync<List<KeyValuePair<int, bool>>>().Result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Notifications
+
+        public async Task<List<int>> GetNotifications()
+        {
+            var resp = await this.client.GetAsync($"Notifications/{this.User.id}");
+            if (resp.IsSuccessStatusCode)
+            {
+                byte[] bytes = resp.Content.ReadAsAsync<byte[]>().Result;
+                List<int> ints = new List<int>();
+                for (int i = 0; i < bytes.Length; i += 4)
+                {
+                    ints.Add(BitConverter.ToInt32(bytes, i));
+                }
+
+                //return Array.ConvertAll(resp.Content.ReadAsAsync<byte[]>().Result, c => (int)c);
+                return ints;
+
+            }
+            else
+            {
+                return new List<int>(8);
+            }
+        }
+
+        public async Task<bool> SaveNotificationsToServer(List<int> notifications)
+        {
+            byte[] result = new byte[notifications.Count * sizeof(int)];
+            Buffer.BlockCopy(notifications.ToArray(), 0, result, 0, result.Length);
+            var resp = await this.client.PostAsJsonAsync($"Notifications/post/{this.User.id}", result);
+            if (resp.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Logs
+
+        public async Task<string> GetUserNickname(int userId)
+        {
+            var resp = await this.client.GetAsync($"Logs/username/{userId}");
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp.Content.ReadAsAsync<string>().Result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<LogLine>> GetLogLines(int start_num, int count)
+        {
+            var resp = await this.client.GetAsync($"Logs/{this.User.id}/{start_num}/{count}");
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp.Content.ReadAsAsync<List<LogLine>>().Result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<LogLine> GetLogLine(int id)
+        {
+            var resp = await this.client.GetAsync($"Logs/logline/{id}");
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp.Content.ReadAsAsync<LogLine>().Result;
+            }
+            else
+            {
+                return null;
             }
         }
 

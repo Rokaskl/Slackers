@@ -29,14 +29,24 @@ namespace WpfApp1.Controls.UsersList
             }
         }
 
-        private void UsersListLineControl_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            this.last_clicked_user = ((e.Source as UsersListLineControl).DataContext as UsersListLineViewModel);
-        }
+        //private void UsersListLineControl_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        //{
+        //    this.last_clicked_user = ((e.Source as UsersListLineControl).DataContext as UsersListLineViewModel);
+        //}
 
         private void MenuItems_Clicked(object sender, RoutedEventArgs e)
         {
             Inst.Utils.MainWindow.Fl_form.HandleUserControlsChange((sender as MenuItem).Header.ToString(), this.last_clicked_user);
+        }
+
+        private void UsersListLineControl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Inst.Utils.MainWindow.Fl_form.HandleUserControlsChange("Send message", this.last_clicked_user);
+        }
+
+        private void UsersListLineControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            this.last_clicked_user = ((e.Source as UsersListLineControl).DataContext as UsersListLineViewModel);
         }
     }
 }

@@ -103,7 +103,15 @@
     <Compile Include="Controls\ButtonCornering.xaml.cs">
       <DependentUpon>ButtonCornering.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\NotifyingButton\NotifyingButtonControl.xaml.cs">
+      <DependentUpon>NotifyingButtonControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FriendsChatForm.xaml.cs">
+      <DependentUpon>FriendsChatForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\EnableChangeHandle.cs" />
+    <Compile Include="ViewModels\FriendsChatFormViewModel.cs" />
+    <Compile Include="ViewModels\NotifyingButtonViewModel.cs" />
     <Compile Include="Windows\ConfirmWindow.xaml.cs">
       <DependentUpon>ConfirmWindow.xaml</DependentUpon>
     </Compile>
@@ -126,14 +134,14 @@
     <Compile Include="Forms\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
     </Compile>
-<!---->
+    <!---->
     <Compile Include="Windows\PassChangingWindow.xaml.cs">
       <DependentUpon>PassChangingWindow.xaml</DependentUpon>
     </Compile>
-<!---->
+    <!---->
     <Compile Include="Forms\FriendsListForm.xaml.cs">
       <DependentUpon>FriendsListForm.xaml</DependentUpon>
-<!---->
+      <!---->
     </Compile>
     <Compile Include="Forms\IpSelectionForm.xaml.cs">
       <DependentUpon>IpSelectionForm.xaml</DependentUpon>
@@ -167,11 +175,19 @@
     <Compile Include="Controls\TimerControl\Timer.cs" />
     <Compile Include="Entities\UserDto.cs" />
     <Compile Include="ValidationBinding.cs" />
-<!---->
+    <!---->
     <Compile Include="Windows\WarningWindow.xaml.cs">
       <DependentUpon>WarningWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\ButtonCornering.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\NotifyingButton\NotifyingButtonControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\FriendsChatForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -183,9 +199,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-<!---->
+    <!---->
     <Compile Include="ViewModels\FriendsListViewModel.cs" />
-<!---->
+    <!---->
     <Compile Include="ViewModels\ChatLineViewModel.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="ViewModels\UsersListLineViewModel.cs" />

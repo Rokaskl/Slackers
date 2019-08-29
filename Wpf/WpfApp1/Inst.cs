@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WebApi.Entities;
 using WpfApp1.Forms;
 using WpfApp1.Pages;
 
@@ -96,6 +97,7 @@ namespace WpfApp1
         private Room room;
         private string ip;
         private int port;
+        public List<Tuple<int, BitmapImage>> User_images;
 
         public Utils(KeyValuePair<string, int> ip_port)
         {
@@ -107,6 +109,9 @@ namespace WpfApp1
             client.BaseAddress = this.url;
             roomPage = null;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            //this.User_images = new List<Tuple<int, BitmapImage>>() { new Tuple<int, BitmapImage>(int.Parse(Inst.ApiRequests.User.id), Inst.PhotoBytes_to_Image(Inst.ApiRequests.AdditionalData.PhotoBytes)) };
+            this.User_images = new List<Tuple<int, BitmapImage>>();
         }
 
         public void CreateTcpServer()
@@ -194,6 +199,43 @@ namespace WpfApp1
              else
             {
                 return null;
+            }
+        }
+
+        public async Task<BitmapImage> FindImageOf(int id)
+        {
+            if (id < 0)
+            {
+                return null;
+            }
+            Tuple<int, BitmapImage> item;
+            if ((item = User_images.FirstOrDefault(x => x.Item1 == id)) != null)
+            {
+                return item.Item2;
+            }
+            else
+            {
+                AdditionalData addata = await Inst.ApiRequests.GetUserAddData(id);
+                byte[] result = addata.PhotoBytes;
+                //BitmapImage image = Inst.PhotoBytes_to_Image(Inst.ApiRequests.GetUserAddData(id).Result?.PhotoBytes);//Problem
+                BitmapImage image = Inst.PhotoBytes_to_Image(result);
+                User_images.Add(new Tuple<int, BitmapImage>(id, image));
+                return image;
+            }
+        }
+
+        public async Task PopulateLogLinesWithNames(LogLine log_line)
+        {
+            if (log_line.Message_num >= 100)//Nickname = room name.
+            {
+                //log_line.Nickname = await Inst.ApiRequests.GetRoomName(log_line.Causer_Id);//Rooms gali buti istrinti, todel reiketu saugoti stringa.
+            }
+            else
+            {
+                if (log_line.Message_num < 100)//Nickname = user nickname.
+                {
+                    log_line.Nickname = await Inst.ApiRequests.GetUserNickname(log_line.Causer_Id);
+                }
             }
         }
 
@@ -334,6 +376,110 @@ namespace WpfApp1
         public string GetUsername(int id)
         {
             return users.FirstOrDefault(x => x.id == id.ToString())?.username;
+        }
+    }
+
+    public class LogLine
+    {
+        public int Id { get; set; }
+        public int User_Id { get; set; }
+        public int Causer_Id { get; set; }
+        public DateTime DateTime { get; set; }
+        public int Message_num { get; set; }
+
+        public string Nickname { get; set; }//User nickname or room name
+
+        public override string ToString()
+        {
+            return String.Format($"{DateTime} - ({Nickname}): {MessageCodes.Message(Message_num)}");
+        }
+    }
+
+    public static class MessageCodes
+    {
+        //FriendsController and RoomsController done so far.
+        public static string Message(int code)
+        {
+            switch (code)
+            {
+                case 0:
+                    {
+                        return "has sent you request to add.";
+                    }
+                case 1:
+                    {
+                        return "has rejected your request.";
+                    }
+                case 2:
+                    {
+                        return " has removed you.";
+                    }
+                case 3:
+                    {
+                        return " has accepted your request.";
+                    }
+                case 4:
+                    {
+                        return " has logged in.";
+                    }
+                case 5:
+                    {
+                        return " has logged out.";
+                    }
+                case 6:
+                    {
+                        return " has canceled his request.";
+                    }
+                case 7:
+                    {
+                        return " you sent a request.";
+                    }
+                case 8:
+                    {
+                        return " you rejected his request.";
+                    }
+                case 9:
+                    {
+                        return " you canceled your request.";
+                    }
+                case 10:
+                    {
+                        return " you removed from your friends list.";
+                    }
+                case 11:
+                    {
+                        return " you accepted his request";
+                    }
+                case 100:
+                    {
+                        return " you changed the guid of room";
+                    }
+                case 101:
+                    {
+                        return " you deleted a room";
+                    }
+                case 102:
+                    {
+                        return " you created a room";
+                    }
+                case 103:
+                    {
+                        return " you kicked a user from room";//What user???
+                    }
+                case 104:
+                    {
+                        return " you joined a room";
+                    }
+                case 105:
+                    {
+                        return " you left a room";
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+            return null;
         }
     }
 }

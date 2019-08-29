@@ -59,6 +59,27 @@ namespace WebApi
             }
         }
 
+        private event FriendsChangeEventHandler FriendsChanged;
+        private delegate void FriendsChangeEventHandler(object sender, FriendsChangeEventArgs e);
+        public virtual void RaiseFriendschangedEvent(object sender, FriendsChangeEventArgs e)
+        {
+            if (FriendsChanged != null)
+            {
+                FriendsChanged(sender, e);
+            }
+        }
+
+        //Separate event is needed to delay tcp signal in order to avoid tcp signal interferation.
+        private event LogEventHandler LogCreated;
+        private delegate void LogEventHandler(object sender, FriendsChangeEventArgs e);
+        public virtual void RaiseLogCreatedEvent(object sender, FriendsChangeEventArgs e)
+        {
+            if (LogCreated != null)
+            {
+                LogCreated(sender, e);
+            }
+        }
+
         public List<TempRoom> tempRooms;
         //private Dictionary<int, Tuple<int, int>> users;//UserId = 1, timespan value = 2, RoomId = 3
         public List<UserInfo> users;
@@ -69,7 +90,9 @@ namespace WebApi
         
         public Inst()
         {
-            RoomChanged += Inst_RoomChanged;    
+            RoomChanged += Inst_RoomChanged;
+            FriendsChanged += Inst_FriendsChanged;
+            LogCreated += Inst_LogCreated;
             tempRooms = new List<TempRoom>();
             User_TimeOut_List = new Dictionary<DateTime, int>();
             OnlineStatusUsers = new List<int>();
@@ -78,6 +101,19 @@ namespace WebApi
             users = new List<UserInfo>();
             Server = new TcpServer();
             //loggedin = new List<int>();
+        }
+
+        private async void Inst_LogCreated(object sender, FriendsChangeEventArgs e)
+        {
+            await Task.Delay(10);
+
+            if (e.receivers != null)
+            {
+                foreach (int user in e.receivers)
+                {
+                    this.Server.SendInfo(user, e.change.ToString(), e.data, e.senderId);
+                }
+            }
         }
 
         private void Inst_RoomChanged(object sender, ChangeEventArgs e)
@@ -97,7 +133,18 @@ namespace WebApi
                 {
                     this.Server.SendInfo(user, e.change.ToString(), e.data, e.senderId);
                 }
-            } 
+            }
+        }
+
+        private void Inst_FriendsChanged(object sender, FriendsChangeEventArgs e)
+        {
+            if (e.receivers != null)
+            {
+                foreach (int user in e.receivers)
+                {
+                    this.Server.SendInfo(user, e.change.ToString(), e.data, e.senderId);
+                }
+            }
         }
 
         public bool Add(int id)
@@ -140,5 +187,14 @@ namespace WebApi
         public List<int> registered_room_users;
         public string data;
         public int senderId;
+    }
+
+    //Also used for LogCreated event.
+    public class FriendsChangeEventArgs : EventArgs
+    {
+        public int change;
+        public string data;
+        public int senderId;
+        public List<int> receivers;
     }
 }

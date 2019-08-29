@@ -8,11 +8,20 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="500"
              BorderBrush="Black" BorderThickness="1">
+    
     <Grid Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <!--<Grid.Background>
             <ImageBrush ImageSource="C:\Users\Justas\Desktop\bluebackground.png" Stretch="UniformToFill"/>
         </Grid.Background>-->
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding ChatLines}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -21,6 +30,8 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+        <TextBox x:Name="txt_entry" Grid.Column="0" Grid.Row="1" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxHeight="120" TextWrapping="Wrap" Text="" Background="#FFFBFBBD" BorderBrush="#89000000" VerticalScrollBarVisibility="Auto" AcceptsTab="True" KeyDown="Txt_entry_KeyUp" Margin="2"/>
+        <Button x:Name="btn_txtenter" Grid.Column="1" Grid.Row="1" FontSize="17" Content="&gt;" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="40" Click="Btn_txtenter_Click" Margin="1"/>
     </Grid>
 </UserControl>
 <!--d:DataContext="{x:Static local1:DesignTimeChatStatic.Instance}"--> 

@@ -8,26 +8,61 @@
         mc:Ignorable="d"
         Height="500" Width="400"
         ResizeMode="CanMinimize">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+    </Window.Resources>
+
     <Grid >
         <StackPanel Background="LightBlue">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
                 <local1:UsersListLineControl DataContext="{Binding Owner}" Grid.Column="0" Margin="10" HorizontalAlignment="Stretch"></local1:UsersListLineControl>
-                <RadioButton Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10"/>
+                <Button Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10" Click="Status_Button_Click" Width="60" Background="Gray" Content="OFF" ToolTip="Switch status to:"/>
             </Grid>
             <TabControl Margin="10" Background="Azure" VerticalAlignment="Stretch" Height="354">
-                <TabItem Header="Friends">
-                    <local1:UsersListControl DataContext="{Binding FriendsList}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Background="Transparent"></local1:UsersListControl>
+                <TabControl.Resources>
+                    <Style TargetType="{x:Type TabItem}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type TabItem}">
+                                    <Grid>
+                                        <Border Background="Transparent" Margin="2,2,-8,0" BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="10">
+                                            <Grid>
+                                                <ContentPresenter x:Name="ContentSite" ContentSource="Header" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,2,6,2" RecognizesAccessKey="True"/>
+                                            </Grid>
+                                        </Border>
+                                        <Rectangle Height="50" Width="10" Margin="0,0,-10,0" Stroke="Black" VerticalAlignment="Bottom" HorizontalAlignment="Right" StrokeThickness="0" Fill="#FFD4D0C8"/>
+                                        <Border x:Name="Notification_popup" HorizontalAlignment="Right" Background="PaleVioletRed" VerticalAlignment="Top" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="0, -2, 2, 0" MinWidth="20" Visibility="{Binding FallbackValue=Hidden, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}, Path=DataContext.Visibility, Converter={StaticResource BoolToVisConverter}}" >
+                                            <ContentPresenter ContentSource="DataContext" Content="{Binding Path=Notifications}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter Property="FontWeight" Value="Bold" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="true">
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="FontSize" Value="14"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.Resources>
+                <TabItem Header="Friends" DataContext="{Binding FriendsList}" GotFocus="TabItem_GotFocus">
+                    <local1:UsersListControl DataContext="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Background="Transparent"></local1:UsersListControl>
                 </TabItem>
-                <TabItem Header="Requests Incoming">
-                    <local1:UsersListControl DataContext="{Binding Requests}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Background="Transparent"></local1:UsersListControl>
+                <TabItem Header="Requests Incoming" DataContext="{Binding Requests}" GotFocus="TabItem_GotFocus">
+                    <local1:UsersListControl DataContext="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Background="Transparent"></local1:UsersListControl>
                 </TabItem>
-                <TabItem Header="Requests Outgoing">
-                    <local1:UsersListControl DataContext="{Binding RequestsOutgoing}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Background="Transparent"></local1:UsersListControl>
+                <TabItem Header="Requests Outgoing" DataContext="{Binding RequestsOutgoing}" GotFocus="TabItem_GotFocus">
+                    <local1:UsersListControl DataContext="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Background="Transparent"></local1:UsersListControl>
                 </TabItem>
                 <TabItem x:Name="search_tab" Header="Search">
                     <Grid Margin="5">
@@ -39,11 +74,16 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBox x:Name="search_string_txtbox" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Margin="10,0,35,0"/>
+                        <TextBox x:Name="search_string_txtbox" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Margin="10,0,35,0" KeyUp="Search_string_txtbox_KeyUp"/>
                         <Button Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Width="30" Click="Search_Click"/>
                         <local1:UsersListControl x:Name="search_found_list" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Background="Transparent">
                         </local1:UsersListControl>
                     </Grid>
+                </TabItem>
+                <TabItem Header="Log" Width="36.5" DataContext="{Binding LogLines}" GotFocus="TabItem_GotFocus">
+                    <ScrollViewer x:Name="LogTab_ScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <ItemsControl ItemsSource="{Binding}"/>
+                    </ScrollViewer>
                 </TabItem>
             </TabControl>
             <Grid x:Name="friendless_grid" Margin="20" Visibility="Hidden">

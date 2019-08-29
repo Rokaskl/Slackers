@@ -12,30 +12,6 @@ namespace WpfApp1.Controls.UsersList
         public UsersListLineControl()
         {
             InitializeComponent();
-            var x = this.ContextMenu;
-            this.DataContextChanged += UsersListLineControl_DataContextChanged;
-        }
-
-        private void UsersListLineControl_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
-        {
-            while(true)
-            {
-                Task.Delay(2);
-                if (this.ContextMenu != null)
-                {
-
-                }
-                break;
-            }
-            if (true)
-            {
-
-            }
-        }
-
-        private void MenuItems_Clicked(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

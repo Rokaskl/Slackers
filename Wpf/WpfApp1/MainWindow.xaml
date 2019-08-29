@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1.Forms"
+        xmlns:local1="clr-namespace:WpfApp1.Controls.NotifyingButton"
         mc:Ignorable="d"
         ResizeMode="CanResize"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -41,7 +42,8 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="10">
-                    <Button Content="Friends" Click="FriendsList_Button_Click"/>
+                    <!--<Button Content="Friends" Click="FriendsList_Button_Click"/>-->
+                    <local1:NotifyingButtonControl x:Name="btn_Friends"/>
                 </StackPanel>
                 
                 <TextBlock Grid.Column="0" Grid.Row="2" Text="Slackers!" HorizontalAlignment="Center" VerticalAlignment="Bottom"  FontSize="22" Margin="0, 0, 0, 15"/>

@@ -13,6 +13,7 @@ namespace WebApi.Services
         bool Delete(int id1, int id2);
         List<int> FriendsOf(int id);//Friends list of {id} user.
         List<int> Search(int userId, string search_string);
+        List<int> Friends_and_RequestReceivers_Of(int id);
     }
 
     public class FriendshipService : IFriendshipService
@@ -53,6 +54,11 @@ namespace WebApi.Services
         {
             var temp = _context.Friendships.Where(x => x.id_first == id || x.id_second == id);
             return temp.Select(y => y.id_first == id ? y.id_second : y.id_first).ToList();
+        }
+
+        public List<int> Friends_and_RequestReceivers_Of(int id)
+        {
+            return _context.FriendshipRequests.Where(x => x.Sender == id).Select(y => y.Receiver).Concat(FriendsOf(id)).ToList();
         }
 
         public List<int> Search(int userId, string search_string)

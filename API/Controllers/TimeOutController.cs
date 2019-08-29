@@ -50,6 +50,7 @@ namespace WebApi.Controllers
 
         public TimeOutControl()
         {
+
         }
 
         public void Start()
@@ -93,6 +94,14 @@ namespace WebApi.Controllers
                 //App.Inst.loggedin.Remove(user.id);
             }
 
+            //foreach(UserInfo user in App.Inst.users.Where(x => x.time > 2))
+            //{
+            //    App.Inst.RaiseFriendschangedEvent("timeout_controller", new FriendsChangeEventArgs() { senderId = user.id, change = 6, receivers = new List<int>(_friendshipService.FriendsOf(user.id)), data = "5" });
+            //}
+            //Neina prieiti prie DataContext arba service, galima sprendimas - https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-2.2, tik daug skaityt.
+            //----
+            //--Sutvarkyta. Client pats klausia ar useriai vis dar online. FriendsListForm.xaml.cs'e
+            //----
             App.Inst.users.RemoveAll(x => x.time > 2);
         }
 

@@ -105,6 +105,23 @@ namespace WpfApp1
                         });
                         break;
                     }
+                case 6:
+                    {
+                        
+                        Inst.Utils.MainWindow.Dispatcher.Invoke(() => 
+                        {
+                            Inst.Utils.MainWindow.HandleSignal_for_Fl_form(int.Parse(e.data[1]), int.Parse(e.data[2]));
+                        });
+                        break;   
+                    }
+                case 7:
+                    {
+                        Inst.Utils.MainWindow.Dispatcher.Invoke(() =>
+                        {
+                            Inst.Utils.MainWindow.HandleSignal_for_Fl_forms_friendschat_form(e.data[1], int.Parse(e.data[2]));
+                        });
+                        break;
+                    }
                 default:
                     {
                         break;

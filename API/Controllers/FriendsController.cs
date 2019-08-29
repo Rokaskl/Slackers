@@ -17,13 +17,17 @@ namespace WebApi.Controllers
         private readonly IFriendshipService _friendshipService;
         private readonly IFriendshipRequestService _friendshipRequestService;
         private readonly IUserService _userService;
+        private readonly INotificationService _notificationService;
+        private readonly ILogService _logService;
 
-        public FriendsController(DataContext context, IFriendshipService friendshipService, IFriendshipRequestService friendshipRequestService, IUserService userService)
+        public FriendsController(DataContext context, IFriendshipService friendshipService, IFriendshipRequestService friendshipRequestService, IUserService userService, INotificationService notificationService, ILogService logService)
         {
             _context = context;
             _friendshipService = friendshipService;
             _friendshipRequestService = friendshipRequestService;
             _userService = userService;
+            _notificationService = notificationService;
+            _logService = logService;
         }
 
         /// <summary>
@@ -47,7 +51,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public IActionResult Search(int userId, string search_string)
         {
-            return Ok(_userService.UserViewModel_dict(_friendshipService.Search(userId, search_string)));
+            return Ok(_userService.UserViewModel_dict(_friendshipService.Search(userId, search_string), false));
         }
 
         /// <summary>
@@ -61,7 +65,10 @@ namespace WebApi.Controllers
         public IActionResult Add(int sender, int receiver)
         {
             _friendshipRequestService.Create(sender, receiver);
-            //Notification
+            App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver}, data = "0"});
+            _notificationService.LeaveNotification(receiver, 0);
+            _logService.Create(receiver, sender, 0);
+            _logService.Create(sender, receiver, 7);
             return Ok();
         }
 
@@ -75,9 +82,12 @@ namespace WebApi.Controllers
         [HttpGet]
         public IActionResult Reject(int sender, int receiver)
         {
-            //Notification
             if(_friendshipRequestService.Delete(sender, receiver))
             {
+                App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver }, data = "1" });
+                _notificationService.LeaveNotification(receiver, 1);
+                _logService.Create(receiver, sender, 1);
+                _logService.Create(sender, receiver, 8);
                 return Ok();
             }
             else
@@ -85,6 +95,31 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
             
+        }
+
+        /// <summary>
+        /// Sender sends request to cancel his friendship request to receiver.
+        /// </summary>
+        /// <param name="sender">sender id</param>
+        /// <param name="receiver">receiver id</param>
+        /// <returns>bool. true if request was successfully sent to server.</returns>
+        [Route("request/{sender:int}/{receiver:int}/cancel")]
+        [HttpGet]
+        public IActionResult Cancel(int sender, int receiver)
+        {
+            if (_friendshipRequestService.Delete(sender, receiver))
+            {
+                App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver }, data = "6" });
+                _notificationService.LeaveNotification(receiver, 6);
+                _logService.Create(receiver, sender, 6);
+                _logService.Create(sender, receiver, 9);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+
         }
 
         /// <summary>
@@ -97,9 +132,12 @@ namespace WebApi.Controllers
         [HttpGet]
         public IActionResult Remove(int sender, int receiver)
         {
-            //Notification
             if(_friendshipService.Delete(sender, receiver))
             {
+                App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver }, data = "2" });
+                _notificationService.LeaveNotification(receiver, 2);
+                _logService.Create(receiver, sender, 2);
+                _logService.Create(sender, receiver, 10);
                 return Ok();
             }
             else
@@ -120,7 +158,10 @@ namespace WebApi.Controllers
         {
             _friendshipRequestService.Delete(sender, receiver);
             _friendshipService.Create(sender, receiver);
-            //Notification
+            App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver }, data = "3" });
+            _notificationService.LeaveNotification(receiver, 3);
+            _logService.Create(receiver, sender, 3);
+            _logService.Create(sender, receiver, 11);
             return Ok();
         }
 
@@ -145,7 +186,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public IActionResult Requests_Outgoing(int id)
         {
-            return Ok(_userService.UserViewModel_dict(_friendshipRequestService.RequestsOf_Outgoing(id)));
+            return Ok(_userService.UserViewModel_dict(_friendshipRequestService.RequestsOf_Outgoing(id), false));
         }
 
         /// <summary>
@@ -154,23 +195,48 @@ namespace WebApi.Controllers
         /// <param name="id">User id</param>
         /// <param name="status">upcoming status</param>
         /// <returns>Ok if server received request and completed it without errors.</returns>
-        [Route("status/{id:int}/{status:int}")]
+        [Route("status/{sender:int}/{status:int}")]
         [HttpGet]
-        public IActionResult StatusChange(int id, int status)//status = 1 - online; status = 0 - offline/invisible.
+        public IActionResult StatusChange(int sender, int status)//status = 1 - online; status = 0 - offline/invisible.
         {
-            //Notification
-            if (status == 1 && !App.Inst.OnlineStatusUsers.Contains(id))
+            if (status == 1 && !App.Inst.OnlineStatusUsers.Contains(sender))
             {
-                App.Inst.OnlineStatusUsers.Add(id);
+                App.Inst.OnlineStatusUsers.Add(sender);
             }
             else
             {
-                if (status == 0 && App.Inst.OnlineStatusUsers.Contains(id))
+                if (status == 0 && App.Inst.OnlineStatusUsers.Contains(sender))
                 {
-                    App.Inst.OnlineStatusUsers.Remove(id);
+                    App.Inst.OnlineStatusUsers.Remove(sender);
                 }
             }
+            App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>(_friendshipService.Friends_and_RequestReceivers_Of(sender)), data = status == 1 ? "4" : "5" });
             return Ok();
+        }
+
+
+        [Route("user/{userId:int}")]
+        [HttpGet]
+        public IActionResult UserInfo(int userId)
+        {
+            return Ok(_userService.UserViewModel_dict(new List<int>() { userId }));
+        }
+
+        [Route("statuses")]
+        public IActionResult GetUserStatuses([FromBody] List<int> ids)
+        {
+            return Ok(ids.Select(x =>
+            {
+                if (App.Inst.OnlineStatusUsers.Contains(x))
+                {
+                    return new KeyValuePair<int, bool>(x, true);
+                }
+                else
+                {
+                    return new KeyValuePair<int, bool>(x, false);
+                }
+            }
+            ));
         }
     }
 }

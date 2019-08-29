@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using WpfApp1.Forms;
 using WpfApp1.ViewModels;
 using System.Windows.Media;
+using System;
+using System.Linq;
 
 namespace WpfApp1
 {
@@ -19,6 +21,7 @@ namespace WpfApp1
     {
         //private HttpClient client;
         private KeyValuePair<string, int> ip_port;
+        private NotifyingButtonViewModel btn_Friends_vm;
 
         public MainWindow()
         {
@@ -28,6 +31,12 @@ namespace WpfApp1
             
             this.MinHeight = 400;
             this.MinWidth = 800;
+
+            this.btn_Friends_vm = new NotifyingButtonViewModel();
+
+            this.btn_Friends.DataContext = this.btn_Friends_vm;
+            (this.btn_Friends.Content as System.Windows.Controls.Grid).GetChildOfType<System.Windows.Controls.Button>().Click += FriendsList_Button_Click;
+
             Inst.CreateInstance(ip_port);
             Inst.Utils.MainWindow = this;
             //client = Inst.Utils.HttpClient;
@@ -44,7 +53,7 @@ namespace WpfApp1
             frame2.NavigationService.Navigate(new Admin());
             frame1.NavigationService.Navigate(new UserPage());   
             roomPage.NavigationService.Navigate(new RoomPage());
-            
+            SetupNotifications();
         }        
 
         //private void MainWindow_Closed(object sender, EventArgs e)
@@ -103,6 +112,11 @@ namespace WpfApp1
                         (Inst.Utils.RoomPage as RoomPage).Logout();
                     }
                     Task<bool> x = Logout();
+                    if (this.Fl_form != null)
+                    {
+                        this.Fl_form.Close();
+                    }
+                    SaveNotificationsToServer();
                 }
                 else
                 {
@@ -125,6 +139,61 @@ namespace WpfApp1
         }
 
         public FriendsListForm Fl_form;
+        private int Notification_count = 0;
+        public List<int> notifications = new List<int>();
+        public List<int> friends_notif;
+        
+        private async void SetupNotifications()
+        {
+            notifications = await Inst.ApiRequests.GetNotifications();
+            if (notifications.Count >= 8)
+            {
+                Notification_count = notifications.Sum();
+                this.btn_Friends_vm.Notifications = Notification_count;
+            }
+            if (notifications.Count > 8)
+            {
+                friends_notif = notifications.Skip(8).ToList();
+            }
+        }
+
+        private async void SaveNotificationsToServer()
+        {
+            await Inst.ApiRequests.SaveNotificationsToServer(notifications);
+        }
+
+        public void HandleSignal_for_Fl_form(int command, int user_id)
+        {
+            if (this.Fl_form != null)
+            {
+                this.Fl_form.HandleTcpSignal(command, user_id);
+            }
+            else
+            {
+                if (command < 7)
+                {
+                    System.Media.SystemSounds.Exclamation.Play();
+                    Notification_count++;
+                    notifications[command]++;
+                    this.btn_Friends_vm.Notifications = Notification_count;
+                }
+            }
+        }
+
+        public void HandleSignal_for_Fl_forms_friendschat_form(string text, int user_id)
+        {
+            if (this.Fl_form != null)
+            {
+                this.Fl_form.NewChatLine(user_id, text);
+            }
+            else
+            {
+                System.Media.SystemSounds.Exclamation.Play();
+                Notification_count++;
+                notifications.Add(user_id);
+                this.btn_Friends_vm.Notifications = Notification_count;
+            }
+        }
 
         private void FriendsList_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -134,7 +203,7 @@ namespace WpfApp1
                 ImageBrush img = new ImageBrush();
                 img.ImageSource = Inst.PhotoBytes_to_Image(Inst.ApiRequests.AdditionalData.PhotoBytes);
                 FriendsListViewModel fl_vm = new FriendsListViewModel(img, Inst.ApiRequests.User.username, int.Parse(Inst.ApiRequests.User.id), Inst.ApiRequests.AdditionalData.Biography);
-                FriendsListForm fl_form = new FriendsListForm(fl_vm);
+                FriendsListForm fl_form = new FriendsListForm(fl_vm, notifications, this.friends_notif);
                 this.Fl_form = fl_form;
                 fl_form.Show();
             }
@@ -142,6 +211,7 @@ namespace WpfApp1
             {
                 this.Fl_form.Focus();
             }
+            this.btn_Friends_vm.Notifications = 0;
         }
     }
 }

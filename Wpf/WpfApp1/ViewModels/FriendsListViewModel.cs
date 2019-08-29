@@ -16,6 +16,19 @@ namespace WpfApp1.ViewModels
         public UsersListViewModel FriendsList { get; set; }
         public UsersListViewModel Requests { get; set; }
         public UsersListViewModel RequestsOutgoing { get; set; }
+        private ObservableCollection<LogLine> log_lines;
+        public ObservableCollection<LogLine> LogLines
+        {
+            get
+            {
+                return log_lines;
+            }
+            set
+            {
+                log_lines = value;
+                OnPropertyRaised("LogLines");
+            }
+        }
         public OwnerStatus Status { get; set; }
         //public ObservableCollection<UsersListLineViewModel> Friends { get; set; }
 
@@ -30,9 +43,43 @@ namespace WpfApp1.ViewModels
             this.FriendsList = new UsersListViewModel(new List<string> { "Send message", "Remove"});
             this.Requests = new UsersListViewModel(new List<string> { "Accept", "Reject" });
             this.RequestsOutgoing = new UsersListViewModel(new List<string> { "Cancel" });
+            this.LogLines = new ObservableCollection<LogLine>();
+        }
+
+        public void Add_Notification(int tab_num)
+        {
+            switch (tab_num)
+            {
+                case 0:
+                    {
+                        FriendsList.Notifications++;
+                        break;
+                    }
+                case 1:
+                    {
+                        Requests.Notifications++;
+                        break;
+                    }
+                case 2:
+                    {
+                        RequestsOutgoing.Notifications++;
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyRaised(string propertyname)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyname));
+            }
+        }
     }
 
     public enum OwnerStatus

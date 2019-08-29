@@ -15,5 +15,7 @@ namespace WebApi.Helpers
         public DbSet<ChatLine> ChatLines { get; set; }
         public DbSet<Friendship> Friendships { get; set; }
         public DbSet<FriendshipRequest> FriendshipRequests { get; set; }
+        public DbSet<Notifications> Notifications { get; set; }
+        public DbSet<Log> Logs { get; set; }
     }
 }

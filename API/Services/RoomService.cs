@@ -242,8 +242,15 @@ namespace WebApi.Services
         public RoomDto GetRoom(int id)
         {
             Room temp = _context.Rooms.Find(id);
-            List<int> _users = ConvertToInts(temp.usersBytes);
-            return new RoomDto(temp.roomId, temp.roomAdminId, temp.roomName, _users);
+            if (temp != null)
+            {
+                List<int> _users = ConvertToInts(temp.usersBytes);
+                return new RoomDto(temp.roomId, temp.roomAdminId, temp.roomName, _users);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public bool Logout_from_room(Room room, int UserId)

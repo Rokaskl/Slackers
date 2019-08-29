@@ -6,11 +6,16 @@
              xmlns:local="clr-namespace:WpfApp1.Controls.UsersList"
              mc:Ignorable="d" 
              d:DesignHeight="80" d:DesignWidth="280">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+    </UserControl.Resources>
+
     <Grid>
         <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,1" EndPoint="0,0" Opacity="0.5" SpreadMethod="Reflect">
-                    <GradientStop Offset="0.0" Color="{Binding StatusColor}"></GradientStop>
+                    <GradientStop Offset="0.0" Color="{Binding StatusColor, UpdateSourceTrigger=PropertyChanged}"></GradientStop>
                     <GradientStop Offset="0.7" Color="Transparent"></GradientStop>
                 </LinearGradientBrush>
             </Border.Background>
@@ -20,8 +25,11 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Ellipse Grid.Column="0" Fill="{Binding Photo}" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Black" StrokeThickness="1" Margin="10" ToolTip="{Binding Bio}"/>
+                <Ellipse Grid.Column="0" Fill="{Binding Photo, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Black" StrokeThickness="1" Margin="10" ToolTip="{Binding Bio}"/>
                 <TextBlock Grid.Column="1" Text="{Binding Username}" ToolTip="{Binding Username}" TextAlignment="Center" TextTrimming="CharacterEllipsis" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="20" Margin="5"></TextBlock>
+                <Border x:Name="Notification_popup" HorizontalAlignment="Center" Background="PaleVioletRed" VerticalAlignment="Top" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="40,13,10,0" MinWidth="20" Visibility="{Binding Path=DataContext.Visibility, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, FallbackValue=Hidden, Converter={StaticResource BoolToVisConverter}, UpdateSourceTrigger=PropertyChanged}" >
+                    <ContentPresenter Content="!" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
             </Grid>
         </Border>
     </Grid>
