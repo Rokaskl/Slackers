@@ -91,6 +91,7 @@ namespace WebApi.Controllers
                 App.Inst.tempRooms.FirstOrDefault(x => x.usersById.Keys.Contains(user.id))?.usersById.Remove(user.id);
                 //If user is trackint time, his time tracking should be stopped (stop mark left).
                 App.Inst.User_TimeOut_List.Add(DateTime.Now, user.id);
+                App.Inst.OnlineStatusUsers.Remove(user.id);
                 //App.Inst.loggedin.Remove(user.id);
             }
 

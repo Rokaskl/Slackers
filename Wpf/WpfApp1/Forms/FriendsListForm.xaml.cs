@@ -407,27 +407,39 @@ namespace WpfApp1.Forms
                 case "Friends":
                     {
                         fl_vm.FriendsList.Notifications = 0;
-                        Inst.Utils.MainWindow.notifications[3] = 0;
-                        Inst.Utils.MainWindow.notifications[2] = 0;
+                        if (Inst.Utils.MainWindow.notifications.Count > 0)
+                        {
+                            Inst.Utils.MainWindow.notifications[3] = 0;
+                            Inst.Utils.MainWindow.notifications[2] = 0;
+                        }
                         break;
                     }
                 case "Requests Incoming":
                     {
                         fl_vm.Requests.Notifications = 0;
-                        Inst.Utils.MainWindow.notifications[0] = 0;
-                        Inst.Utils.MainWindow.notifications[6] = 0;
+                        if (Inst.Utils.MainWindow.notifications.Count > 0)
+                        {
+                            Inst.Utils.MainWindow.notifications[0] = 0;
+                            Inst.Utils.MainWindow.notifications[6] = 0;
+                        }
                         break;
                     }
                 case "Requests Outgoing":
                     {
                         fl_vm.RequestsOutgoing.Notifications = 0;
-                        Inst.Utils.MainWindow.notifications[1] = 0;
+                        if (Inst.Utils.MainWindow.notifications.Count > 0)
+                        {
+                            Inst.Utils.MainWindow.notifications[1] = 0;
+                        }
                         break;
                     }
                 case "Log":
                     {
                         //fl_vm.LogLines.no
-                        Inst.Utils.MainWindow.notifications[7] = 0;
+                        if (Inst.Utils.MainWindow.notifications.Count > 0)
+                        {
+                            Inst.Utils.MainWindow.notifications[7] = 0;
+                        }
                         break;
                     }
                 default:
