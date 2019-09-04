@@ -181,45 +181,33 @@ namespace WpfApp1.Controls.Chat
 
         public async Task AppendChatLine(string text, string username, DateTime CreateDate, BitmapImage pImage = null, int pCreatorId = -1, bool Insert = false)
         {
-            try
+            if (ChatViewModel.ChatLines.Count > 0)
             {
-                if (ChatViewModel.ChatLines.Count > 0)
+                ChatLineViewModel chatline_vm;
+                if (Insert)
                 {
-                    ChatLineViewModel chatline_vm;
+                    chatline_vm = ChatViewModel.ChatLines.First();
+                }
+                else
+                {
+                    chatline_vm = ChatViewModel.ChatLines.Last();
+                }
+
+                DateTime last_chatline_createtime = DateTime.Parse(chatline_vm.CreateDate);
+                DateTime added_chatline_createtime = CreateDate;
+                if (chatline_vm.CreatorId == pCreatorId && last_chatline_createtime.Date == added_chatline_createtime.Date && last_chatline_createtime.Hour == added_chatline_createtime.Hour && last_chatline_createtime.Minute == added_chatline_createtime.Minute)
+                {
+                    ChatViewModel.ChatLines.Remove(chatline_vm);
+
                     if (Insert)
                     {
-                        chatline_vm = ChatViewModel.ChatLines.First();
+                        ChatViewModel.ChatLines.Insert(0, chatline_vm);
+                        chatline_vm.Text = text + Environment.NewLine + chatline_vm.Text;
                     }
                     else
                     {
-                        chatline_vm = ChatViewModel.ChatLines.Last();
-                    }
-
-                    DateTime last_chatline_createtime = DateTime.Parse(chatline_vm.CreateDate);
-                    DateTime added_chatline_createtime = CreateDate;
-                    if (chatline_vm.CreatorId == pCreatorId && last_chatline_createtime.Date == added_chatline_createtime.Date && last_chatline_createtime.Hour == added_chatline_createtime.Hour && last_chatline_createtime.Minute == added_chatline_createtime.Minute)
-                    {
-                        ChatViewModel.ChatLines.Remove(chatline_vm);
-
-                        if (Insert)
-                        {
-                            ChatViewModel.ChatLines.Insert(0, chatline_vm);
-                            chatline_vm.Text = text + Environment.NewLine + chatline_vm.Text;
-                        }
-                        else
-                        {
-                            chatline_vm.Text += Environment.NewLine + text;
-                            ChatViewModel.ChatLines.Add(chatline_vm);
-                        }
-                    }
-                    else
-                    {
-                        await AddChatLine();
-                    }
-
-                    if ((!Insert && DateTime.Parse(chatline_vm.CreateDate) > CreateDate)/* || (Insert && DateTime.Parse(chatline_vm.CreateDate) < CreateDate)*/)
-                    {
-                        ReorderChatLines();
+                        chatline_vm.Text += Environment.NewLine + text;
+                        ChatViewModel.ChatLines.Add(chatline_vm);
                     }
                 }
                 else
@@ -227,47 +215,52 @@ namespace WpfApp1.Controls.Chat
                     await AddChatLine();
                 }
 
-                async Task AddChatLine()
+                if ((!Insert && DateTime.Parse(chatline_vm.CreateDate) > CreateDate)/* || (Insert && DateTime.Parse(chatline_vm.CreateDate) < CreateDate)*/)
                 {
-                    ChatLine line = new ChatLine() { Id = null, CreateDate = CreateDate, Username = username, CreatorId = pCreatorId, RoomId = GetContextId(), Text = text };
-                    if (pImage == null)
-                    {
-                        if (this.chat_vm != null && pCreatorId == ChatViewModel.Id)
-                        {
-                            line.Profile_image = (this.chat_vm.End_user_vm.Photo as ImageBrush)?.ImageSource as BitmapImage;
-                        }
-                        if (line.Profile_image == null)
-                        {
-                            line.Profile_image = await Inst.Utils.FindImageOf(pCreatorId);
-                        }
-                    }
-                    else
-                    {
-                        line.Profile_image = pImage;
-                    }
-
-                    if (Insert)
-                    {
-                        ChatViewModel.ChatLines.Insert(0, new ChatLineViewModel(line));
-                    }
-                    else
-                    {
-                        ChatViewModel.Add(new ChatLineViewModel(line));
-                    }
+                    ReorderChatLines();
                 }
+            }
+            else
+            {
+                await AddChatLine();
+            }
 
-                if (this.ScrollViewer != null)
+            async Task AddChatLine()
+            {
+                ChatLine line = new ChatLine() { Id = null, CreateDate = CreateDate, Username = username, CreatorId = pCreatorId, RoomId = GetContextId(), Text = text };
+                if (pImage == null)
                 {
-                    HandleChatControlView(pCreatorId == int.Parse(Inst.ApiRequests.User.id), was_inserted: Insert);
+                    if (this.chat_vm != null && pCreatorId == ChatViewModel.Id)
+                    {
+                        line.Profile_image = (this.chat_vm.End_user_vm.Photo as ImageBrush)?.ImageSource as BitmapImage;
+                    }
+                    if (line.Profile_image == null)
+                    {
+                        line.Profile_image = await Inst.Utils.FindImageOf(pCreatorId);
+                    }
                 }
                 else
                 {
-                    GetScrollViewer();
+                    line.Profile_image = pImage;
+                }
+
+                if (Insert)
+                {
+                    ChatViewModel.ChatLines.Insert(0, new ChatLineViewModel(line));
+                }
+                else
+                {
+                    ChatViewModel.Add(new ChatLineViewModel(line));
                 }
             }
-            catch( Exception ex)
-            {
 
+            if (this.ScrollViewer != null)
+            {
+                HandleChatControlView(pCreatorId == int.Parse(Inst.ApiRequests.User.id), was_inserted: Insert);
+            }
+            else
+            {
+                GetScrollViewer();
             }
         }
 
@@ -293,7 +286,10 @@ namespace WpfApp1.Controls.Chat
                 if (!creator_is_local && !was_inserted)
                 {
                     System.Media.SystemSounds.Beep.Play();
-                    Inst.Utils.Notifications.AddMessageNotifications(this.chat_vm.End_user_vm);
+                    if (!this.room)
+                    {
+                        Inst.Utils.Notifications.AddMessageNotifications(this.chat_vm.End_user_vm);
+                    }
                     //Kazkokias vizualias priemones padaryti? Kontroliu mirgsejima..?
                 }
                 else
