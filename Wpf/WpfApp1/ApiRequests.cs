@@ -14,6 +14,7 @@ using WpfApp1.Windows;
 using WpfApp1.ViewModels;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using WpfApp1.GlobalClasses;
 
 namespace WpfApp1
 {
@@ -208,6 +209,19 @@ namespace WpfApp1
             if (resp.IsSuccessStatusCode)
             {
                 return resp.Content.ReadAsAsync<string>().Result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<int>> GetOnlineUsersInRoom(int roomId)
+        {
+            var resp = await this.client.GetAsync($"Rooms/online_members/{roomId}");
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp.Content.ReadAsAsync<List<int>>().Result;
             }
             else
             {
@@ -470,7 +484,7 @@ namespace WpfApp1
             var resp = await this.client.GetAsync($"Friends/{UserId}");
             if (resp.IsSuccessStatusCode)
             {
-                resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.ForEach(x => friends_list.Add(new UsersListLineViewModel(x["photobytes"], null, null, x["username"].ToString(), int.Parse(x["status"].ToString()) == 1 ? Brushes.Green : Brushes.Gray, int.Parse(x["id"].ToString()), null)));
+                resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.ForEach(x => friends_list.Add(new UsersListLineViewModel(x["photobytes"], null, null, x["username"].ToString(), int.Parse(x["status"].ToString()) == 1 ? Brushes.Green : Brushes.Gray, int.Parse(x["id"].ToString()), x["bio"].ToString())));
                 return friends_list;
             }
             else
@@ -543,9 +557,16 @@ namespace WpfApp1
             {
                 //AdditionalData ad_data = await this.GetUserAddData(id);
                 Dictionary<string, object> user = resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.First();
-                return new UsersListLineViewModel(user["photobytes"], null, null, user["username"].ToString(), user["status"].ToString() == "1" ? Brushes.Green : Brushes.Gray, int.Parse(user["id"].ToString()), null);
+                if (user != null && user.Count > 0)
+                {
+                    return new UsersListLineViewModel(user["photobytes"], null, null, user["username"]?.ToString(), user["status"]?.ToString() == "1" ? Brushes.Green : Brushes.Gray, int.Parse(user["id"]?.ToString()), null);
+                }
+                else
+                {
+                    return null;
+                }
                 //resp.Content.ReadAsAsync<List<Dictionary<string, object>>>().Result.ForEach(x => found_list.Add(new UsersListLineViewModel(x["photobytes"], null, null, x["username"].ToString(), int.Parse(x["status"].ToString()) == 1 ? Brushes.Green : Brushes.Gray, int.Parse(x["id"].ToString()), null)));
-               
+
             }
             else
             {
@@ -570,33 +591,28 @@ namespace WpfApp1
 
         #region Notifications
 
-        public async Task<List<int>> GetNotifications()
+        public async Task<List<Tuple<int, int>>> GetNotifications()
         {
             var resp = await this.client.GetAsync($"Notifications/{this.User.id}");
             if (resp.IsSuccessStatusCode)
             {
                 byte[] bytes = resp.Content.ReadAsAsync<byte[]>().Result;
-                List<int> ints = new List<int>();
-                for (int i = 0; i < bytes.Length; i += 4)
-                {
-                    ints.Add(BitConverter.ToInt32(bytes, i));
-                }
-
-                //return Array.ConvertAll(resp.Content.ReadAsAsync<byte[]>().Result, c => (int)c);
-                return ints;
+                List<Tuple<int, int>> n = Inst.ByteArrayToObject(bytes) as List<Tuple<int, int>>;
+                return n;
 
             }
             else
             {
-                return new List<int>(8);
+                return null;
             }
         }
 
-        public async Task<bool> SaveNotificationsToServer(List<int> notifications)
+        public async Task<bool> SaveNotificationsToServer(PersistentNotifications n)
         {
-            byte[] result = new byte[notifications.Count * sizeof(int)];
-            Buffer.BlockCopy(notifications.ToArray(), 0, result, 0, result.Length);
-            var resp = await this.client.PostAsJsonAsync($"Notifications/post/{this.User.id}", result);
+            //byte[] result = new byte[notifications.Count * sizeof(int)];
+            //Buffer.BlockCopy(notifications.ToArray(), 0, result, 0, result.Length);
+
+            var resp = await this.client.PostAsJsonAsync($"Notifications/post/{this.User.id}/{n.RequestsIncoming_count}/{n.RequestsOutgoing_count}/{n.Log_count}", Inst.ObjectToByteArray(n.Friends_changes));
             if (resp.IsSuccessStatusCode)
             {
                 return true;
@@ -604,6 +620,19 @@ namespace WpfApp1
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<List<int>> GetGeneralNotifications()
+        {
+            var resp = await this.client.GetAsync($"Notifications/notif_count/{this.User.id}");
+            if (resp.IsSuccessStatusCode)
+            {
+                return resp.Content.ReadAsAsync<List<int>>().Result;
+            }
+            else
+            {
+                return null;
             }
         }
 

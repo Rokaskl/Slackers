@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,7 +16,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WebApi.Entities;
 using WpfApp1.Forms;
+using WpfApp1.GlobalClasses;
 using WpfApp1.Pages;
+using WpfApp1.ViewModels;
 
 namespace WpfApp1
 {
@@ -80,6 +83,32 @@ namespace WpfApp1
                 return new KeyValuePair<string, int>( "192.168.0.129", 10102);
             }
         }
+
+        public static byte[] ObjectToByteArray(Object obj)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, obj);
+                return ms.ToArray();
+            }
+        }
+
+        public static Object ByteArrayToObject(byte[] arrBytes)
+        {
+            using (var memStream = new MemoryStream())
+            {
+                var binForm = new BinaryFormatter();
+                memStream.Write(arrBytes, 0, arrBytes.Length);
+                memStream.Seek(0, SeekOrigin.Begin);
+                if (memStream.Length == 0)
+                {
+                    return null;
+                }
+                var obj = binForm.Deserialize(memStream);
+                return obj;
+            }
+        }
     }
 
     public class Utils
@@ -97,6 +126,7 @@ namespace WpfApp1
         private Room room;
         private string ip;
         private int port;
+        private Notifications notifications;
         public List<Tuple<int, BitmapImage>> User_images;
 
         public Utils(KeyValuePair<string, int> ip_port)
@@ -112,6 +142,7 @@ namespace WpfApp1
 
             //this.User_images = new List<Tuple<int, BitmapImage>>() { new Tuple<int, BitmapImage>(int.Parse(Inst.ApiRequests.User.id), Inst.PhotoBytes_to_Image(Inst.ApiRequests.AdditionalData.PhotoBytes)) };
             this.User_images = new List<Tuple<int, BitmapImage>>();
+            SetUsersList();
         }
 
         public void CreateTcpServer()
@@ -234,7 +265,7 @@ namespace WpfApp1
             {
                 if (log_line.Message_num < 100)//Nickname = user nickname.
                 {
-                    log_line.Nickname = await Inst.ApiRequests.GetUserNickname(log_line.Causer_Id);
+                    log_line.Nickname = await GetUsername(log_line.Causer_Id);
                 }
             }
         }
@@ -255,6 +286,18 @@ namespace WpfApp1
         {
             get => port;
             set => port = value;
+        }
+
+        public Notifications Notifications
+        {
+            get
+            {
+                return notifications;
+            }
+            set
+            {
+                notifications = value;
+            }
         }
 
         //private async void Ping()
@@ -315,6 +358,41 @@ namespace WpfApp1
         //    //    MessageChanged(this, e);
         //    //}
         //}
+
+        public Dictionary<int, string> Users { get; set; }
+
+        public async Task SetUsersList()
+        {
+            //var user_list = await Inst.ApiRequests.GetUsersList(Id, true);
+            Users = new Dictionary<int, string>();
+            //user_list.ForEach(x => Users.Add(int.Parse(x.id), x.username));
+        }
+
+        public async Task<string> GetUsername(int id)
+        {
+            if (Users.Keys.Any(x => x == id))
+            {
+                return Users.FirstOrDefault(x => x.Key == id).Value;
+            }
+            else
+            {
+                AddUser(await Inst.ApiRequests.GetUser(id));
+                return Users.FirstOrDefault(x => x.Key == id).Value;
+            }
+        }
+
+        public void RemoveUser(int id)
+        {
+            Users.Remove(id);
+        }
+
+        public void AddUser(UsersListLineViewModel user_vm)
+        {
+            if (user_vm != null && !Users.Keys.Contains(user_vm.UserId))
+            {
+                Users.Add(user_vm.UserId, user_vm.Username);
+            }
+        }
     }
 
     public class User
@@ -358,7 +436,7 @@ namespace WpfApp1
     public class Room
     {
         public int Id;
-        public List<User> users;//Joininus naujam useriui, listas lieka senas
+        public Dictionary<int, string> users;
         public string Room_Name;
 
         public Room(int id, string name)
@@ -368,14 +446,24 @@ namespace WpfApp1
             SetUsersList();
         }
 
-        public async void SetUsersList()
+        public async Task SetUsersList()
         {
-            users = await Inst.ApiRequests.GetUsersList(Id, true);
+            var user_list = await Inst.ApiRequests.GetUsersList(Id, true);
+            users = new Dictionary<int, string>();
+            user_list.ForEach(x => users.Add(int.Parse(x.id), x.username));
         }
 
-        public string GetUsername(int id)
+        public void RemoveUser(int id)
         {
-            return users.FirstOrDefault(x => x.id == id.ToString())?.username;
+            users.Remove(id);
+        }
+
+        public void AddUser(UsersListLineViewModel user_vm)
+        {
+            if (!users.Keys.Contains(user_vm.UserId))
+            {
+                users.Add(user_vm.UserId, user_vm.Username);
+            }
         }
     }
 
@@ -448,31 +536,43 @@ namespace WpfApp1
                     }
                 case 11:
                     {
-                        return " you accepted his request";
+                        return " you accepted his request.";
                     }
                 case 100:
                     {
-                        return " you changed the guid of room";
+                        return " you changed the guid of room.";
                     }
                 case 101:
                     {
-                        return " you deleted a room";
+                        return " you deleted a room.";
                     }
                 case 102:
                     {
-                        return " you created a room";
+                        return " you created a room.";
                     }
                 case 103:
                     {
-                        return " you kicked a user from room";//What user???
+                        return " you kicked a user from room.";//What user???
                     }
                 case 104:
                     {
-                        return " you joined a room";
+                        return " you joined a room.";
                     }
                 case 105:
                     {
-                        return " you left a room";
+                        return " you left a room.";
+                    }
+                case 106:
+                    {
+                        return " you got kicked.";
+                    }
+                case 107:
+                    {
+                        return " has left your room";
+                    }
+                case 108:
+                    {
+                        return " has joined your room";
                     }
                 default:
                     {

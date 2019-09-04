@@ -272,7 +272,7 @@ namespace WebApi.Services
             if (ConvertToInts(room.usersBytes) != null)
                 registeredUsers.AddRange(ConvertToInts(room.usersBytes));
             registeredUsers.Add(room.roomAdminId);
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = room.roomId, registered_room_users = registeredUsers });
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = room.roomId, registered_room_users = registeredUsers, senderId = UserId, data = "0" });
             return true;
         }
 

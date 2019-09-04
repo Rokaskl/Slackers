@@ -4,11 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WpfApp1.Controls.UsersList"
+             xmlns:converters="clr-namespace:WpfApp1.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="80" d:DesignWidth="280">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" True="Hidden" False="Visible"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverterInverted" True="Visible" False="Hidden"/>
     </UserControl.Resources>
 
     <Grid>
@@ -19,16 +22,44 @@
                     <GradientStop Offset="0.7" Color="Transparent"></GradientStop>
                 </LinearGradientBrush>
             </Border.Background>
-            <Grid>
+            <Grid x:Name="content_grid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Ellipse Grid.Column="0" Fill="{Binding Photo, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Black" StrokeThickness="1" Margin="10" ToolTip="{Binding Bio}"/>
-                <TextBlock Grid.Column="1" Text="{Binding Username}" ToolTip="{Binding Username}" TextAlignment="Center" TextTrimming="CharacterEllipsis" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="20" Margin="5"></TextBlock>
-                <Border x:Name="Notification_popup" HorizontalAlignment="Center" Background="PaleVioletRed" VerticalAlignment="Top" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="40,13,10,0" MinWidth="20" Visibility="{Binding Path=DataContext.Visibility, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, FallbackValue=Hidden, Converter={StaticResource BoolToVisConverter}, UpdateSourceTrigger=PropertyChanged}" >
-                    <ContentPresenter Content="!" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Ellipse Grid.Column="0" Grid.Row="0" Fill="{Binding Photo, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Black" StrokeThickness="1" Margin="10" ToolTip="{Binding Bio}"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Username}" ToolTip="{Binding Username}" TextAlignment="Center" TextTrimming="CharacterEllipsis" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="20" Margin="5"></TextBlock>
+                <Border x:Name="Notification_popup" Grid.Row="0" HorizontalAlignment="Center" Background="PaleVioletRed" VerticalAlignment="Top" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="40,13,10,0" MinWidth="20" Visibility="{Binding Path=DataContext.NotificationCount, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, FallbackValue=Hidden, Converter={StaticResource NullToVisibilityConverterInverted}, UpdateSourceTrigger=PropertyChanged}" >
+                    <ContentPresenter Content="{Binding NotificationCount, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <Button Grid.Column="2" x:Name="BioPanel_btn" HorizontalAlignment="Right" VerticalAlignment="Bottom" BorderThickness="0" Height="20" Width="20" Click="BioPanel_ButtonClick" Margin="2" Visibility="{Binding Bio, FallbackValue=Hidden, Converter={StaticResource NullToVisibilityConverter}}">
+                    <Button.Background>
+                        <ImageBrush ImageSource="pack://application:,,,/WpfApp1;component/Images/plus_blue_add.png" Stretch="Fill"/>
+                    </Button.Background>
+                </Button>
+                <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="bio_panel" MaxHeight="120" Height="0" Background="Transparent" Visibility="Hidden">
+                    <Border Background="Transparent" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="auto">
+                        <TextBox MaxHeight="100" Text="{Binding Bio}" TextWrapping="Wrap" Foreground="Black" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="4" IsReadOnly="True" BorderBrush="Transparent">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type TextBox}">
+                                                <Border x:Name="border" SnapsToDevicePixels="True">
+                                                    <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </Border>
                 </Border>
             </Grid>
         </Border>

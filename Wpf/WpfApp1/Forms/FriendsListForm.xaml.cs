@@ -24,42 +24,54 @@ namespace WpfApp1.Forms
         private FriendsListViewModel fl_vm;
         private UsersListViewModel found_vm;
 
-        public FriendsListForm(FriendsListViewModel vm, List<int> notifications, List<int> friend_notif)
+        public FriendsListForm(FriendsListViewModel vm)
         {
             this.DataContext = vm;
             this.fl_vm = vm;
 
-            if (notifications.Count > 0)
-            {
-                this.fl_vm.FriendsList.Notifications = notifications[3];
-                this.fl_vm.Requests.Notifications = notifications[0];
-                this.fl_vm.RequestsOutgoing.Notifications = notifications[1];
-                //this.fl_vm.RequestsOutgoing.Notifications = notifications[];
-                //Log notifications...
-            }
+            this.fl_vm.FriendsList.Notifications = Inst.Utils.Notifications.FriendsTabN;
+            this.fl_vm.Requests.Notifications = Inst.Utils.Notifications.RequestsTabN;
+            this.fl_vm.RequestsOutgoing.Notifications = Inst.Utils.Notifications.RequestsOutgoingTabN;
 
             found_vm = new UsersListViewModel(new List<string> { "Add" });
             
             InitializeComponent();
-            LoadFriends(friend_notif);
+            Inst.Utils.Notifications.TabNotificationChanged += Notifications_TabNotificationChanged;
+            LoadFriends();
             LoadRequestsIncoming();
             LoadRequestsOutgoing();
-            this.fl_vm.LogLines = new System.Collections.ObjectModel.ObservableCollection<LogLine>();
-            LoadLog();
-            this.LogTab_ScrollViewer.ScrollChanged += LogTab_ScrollViewer_ScrollChanged;
+            
             //this.search_found_list.DataContext = found_vm;
             this.Closing += FriendsListForm_Closing;
             
             KeepUpdatingStatuses();
         }
 
-        private void LogTab_ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        private void Notifications_TabNotificationChanged(object sender, GlobalClasses.Notifications.TabNotificationsChangesEventArgs e)
         {
-            ScrollViewer scv = (sender as ScrollViewer);
-            if (scv.VerticalOffset == scv.ScrollableHeight)
+            switch (e.TabChanged)
             {
-                LoadLog();
+                case "Friends":
+                    {
+                        this.fl_vm.FriendsList.Notifications = e.NotificationCount;
+                        break;
+                    }
+                case "RequestsIncoming":
+                    {
+                        this.fl_vm.Requests.Notifications = e.NotificationCount;
+                        break;
+                    }
+                case "RequestsOutgoing":
+                    {
+                        this.fl_vm.RequestsOutgoing.Notifications = e.NotificationCount;
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
             }
+            
         }
 
         private void FriendsListForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -72,20 +84,22 @@ namespace WpfApp1.Forms
             }
         }
 
-        private async void LoadFriends(List<int> friend_notif)
+        private async void LoadFriends()
         {
             List<UsersListLineViewModel> fl = await Inst.ApiRequests.GetFriends(int.Parse(Inst.ApiRequests.User.id));
             if (fl?.Count != 0)
             {
                 fl.OrderBy(y => y.StatusColor == Brushes.Green.Color).ToList().ForEach(x =>
                     {
-                        if (friends_notif != null && friends_notif.Contains(x.UserId))
+                        if (Inst.Utils.Notifications.MessageNotifications != null && Inst.Utils.Notifications.MessageNotifications.Keys.Contains(x.UserId))
                         {
-                            x.Visibility = true;
+                           // x.Visibility = true;
+                            x.NotificationCount = Inst.Utils.Notifications.MessageNotifications[x.UserId];
                         }
                         else
                         {
-                            x.Visibility = false;//Default value;
+                            //x.Visibility = false;//Default value;
+                            x.NotificationCount = 0;
                         }
 
                         fl_vm.FriendsList.Users.Add(x);
@@ -96,8 +110,6 @@ namespace WpfApp1.Forms
             {
                 this.friendless_grid.Visibility = Visibility.Visible;
             }
-
-            //this.UpdateLayout();//Reikalingas?
         }
 
         private async void LoadRequestsIncoming()
@@ -124,17 +136,6 @@ namespace WpfApp1.Forms
             {
                 //There are no requests.
             }
-        }
-
-        private int current_log_page = 0;
-        private int log_count_per_page = 20;
-
-        private async void LoadLog()
-        {
-            List<LogLine> logs = await Inst.ApiRequests.GetLogLines(current_log_page * log_count_per_page, log_count_per_page);
-            current_log_page++;
-            logs.ForEach(async x => await Inst.Utils.PopulateLogLinesWithNames(x));
-            logs.ForEach(x => this.fl_vm.LogLines.Add(x));
         }
 
         private void SearchFriends_Click(object sender, RoutedEventArgs e)
@@ -199,7 +200,7 @@ namespace WpfApp1.Forms
                                 else
                                 {
                                     this.fl_vm.Requests.Users.Remove(user_vm);
-                                    this.fl_vm.FriendsList.Users.Add(user_vm);
+                                    this.fl_vm.FriendsList.Users.Add(Inst.Utils.Notifications.PopulateUserWithNotifications(user_vm));
                                 }
                             }
                         }
@@ -215,8 +216,12 @@ namespace WpfApp1.Forms
                                 UsersListLineViewModel user_from_friendslist = this.fl_vm.FriendsList.Users.First(x => x.UserId == user_vm.UserId);
                                 user_from_friendslist.StatusColor = Brushes.Gray.Color;
                                 this.fl_vm.FriendsList.Users.Remove(user_vm);
-                                f_chat_form_vm.RemoveChat(user_vm.UserId);
-                                this.f_chat_form.RemoveTab(user_vm.UserId);
+                                if (this.f_chat_form != null && this.f_chat_form_vm != null)
+                                {
+                                    this.f_chat_form_vm.RemoveChat(user_vm.UserId);
+                                    this.f_chat_form.RemoveTab(user_vm.UserId);
+                                }
+                                Inst.Utils.Notifications.RemoveMessageNotifications(user_from_friendslist);
                             }
                         }
                         break;
@@ -235,7 +240,7 @@ namespace WpfApp1.Forms
                         {
                             if (!this.fl_vm.FriendsList.Users.Contains(user_vm))
                             {
-                                this.fl_vm.FriendsList.Users.Add(user_vm);
+                                this.fl_vm.FriendsList.Users.Add(Inst.Utils.Notifications.PopulateUserWithNotifications(user_vm));
                                 this.fl_vm.Requests.Users.Remove(user_vm);
                             }
                         }
@@ -269,7 +274,7 @@ namespace WpfApp1.Forms
                         if (!this.fl_vm.Requests.Users.Contains(user))
                         {
                             this.fl_vm.Requests.Users.Add(user);
-                            Notify(1, user.Username + " wants to become friends.", 1);
+                            Notify(1, user.Username + " wants to become friends.", user, 0, 1);
                         }
                         break;
                     }
@@ -277,14 +282,15 @@ namespace WpfApp1.Forms
                     {
                         UsersListLineViewModel user = this.fl_vm.RequestsOutgoing.Users.First(x => x.UserId == user_id);
                         this.fl_vm.RequestsOutgoing.Users.Remove(user);
-                        Notify(1, user.Username + " has rejected your request.", null);
+                        Notify(1, user.Username + " has rejected your request.", user, 1);
                         break;
                     }
                 case 2://Remove
                     {
                         UsersListLineViewModel user = this.fl_vm.FriendsList.Users.First(x => x.UserId == user_id);
+                        Inst.Utils.Notifications.RemoveMessageNotifications(user);
                         this.fl_vm.FriendsList.Users.Remove(user);
-                        Notify(1, user.Username + " has removed you.", null);
+                        Notify(1, user.Username + " has removed you.", user, 2);
                         break;
                     }
                 case 3://Accept
@@ -294,8 +300,8 @@ namespace WpfApp1.Forms
                         user.StatusColor = (await Inst.ApiRequests.GetUser(user.UserId)).StatusColor;
                         if (!this.fl_vm.FriendsList.Users.Contains(user))
                         {
-                            this.fl_vm.FriendsList.Users.Add(user);
-                            Notify(1, user.Username + " has accepted your request.", 0);
+                            this.fl_vm.FriendsList.Users.Add(Inst.Utils.Notifications.PopulateUserWithNotifications(user));
+                            Notify(1, user.Username + " has accepted your request.", user, 3, 0);
                         }
                         break;
                     }
@@ -309,7 +315,7 @@ namespace WpfApp1.Forms
                         if (user != null)
                         {
                             user.StatusColor = Brushes.Green.Color;
-                            Notify(0, user.Username + " logged in.", null);
+                            Notify(0, user.Username + " logged in.", user, 4);
                         }
                         break;
                     }
@@ -323,7 +329,7 @@ namespace WpfApp1.Forms
                         if (user != null)
                         {
                             user.StatusColor = Brushes.Gray.Color;
-                            Notify(0, user.Username + " logged out.", null);
+                            Notify(0, user.Username + " logged out.", user, 5);
                         }
                         break;
                     }
@@ -331,15 +337,7 @@ namespace WpfApp1.Forms
                     {
                         UsersListLineViewModel user = this.fl_vm.Requests.Users.First(x => x.UserId == user_id);
                         this.fl_vm.Requests.Users.Remove(user);
-                        Notify(1, user.Username + " has canceled his request.", null);
-                        break;
-                    }
-                case 7:
-                    {
-                        LogLine log_line = await Inst.ApiRequests.GetLogLine(user_id);
-                        await Inst.Utils.PopulateLogLinesWithNames(log_line);
-                        this.fl_vm.LogLines.Insert(0, log_line);
-                        
+                        Notify(1, user.Username + " has canceled his request.", user, 6);
                         break;
                     }
                 default:
@@ -348,9 +346,6 @@ namespace WpfApp1.Forms
                     }
             }
         }
-
-        private int notifications_count = 0;
-        public List<int> friends_notif;
 
         /// <summary>
         /// Add notification number on top of tabs.
@@ -361,12 +356,12 @@ namespace WpfApp1.Forms
         /// <param name="news_number">Describes what happened</param>
         /// <param name="message">Describes what happened with a message string</param>
         /// <param name="tab_num">Which tab is related with this event</param>
-        private void Notify(int news_number, string message, int? tab_num = null)
+        private void Notify(int news_number, string message, UsersListLineViewModel user, int switch_location, int? tab_num = null)
         {
-            notifications_count += news_number;
             if (tab_num != null)
             {
-                fl_vm.Add_Notification((int)tab_num);
+                //fl_vm.Add_Notification((int)tab_num, user.UserId, switch_location);
+                Inst.Utils.Notifications.AddNotification(switch_location, user.UserId);
             }
             
             //if (!this.IsVisible)
@@ -406,42 +401,27 @@ namespace WpfApp1.Forms
             {
                 case "Friends":
                     {
-                        fl_vm.FriendsList.Notifications = 0;
-                        if (Inst.Utils.MainWindow.notifications.Count > 0)
-                        {
-                            Inst.Utils.MainWindow.notifications[3] = 0;
-                            Inst.Utils.MainWindow.notifications[2] = 0;
-                        }
+                        Inst.Utils.Notifications.FriendsTabFocused();
+                        //fl_vm.FriendsList.Notifications = Inst.Utils.Notifications.FriendsTabN;
                         break;
                     }
                 case "Requests Incoming":
                     {
-                        fl_vm.Requests.Notifications = 0;
-                        if (Inst.Utils.MainWindow.notifications.Count > 0)
-                        {
-                            Inst.Utils.MainWindow.notifications[0] = 0;
-                            Inst.Utils.MainWindow.notifications[6] = 0;
-                        }
+                        Inst.Utils.Notifications.RequestsTabFocused();
+                        //fl_vm.Requests.Notifications = Inst.Utils.Notifications.RequestsTabN;
                         break;
                     }
                 case "Requests Outgoing":
                     {
-                        fl_vm.RequestsOutgoing.Notifications = 0;
-                        if (Inst.Utils.MainWindow.notifications.Count > 0)
-                        {
-                            Inst.Utils.MainWindow.notifications[1] = 0;
-                        }
+                        Inst.Utils.Notifications.RequestsOutgoingTabFocused();
+                        //fl_vm.RequestsOutgoing.Notifications = Inst.Utils.Notifications.RequestsOutgoingTabN;
                         break;
                     }
-                case "Log":
-                    {
-                        //fl_vm.LogLines.no
-                        if (Inst.Utils.MainWindow.notifications.Count > 0)
-                        {
-                            Inst.Utils.MainWindow.notifications[7] = 0;
-                        }
-                        break;
-                    }
+                //case "Log":
+                //    {
+                //        Inst.Utils.Notifications.LogsTabFocused();
+                //        break;
+                //    }
                 default:
                     {
                         break;
@@ -474,11 +454,11 @@ namespace WpfApp1.Forms
                 f_chat_form.FocusTab(user_vm.UserId);
             }
 
-            UsersListLineViewModel user = this.fl_vm.FriendsList.Users.FirstOrDefault(x => x.UserId == user_vm.UserId);
-            if (user != null)
-            {
-                user.Visibility = false;
-            }
+            //UsersListLineViewModel user = this.fl_vm.FriendsList.Users.FirstOrDefault(x => x.UserId == user_vm.UserId);
+            //if (user != null)
+            //{
+            //    user.Visibility = false;
+            //}
         }
 
         private void F_chat_form_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -498,7 +478,9 @@ namespace WpfApp1.Forms
                 UsersListLineViewModel user_vm = this.fl_vm.FriendsList.Users.FirstOrDefault(x => x.UserId == user_id);
                 if (user_vm != null)
                 {
-                    user_vm.Visibility = true;
+                    //user_vm.Visibility = true;
+                    //user_vm.NotificationCount++;
+                    Inst.Utils.Notifications.AddMessageNotifications(user_vm);
                 }
             }
         }

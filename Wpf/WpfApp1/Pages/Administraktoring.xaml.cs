@@ -69,19 +69,15 @@ namespace WpfApp1.Pages
 
         private async void LiveChart()
         {
-            while (true)
+            while (!cancel)
             {
                 await Task.Delay(30000);
                 this.Dispatcher.Invoke(() =>
                 {
                     UpdateChart();
                 });
-
-                if (cancel)
-                {
-                    break;
-                }
             }
+
         }
 
         public void UpdateMembersListView()
@@ -395,6 +391,7 @@ namespace WpfApp1.Pages
             Inst.Utils.MainWindow.frame2.NavigationService.Navigate(new Forms.Admin());
             StopChart();
             Inst.Utils.Administraktoring = null;
+            this.IsVisibleChanged -= Administraktoring_IsVisibleChanged;
         }
         private void Copy_guid_Click(object sender,RoutedEventArgs e)
         {

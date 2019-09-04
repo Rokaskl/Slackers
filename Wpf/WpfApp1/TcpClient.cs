@@ -65,7 +65,7 @@ namespace WpfApp1
                     {
                         (Inst.Utils.RoomPage as RoomPage)?.Dispatcher.Invoke(() =>
                         {
-                            (Inst.Utils.RoomPage as RoomPage)?.UpdateUsersListView();
+                            (Inst.Utils.RoomPage as RoomPage)?.UpdateUsersListView(e.data[1], int.Parse(e.data[2]));
                         });
                         break;
                     }
@@ -85,7 +85,7 @@ namespace WpfApp1
                             //useris jau buna logoutintas is roomo...
                             (Inst.Utils.RoomPage as RoomPage)?.Dispatcher.Invoke(() =>
                             {
-                                (Inst.Utils.RoomPage as RoomPage).Close();
+                                (Inst.Utils.RoomPage as RoomPage).CloseRoom();
                             });
                         }
                         
@@ -172,7 +172,7 @@ namespace WpfApp1
                             //string data = BitConverter.ToString(buffer, 8, Available - 8);
                             string data = Encoding.UTF8.GetString(buffer, 8, Available - 8);
 
-                            args.data.Add(Inst.Utils.Room?.GetUsername(user_id));//Reikia gauti user nickname is user id.
+                            args.data.Add(await Inst.Utils.GetUsername(user_id));//Reikia gauti user nickname is user id.
                             args.data.Add(data);
                             args.data.Add(user_id.ToString());
                         }

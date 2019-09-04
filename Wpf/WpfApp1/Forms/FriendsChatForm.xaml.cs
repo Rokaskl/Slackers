@@ -58,6 +58,12 @@ namespace WpfApp1.Forms
             this.Tabs.Add(new_tab);
             this.chat_tab_ctrl.Items.Add(new_tab);
             this.chat_tab_ctrl.SelectedItem = new_tab;
+            new_tab.Loaded += New_tab_Loaded;
+        }
+
+        private void New_tab_Loaded(object sender, RoutedEventArgs e)
+        {
+            ((sender as TabItem).GetChildOfType<WpfApp1.Controls.UsersList.UsersListLineControl>() as WpfApp1.Controls.UsersList.UsersListLineControl).BioPanel_btn.Visibility = Visibility.Hidden;
         }
 
         public void RemoveTab(int id)
@@ -68,7 +74,7 @@ namespace WpfApp1.Forms
             {
                 return;
             }
-
+            tab_to_remove.Loaded -= New_tab_Loaded;
             this.chat_tab_ctrl.Items.Remove(tab_to_remove);
             this.Tabs.Remove(tab_to_remove);
 

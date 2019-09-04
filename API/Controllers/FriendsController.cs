@@ -66,7 +66,7 @@ namespace WebApi.Controllers
         {
             _friendshipRequestService.Create(sender, receiver);
             App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver}, data = "0"});
-            _notificationService.LeaveNotification(receiver, 0);
+            _notificationService.LeaveNotificationStraightToDb(receiver, 0);
             _logService.Create(receiver, sender, 0);
             _logService.Create(sender, receiver, 7);
             return Ok();
@@ -85,7 +85,7 @@ namespace WebApi.Controllers
             if(_friendshipRequestService.Delete(sender, receiver))
             {
                 App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver }, data = "1" });
-                _notificationService.LeaveNotification(receiver, 1);
+                _notificationService.LeaveNotificationStraightToDb(receiver, 1);
                 _logService.Create(receiver, sender, 1);
                 _logService.Create(sender, receiver, 8);
                 return Ok();
@@ -110,7 +110,7 @@ namespace WebApi.Controllers
             if (_friendshipRequestService.Delete(sender, receiver))
             {
                 App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver }, data = "6" });
-                _notificationService.LeaveNotification(receiver, 6);
+                _notificationService.LeaveNotificationStraightToDb(receiver, 6);
                 _logService.Create(receiver, sender, 6);
                 _logService.Create(sender, receiver, 9);
                 return Ok();
@@ -135,7 +135,7 @@ namespace WebApi.Controllers
             if(_friendshipService.Delete(sender, receiver))
             {
                 App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver }, data = "2" });
-                _notificationService.LeaveNotification(receiver, 2);
+                _notificationService.LeaveNotificationStraightToDb(receiver, 2);
                 _logService.Create(receiver, sender, 2);
                 _logService.Create(sender, receiver, 10);
                 return Ok();
@@ -159,7 +159,7 @@ namespace WebApi.Controllers
             _friendshipRequestService.Delete(sender, receiver);
             _friendshipService.Create(sender, receiver);
             App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = sender, change = 6, receivers = new List<int>() { receiver }, data = "3" });
-            _notificationService.LeaveNotification(receiver, 3);
+            _notificationService.LeaveNotificationStraightToDb(receiver, 3);
             _logService.Create(receiver, sender, 3);
             _logService.Create(sender, receiver, 11);
             return Ok();

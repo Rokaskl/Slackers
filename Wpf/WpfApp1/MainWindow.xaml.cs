@@ -9,6 +9,7 @@ using WpfApp1.ViewModels;
 using System.Windows.Media;
 using System;
 using System.Linq;
+using WpfApp1.GlobalClasses;
 
 namespace WpfApp1
 {
@@ -21,7 +22,6 @@ namespace WpfApp1
     {
         //private HttpClient client;
         private KeyValuePair<string, int> ip_port;
-        private NotifyingButtonViewModel btn_Friends_vm;
 
         public MainWindow()
         {
@@ -31,11 +31,6 @@ namespace WpfApp1
             
             this.MinHeight = 400;
             this.MinWidth = 800;
-
-            this.btn_Friends_vm = new NotifyingButtonViewModel();
-
-            this.btn_Friends.DataContext = this.btn_Friends_vm;
-            (this.btn_Friends.Content as System.Windows.Controls.Grid).GetChildOfType<System.Windows.Controls.Button>().Click += FriendsList_Button_Click;
 
             Inst.CreateInstance(ip_port);
             Inst.Utils.MainWindow = this;
@@ -49,12 +44,27 @@ namespace WpfApp1
             }
             this.Closing += Window_Closing;
             Inst.Utils.CreateTcpServer();
+
+            Inst.Utils.Notifications = new Notifications();
+
+            SetupButtons();
+
             //this.Closed += MainWindow_Closed;//prisisubscribinama po to, kai logino forma jau nebe gali isjungti mainformos
             frame2.NavigationService.Navigate(new Admin());
             frame1.NavigationService.Navigate(new UserPage());   
             roomPage.NavigationService.Navigate(new RoomPage());
-            SetupNotifications();
-        }        
+        }
+
+        private void SetupButtons()
+        {
+            //Friends button
+            (this.btn_Friends.Content as System.Windows.Controls.Grid).GetChildOfType<System.Windows.Controls.Button>().Content = "Friends";
+            (this.btn_Friends.Content as System.Windows.Controls.Grid).GetChildOfType<System.Windows.Controls.Button>().Click += FriendsList_Button_Click;
+
+            //Logs button
+            (this.btn_Logs.Content as System.Windows.Controls.Grid).GetChildOfType<System.Windows.Controls.Button>().Content = "Logs";
+            (this.btn_Logs.Content as System.Windows.Controls.Grid).GetChildOfType<System.Windows.Controls.Button>().Click += Logs_Button_Click;
+        }
 
         //private void MainWindow_Closed(object sender, EventArgs e)
         //{
@@ -116,6 +126,10 @@ namespace WpfApp1
                     {
                         this.Fl_form.Close();
                     }
+                    if (this.Logs_form != null)
+                    {
+                        this.Logs_form.Close();
+                    }
                     SaveNotificationsToServer();
                 }
                 else
@@ -139,43 +153,32 @@ namespace WpfApp1
         }
 
         public FriendsListForm Fl_form;
-        private int Notification_count = 0;
-        public List<int> notifications = new List<int>();
-        public List<int> friends_notif;
-        
-        private async void SetupNotifications()
-        {
-            notifications = await Inst.ApiRequests.GetNotifications();
-            if (notifications.Count >= 8)
-            {
-                Notification_count = notifications.Sum();
-                this.btn_Friends_vm.Notifications = Notification_count;
-            }
-            if (notifications.Count > 8)
-            {
-                friends_notif = notifications.Skip(8).ToList();
-            }
-        }
+        public LogsForm Logs_form;
 
-        private async void SaveNotificationsToServer()
+        private void SaveNotificationsToServer()
         {
-            await Inst.ApiRequests.SaveNotificationsToServer(notifications);
+            Inst.Utils.Notifications.SaveNotifications();
         }
 
         public void HandleSignal_for_Fl_form(int command, int user_id)
         {
-            if (this.Fl_form != null)
+            if (command == 7)
             {
-                this.Fl_form.HandleTcpSignal(command, user_id);
+                NewLogLine(user_id);
             }
             else
             {
-                if (command < 7)
+                if (this.Fl_form != null)
                 {
-                    System.Media.SystemSounds.Exclamation.Play();
-                    Notification_count++;
-                    notifications[command]++;
-                    this.btn_Friends_vm.Notifications = Notification_count;
+                    this.Fl_form.HandleTcpSignal(command, user_id);
+                }
+                else
+                {
+                    if (command < 7)
+                    {
+                        System.Media.SystemSounds.Exclamation.Play();
+                        Inst.Utils.Notifications.AddNotification(command, user_id);
+                    }
                 }
             }
         }
@@ -189,9 +192,7 @@ namespace WpfApp1
             else
             {
                 System.Media.SystemSounds.Exclamation.Play();
-                Notification_count++;
-                notifications.Add(user_id);
-                this.btn_Friends_vm.Notifications = Notification_count;
+                Inst.Utils.Notifications.AddNotificationFriendsMessage(user_id);
             }
         }
 
@@ -203,7 +204,7 @@ namespace WpfApp1
                 ImageBrush img = new ImageBrush();
                 img.ImageSource = Inst.PhotoBytes_to_Image(Inst.ApiRequests.AdditionalData.PhotoBytes);
                 FriendsListViewModel fl_vm = new FriendsListViewModel(img, Inst.ApiRequests.User.username, int.Parse(Inst.ApiRequests.User.id), Inst.ApiRequests.AdditionalData.Biography);
-                FriendsListForm fl_form = new FriendsListForm(fl_vm, notifications, this.friends_notif);
+                FriendsListForm fl_form = new FriendsListForm(fl_vm);
                 this.Fl_form = fl_form;
                 fl_form.Show();
             }
@@ -211,7 +212,37 @@ namespace WpfApp1
             {
                 this.Fl_form.Focus();
             }
-            this.btn_Friends_vm.Notifications = 0;
+        }
+
+        private async void NewLogLine(int user_id)
+        {
+            if (this.Logs_form != null)
+            {
+                LogLine log_line = await Inst.ApiRequests.GetLogLine(user_id);
+                await Inst.Utils.PopulateLogLinesWithNames(log_line);
+                this.Logs_form.LogLines.Insert(0, log_line);
+            }
+            else
+            {
+                Inst.Utils.Notifications.LogsBtnN++;
+
+            }
+            
+        }
+
+        private void Logs_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Inst.Utils.Notifications.LogsBtnN = 0;
+            if (this.Logs_form != null)
+            {
+                this.Logs_form.Focus();
+            }
+            else
+            {
+                this.Logs_form = new LogsForm();
+                this.Logs_form.Show();
+            }
+
         }
     }
 }

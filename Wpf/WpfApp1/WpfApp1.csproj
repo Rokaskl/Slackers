@@ -106,9 +106,14 @@
     <Compile Include="Controls\NotifyingButton\NotifyingButtonControl.xaml.cs">
       <DependentUpon>NotifyingButtonControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Forms\FriendsChatForm.xaml.cs">
       <DependentUpon>FriendsChatForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\LogsForm.xaml.cs">
+      <DependentUpon>LogsForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalClasses\Notifications.cs" />
     <Compile Include="Helpers\EnableChangeHandle.cs" />
     <Compile Include="ViewModels\FriendsChatFormViewModel.cs" />
     <Compile Include="ViewModels\NotifyingButtonViewModel.cs" />
@@ -188,6 +193,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Forms\FriendsChatForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\LogsForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -327,6 +336,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\bluebackground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\plus_blue_add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\minus_blue_remove.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

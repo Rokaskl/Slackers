@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using WebApi.Controllers;
 using WebApi.Dtos;
@@ -24,7 +27,29 @@ namespace WebApi
         //{
 
         //}
-        
+
+        public static byte[] ObjectToByteArray(Object obj)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, obj);
+                return ms.ToArray();
+            }
+        }
+
+        public static Object ByteArrayToObject(byte[] arrBytes)
+        {
+            using (var memStream = new MemoryStream())
+            {
+                var binForm = new BinaryFormatter();
+                memStream.Write(arrBytes, 0, arrBytes.Length);
+                memStream.Seek(0, SeekOrigin.Begin);
+                var obj = binForm.Deserialize(memStream);
+                return obj;
+            }
+        }
+
     }
 
     public class UserInfo
@@ -86,8 +111,8 @@ namespace WebApi
         public TcpServer Server;
         public Dictionary<DateTime, int> User_TimeOut_List;
         public List<int> OnlineStatusUsers;
+        //public NotificationControl NotificationsControl;
 
-        
         public Inst()
         {
             RoomChanged += Inst_RoomChanged;
@@ -100,6 +125,7 @@ namespace WebApi
             //users = new Dictionary<int, Tuple<int, int>>();
             users = new List<UserInfo>();
             Server = new TcpServer();
+            //NotificationsControl = new NotificationControl();
             //loggedin = new List<int>();
         }
 

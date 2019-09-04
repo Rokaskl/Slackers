@@ -27,7 +27,20 @@ namespace WpfApp1.ViewModels
             set { status_color = value;  OnPropertyRaised("StatusColor"); }
         }
         public int UserId { get; set; }
-        public string Bio { get; set; }
+
+        private string bio;
+        public string Bio
+        {
+            get
+            {
+                return bio;
+            }
+            set
+            {
+                bio = value;
+                OnPropertyRaised("Bio");
+            }
+        }
 
         private bool visible;
         public bool Visibility
@@ -40,6 +53,20 @@ namespace WpfApp1.ViewModels
             {
                 visible = value;
                 OnPropertyRaised("Visible");
+            }
+        }
+
+        private int n_count;
+        public int NotificationCount
+        {
+            get
+            {
+                return n_count;
+            }
+            set
+            {
+                n_count = value;
+                OnPropertyRaised("NotificationCount");
             }
         }
 

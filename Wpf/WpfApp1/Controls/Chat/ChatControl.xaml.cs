@@ -56,13 +56,13 @@ namespace WpfApp1.Controls.Chat
         //To delete notifications
         private void ChatControl_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (this.chat_vm != null && this.chat_vm.Notifications > 0 && this.ScrollViewer != null && this.ScrollViewer.VerticalOffset == this.ScrollViewer.ScrollableHeight)
+            if (this.chat_vm != null && this.chat_vm.End_user_vm?.NotificationCount > 0 && this.ScrollViewer != null && this.ScrollViewer.VerticalOffset == this.ScrollViewer.ScrollableHeight)
             {
-                this.chat_vm.Notifications = 0;
+                Inst.Utils.Notifications.RemoveMessageNotifications(this.chat_vm.End_user_vm);
             }
         }
 
-        private void ChatControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void ChatControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (this.ChatViewModel == null)
             {
@@ -71,6 +71,15 @@ namespace WpfApp1.Controls.Chat
                 if (!chat_filled)
                 {
                     FillChat();
+                }
+            }
+
+            while (!chat_flag && this.ScrollViewer?.ScrollableHeight == 0)
+            {
+                await LoadPage();
+                if (this.ScrollViewer.ScrollableHeight > 0)
+                {
+                    chat_flag = true;
                 }
             }
         }
@@ -172,33 +181,45 @@ namespace WpfApp1.Controls.Chat
 
         public async Task AppendChatLine(string text, string username, DateTime CreateDate, BitmapImage pImage = null, int pCreatorId = -1, bool Insert = false)
         {
-            if (ChatViewModel.ChatLines.Count > 0)
+            try
             {
-                ChatLineViewModel chatline_vm;
-                if (Insert)
+                if (ChatViewModel.ChatLines.Count > 0)
                 {
-                    chatline_vm = ChatViewModel.ChatLines.First();
-                }
-                else
-                {
-                    chatline_vm = ChatViewModel.ChatLines.Last();
-                }
-
-                DateTime last_chatline_createtime = DateTime.Parse(chatline_vm.CreateDate);
-                DateTime added_chatline_createtime = CreateDate;
-                if (chatline_vm.CreatorId == pCreatorId && last_chatline_createtime.Date == added_chatline_createtime.Date && last_chatline_createtime.Hour == added_chatline_createtime.Hour && last_chatline_createtime.Minute == added_chatline_createtime.Minute)
-                {
-                    ChatViewModel.ChatLines.Remove(chatline_vm);
-
+                    ChatLineViewModel chatline_vm;
                     if (Insert)
                     {
-                        ChatViewModel.ChatLines.Insert(0, chatline_vm);
-                        chatline_vm.Text = text + Environment.NewLine + chatline_vm.Text;
+                        chatline_vm = ChatViewModel.ChatLines.First();
                     }
                     else
                     {
-                        chatline_vm.Text += Environment.NewLine + text;
-                        ChatViewModel.ChatLines.Add(chatline_vm);
+                        chatline_vm = ChatViewModel.ChatLines.Last();
+                    }
+
+                    DateTime last_chatline_createtime = DateTime.Parse(chatline_vm.CreateDate);
+                    DateTime added_chatline_createtime = CreateDate;
+                    if (chatline_vm.CreatorId == pCreatorId && last_chatline_createtime.Date == added_chatline_createtime.Date && last_chatline_createtime.Hour == added_chatline_createtime.Hour && last_chatline_createtime.Minute == added_chatline_createtime.Minute)
+                    {
+                        ChatViewModel.ChatLines.Remove(chatline_vm);
+
+                        if (Insert)
+                        {
+                            ChatViewModel.ChatLines.Insert(0, chatline_vm);
+                            chatline_vm.Text = text + Environment.NewLine + chatline_vm.Text;
+                        }
+                        else
+                        {
+                            chatline_vm.Text += Environment.NewLine + text;
+                            ChatViewModel.ChatLines.Add(chatline_vm);
+                        }
+                    }
+                    else
+                    {
+                        await AddChatLine();
+                    }
+
+                    if ((!Insert && DateTime.Parse(chatline_vm.CreateDate) > CreateDate)/* || (Insert && DateTime.Parse(chatline_vm.CreateDate) < CreateDate)*/)
+                    {
+                        ReorderChatLines();
                     }
                 }
                 else
@@ -206,72 +227,59 @@ namespace WpfApp1.Controls.Chat
                     await AddChatLine();
                 }
 
-                if ((!Insert && DateTime.Parse(chatline_vm.CreateDate) > CreateDate) || (Insert && DateTime.Parse(chatline_vm.CreateDate) < CreateDate))
+                async Task AddChatLine()
                 {
-                    ReorderChatLines();
-                }
-            }
-            else
-            {
-                await AddChatLine();
-            }
+                    ChatLine line = new ChatLine() { Id = null, CreateDate = CreateDate, Username = username, CreatorId = pCreatorId, RoomId = GetContextId(), Text = text };
+                    if (pImage == null)
+                    {
+                        if (this.chat_vm != null && pCreatorId == ChatViewModel.Id)
+                        {
+                            line.Profile_image = (this.chat_vm.End_user_vm.Photo as ImageBrush)?.ImageSource as BitmapImage;
+                        }
+                        if (line.Profile_image == null)
+                        {
+                            line.Profile_image = await Inst.Utils.FindImageOf(pCreatorId);
+                        }
+                    }
+                    else
+                    {
+                        line.Profile_image = pImage;
+                    }
 
-            async Task AddChatLine()
-            {
-                ChatLine line = new ChatLine() { Id = null, CreateDate = CreateDate, Username = username, CreatorId = pCreatorId, RoomId = GetContextId(), Text = text };
-                if (pImage == null)
+                    if (Insert)
+                    {
+                        ChatViewModel.ChatLines.Insert(0, new ChatLineViewModel(line));
+                    }
+                    else
+                    {
+                        ChatViewModel.Add(new ChatLineViewModel(line));
+                    }
+                }
+
+                if (this.ScrollViewer != null)
                 {
-                    if (this.chat_vm != null && pCreatorId == ChatViewModel.Id)
-                    {
-                        line.Profile_image = (this.chat_vm.End_user_vm.Photo as ImageBrush).ImageSource as BitmapImage;
-                    }
-                    if (line.Profile_image == null)
-                    {
-                        line.Profile_image = await Inst.Utils.FindImageOf(pCreatorId);
-                    }
+                    HandleChatControlView(pCreatorId == int.Parse(Inst.ApiRequests.User.id), was_inserted: Insert);
                 }
                 else
                 {
-                    line.Profile_image = pImage;
-                }
-
-                if (Insert)
-                {
-                    ChatViewModel.ChatLines.Insert(0, new ChatLineViewModel(line));
-                }
-                else
-                {
-                    ChatViewModel.Add(new ChatLineViewModel(line));
+                    GetScrollViewer();
                 }
             }
+            catch( Exception ex)
+            {
 
-            if (this.ScrollViewer != null)
-            {
-                HandleChatControlView(pCreatorId == int.Parse(Inst.ApiRequests.User.id), was_inserted: Insert);
-            }
-            else
-            {
-                GetScrollViewer();
             }
         }
 
-        private void GetScrollViewer()
+        private async void GetScrollViewer()
         {
-            this.ScrollViewer = this.GetChildOfType<ScrollViewer>();
-            if (this.ScrollViewer != null)
+            //this.ScrollViewer = this.GetChildOfType<ScrollViewer>();
+            
+            if (this.ScrollViewer == null)
             {
+                this.ScrollViewer = this.ChatScrollViewer;
                 this.ScrollViewer.ScrollToEnd();
                 this.ScrollViewer.ScrollChanged += RoomPage_ScrollChangedAsync;
-
-            }
-
-            if (!chat_flag && this.ScrollViewer.ScrollableHeight == 0)
-            {
-                LoadPage();
-                if (this.ScrollViewer.ScrollableHeight > 0)
-                {
-                    chat_flag = true;
-                }
             }
         }
 
@@ -285,8 +293,15 @@ namespace WpfApp1.Controls.Chat
                 if (!creator_is_local && !was_inserted)
                 {
                     System.Media.SystemSounds.Beep.Play();
-                    this.chat_vm.Notifications++;
+                    Inst.Utils.Notifications.AddMessageNotifications(this.chat_vm.End_user_vm);
                     //Kazkokias vizualias priemones padaryti? Kontroliu mirgsejima..?
+                }
+                else
+                {
+                    if (creator_is_local && !was_inserted)
+                    {
+                        this.ScrollViewer.ScrollToEnd();
+                    }
                 }
             }
             else
@@ -297,22 +312,27 @@ namespace WpfApp1.Controls.Chat
 
         private async void RoomPage_ScrollChangedAsync(object sender, ScrollChangedEventArgs e)
         {
-            if (e.VerticalOffset == 0)
+            if (e.OriginalSource.Equals(this.ScrollViewer))
             {
-                if (e.ExtentHeightChange > 0)
+
+
+                if (e.VerticalOffset == 0)
                 {
-                    this.ScrollViewer.ScrollToVerticalOffset(e.ExtentHeightChange + e.ExtentHeightChange > 0 ? e.ViewportHeight + e.ExtentHeightChange - e.ViewportHeight : 0);
+                    if (e.ExtentHeightChange > 0)
+                    {
+                        this.ScrollViewer.ScrollToVerticalOffset(e.ExtentHeightChange + e.ExtentHeightChange > 0 ? e.ViewportHeight + e.ExtentHeightChange - e.ViewportHeight : 0);
+                    }
+                    else
+                    {
+                        await LoadPage();
+                    }
                 }
                 else
                 {
-                    await LoadPage();
-                }
-            }
-            else
-            {
-                if (this.chat_vm.Notifications > 0 && e.VerticalOffset == this.ScrollViewer.ScrollableHeight)
-                {
-                    this.chat_vm.Notifications = 0;
+                    if (this.chat_vm.End_user_vm?.NotificationCount > 0 && e.VerticalOffset == this.ScrollViewer.ScrollableHeight)
+                    {
+                        Inst.Utils.Notifications.RemoveMessageNotifications(this.chat_vm.End_user_vm);
+                    }
                 }
             }
         }

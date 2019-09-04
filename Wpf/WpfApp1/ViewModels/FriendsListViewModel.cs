@@ -16,19 +16,6 @@ namespace WpfApp1.ViewModels
         public UsersListViewModel FriendsList { get; set; }
         public UsersListViewModel Requests { get; set; }
         public UsersListViewModel RequestsOutgoing { get; set; }
-        private ObservableCollection<LogLine> log_lines;
-        public ObservableCollection<LogLine> LogLines
-        {
-            get
-            {
-                return log_lines;
-            }
-            set
-            {
-                log_lines = value;
-                OnPropertyRaised("LogLines");
-            }
-        }
         public OwnerStatus Status { get; set; }
         //public ObservableCollection<UsersListLineViewModel> Friends { get; set; }
 
@@ -39,38 +26,43 @@ namespace WpfApp1.ViewModels
 
         public FriendsListViewModel(object Image, string Username, int UserId, string Bio)
         {
-            this.Owner = new UsersListLineViewModel(Image, null, null, Username, Brushes.Green, UserId, Bio);
-            this.FriendsList = new UsersListViewModel(new List<string> { "Send message", "Remove"});
+            this.Owner = new UsersListLineViewModel(Image, null, null, Username, Brushes.Green, UserId, null);//Bio is set to null deliberately so button would be invisible on the UsersListLineControl in FriendsListFrom(Owner view model).
+            this.FriendsList = new UsersListViewModel(new List<string> { "Send message", "Call", "Remove"});
             this.Requests = new UsersListViewModel(new List<string> { "Accept", "Reject" });
             this.RequestsOutgoing = new UsersListViewModel(new List<string> { "Cancel" });
-            this.LogLines = new ObservableCollection<LogLine>();
         }
 
-        public void Add_Notification(int tab_num)
-        {
-            switch (tab_num)
-            {
-                case 0:
-                    {
-                        FriendsList.Notifications++;
-                        break;
-                    }
-                case 1:
-                    {
-                        Requests.Notifications++;
-                        break;
-                    }
-                case 2:
-                    {
-                        RequestsOutgoing.Notifications++;
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
-        }
+        //public void Add_Notification(int tab_num, int user_id, int action)
+        //{
+        //    switch (tab_num)
+        //    {
+        //        case 0:
+        //            {
+        //                FriendsList.Notifications++;
+        //                Inst.Utils.Notifications.FriendsTabN++;
+        //                Inst.Utils.Notifications.FriendsBtnN++;
+        //                break;
+        //            }
+        //        case 1:
+        //            {
+        //                Requests.Notifications++;
+        //                Inst.Utils.Notifications.RequestsTabN++;
+        //                Inst.Utils.Notifications.FriendsBtnN++;
+        //                break;
+        //            }
+        //        case 2:
+        //            {
+        //                RequestsOutgoing.Notifications++;
+        //                Inst.Utils.Notifications.RequestsOutgoingTabN++;
+        //                Inst.Utils.Notifications.FriendsBtnN++;
+        //                break;
+        //            }
+        //        default:
+        //            {
+        //                break;
+        //            }
+        //    }
+        //}
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyRaised(string propertyname)

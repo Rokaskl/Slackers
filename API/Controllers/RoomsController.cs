@@ -118,6 +118,7 @@ namespace WebApi.Controllers
                 //registeredUsers.Add(room.roomAdminId);
                 App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 4, roomId = roomId, registered_room_users = usersToKick});
                 _logService.Create(admin, userToKick, 103, _roomService.GetRoom(roomId).roomName);//What user was kicked???
+                _logService.Create(userToKick, admin, 106, _roomService.GetRoom(roomId).roomName);
                 return Ok();
             }
             catch (Exception ex)
@@ -146,6 +147,7 @@ namespace WebApi.Controllers
                 registeredUsers.Add(room.roomAdminId);
                 App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 3, roomId = roomId, registered_room_users = registeredUsers });
                 _logService.Create(user, roomId, 105, room.roomName);
+                _logService.Create(room.roomAdminId, user, 107, room.roomName);
                 return Ok();
             }
             catch (Exception ex)
@@ -176,6 +178,7 @@ namespace WebApi.Controllers
                 registeredUsers.Add(room.roomAdminId);
                 App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 3, roomId = temp.roomId, registered_room_users = registeredUsers });
                 _logService.Create(id, room.roomId, 104, room.roomName);
+                _logService.Create(room.roomAdminId, id, 108, room.roomName);
                 return Ok();
             }
             catch(AppException ex)
@@ -192,8 +195,11 @@ namespace WebApi.Controllers
             {
                 int requesterId = Convert.ToInt32(Request.HttpContext.User.Identity.Name);
                 RoomDto room = _roomService.GetRoom(id);
-                _roomService.Delete(id,requesterId);//tik roomo adminas gali ištrinti roomą
-                _logService.Create(requesterId, id, 101, room.roomName);
+                if (room != null)
+                {
+                    _roomService.Delete(id, requesterId);//tik roomo adminas gali ištrinti roomą
+                    _logService.Create(requesterId, id, 101, room.roomName);
+                }
             }
             catch (Exception ex)
             {
@@ -250,7 +256,7 @@ namespace WebApi.Controllers
                 registeredUsers.AddRange(room.users);
             }
             registeredUsers.Add(room.roomAdminId);
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId, registered_room_users = registeredUsers });
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId, registered_room_users = registeredUsers, senderId = UserId, data = "1" });// data = 1, user logged in.
             return Ok();
         }
 
@@ -283,7 +289,7 @@ namespace WebApi.Controllers
             if (room.users != null)
                 registeredUsers.AddRange(room.users);
             registeredUsers.Add(room.roomAdminId);
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId, registered_room_users = registeredUsers });
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = RoomId, registered_room_users = registeredUsers, senderId = UserId, data = "0" });//data = 0, user logged out.
             return Ok();
         }
 
@@ -352,7 +358,7 @@ namespace WebApi.Controllers
             if (roomDto.users != null)
                 registeredUsers.AddRange(roomDto.users);
             registeredUsers.Add(roomDto.roomAdminId);
-            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = roomId, registered_room_users = registeredUsers });
+            App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 2, roomId = roomId, registered_room_users = registeredUsers, senderId = UserId, data = new Func<string, string>((s) => { switch (s) { case "A": { return "2"; } case "B": { return "3"; } case "C": { return "4"; } default: { return "4"; } } })(status)  });
             return Ok();
         }
 
@@ -376,6 +382,12 @@ namespace WebApi.Controllers
         public IActionResult GetUsername(int roomId)
         {
             return Ok(_roomService.GetRoom(roomId).roomName);
+        }
+
+        [Route("online_members/{roomId:int}")]
+        public IActionResult GetOnlineUsersOfRoom(int roomId)
+        {
+            return Ok(App.Inst.tempRooms.FirstOrDefault(x => x.roomId == roomId)?.usersById.Select(y => y.Key));
         }
     }
 }

@@ -107,8 +107,8 @@ namespace WpfApp1.Pages
             this.ChatControl.room_id = this.room.roomId;
             this.ChatControl.items_per_page = this.items_per_page;
             this.ChatControl.ChatViewModel = chatbox;
-            this.ChatControl.FillChat();
             this.ChatControl.SetRoom_bool(true);
+            this.ChatControl.FillChat();
         }
 
         private void SetupChatBox()
@@ -307,17 +307,17 @@ namespace WpfApp1.Pages
                 {
                     case "Active":
                         {
-                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'A')/*client.GetAsync($"/Rooms/status/{this.room.roomId}/A")*/, "Active");
+                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'A')/*client.GetAsync($"/Rooms/status/{this.room.roomId}/A")*/, "Active", Brushes.Green.Color);
                             break;
                         }
                     case "Away":
                         {
-                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'B')/*await client.GetAsync($"/Rooms/status/{this.room.roomId}/B")*/, "Away");
+                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'B')/*await client.GetAsync($"/Rooms/status/{this.room.roomId}/B")*/, "Away", Brushes.Yellow.Color);
                             break;
                         }
                     case "Don't disturb":
                         {
-                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'C')/*await client.GetAsync($"/Rooms/status/{this.room.roomId}/C")*/, "Don't disturb");
+                            DisplaySelectedStatus(await Inst.ApiRequests.UpdateStatus(this.room.roomId,'C')/*await client.GetAsync($"/Rooms/status/{this.room.roomId}/C")*/, "Don't disturb", Brushes.Red.Color);
                             break;
                         }
                     default:
@@ -325,11 +325,12 @@ namespace WpfApp1.Pages
                             break;
                         }
                 }
-                void DisplaySelectedStatus(/*HttpResponseMessage*/bool response, string item)
+                void DisplaySelectedStatus(/*HttpResponseMessage*/bool response, string item, Color color)
                 {
                     if (response/*.IsSuccessStatusCode*/)
                     {
                         this.cmbStatus.SelectedItem = item;
+                        this.usersbox.Users.FirstOrDefault(x => x.UserId == int.Parse(Inst.ApiRequests.User.id)).StatusColor = color;
                         //foreach(var x in this.MembersListView.Items)
                         //{
                         //    if (x.GetType().GetProperty("username").GetValue(x).ToString() == Inst.ApiRequests.User.username)
@@ -446,15 +447,19 @@ namespace WpfApp1.Pages
         //        }
         //    }
         //}
+
+        private bool stop_updating;
+
         private async Task DisplayMembersR()
         {
-            while (true)
+            while (!stop_updating)
             {
                 await Task.Delay(10000);
 
                 await this.Dispatcher.Invoke(async () =>
                 {
-                    await ListUsers();
+                    //await ListUsers();
+                    await CheckUsers();
                 });
                 //ListUsersStack();
                 
@@ -568,7 +573,7 @@ namespace WpfApp1.Pages
                 //var response = await client.GetAsync($"/Rooms/logout_group/{room.roomId}");
                 if (/*response.IsSuccessStatusCode*/await Inst.ApiRequests.LogoutGroup(this.room.roomId))
                 {
-                    Close();
+                    CloseRoom();
                 }
                 else
                 {
@@ -583,13 +588,15 @@ namespace WpfApp1.Pages
             
         }
 
-        public void Close()
+        public void CloseRoom()
         {
             if (this.timer.IsRunning)
             {
                 StopTimer();
             }
+            this.stop_updating = true;
             Inst.Utils.MainWindow.room.Visibility = Visibility.Hidden;
+            
             Inst.Utils.MainWindow.frame1.Refresh();
             Inst.Utils.MainWindow.frame2.Refresh();
             if (prevWindow == "admin")
@@ -601,6 +608,7 @@ namespace WpfApp1.Pages
                 Inst.Utils.MainWindow.tabs.SelectedIndex = 1;
             //Inst.Utils.MainWindow.frame1.NavigationService.Navigate(new UserPage());
             Inst.Utils.RoomPage = null;
+            Inst.Utils.IsLoginEnabled = true;
         }
 
         public void UpdateNoteListView()
@@ -608,10 +616,69 @@ namespace WpfApp1.Pages
             FillNotes();
         }
 
-        public void UpdateUsersListView()
+        public async void UpdateUsersListView(string command, int senderId)
         {
-            this.Dispatcher.Invoke(ListUsers);
-            Inst.Utils.Room.SetUsersList();//Galima butu naudoti is ListUsers metodo gauta info.
+            if (senderId != int.Parse(Inst.ApiRequests.User.id))
+            {
+                switch (command)
+                {
+                    case "0":
+                        {
+                            //User Logged out from the room;
+                            this.usersbox.Users.Remove(this.usersbox.Users.FirstOrDefault(x => x.UserId == senderId));
+                            Inst.Utils.Room.RemoveUser(senderId);
+                            break;
+                        }
+                    case "1":
+                        {
+                            //User logged into the room;
+                            UsersListLineViewModel loggedin_user_vm = await Inst.ApiRequests.GetUser(senderId);
+                            if (!this.usersbox.Users.Contains(loggedin_user_vm))
+                            {
+                                this.usersbox.Users.Add(loggedin_user_vm);
+                                Inst.Utils.Room.AddUser(loggedin_user_vm);
+                                Inst.Utils.AddUser(loggedin_user_vm);
+                            }
+                            break;
+                        }
+                    case "2":
+                        {
+                            //User status became A.
+                            UsersListLineViewModel user = this.usersbox.Users.FirstOrDefault(x => x.UserId == senderId);
+                            if (user != null)
+                            {
+                                user.StatusColor = Brushes.Green.Color;
+                            }
+                            break;
+                        }
+                    case "3":
+                        {
+                            //User status became B.
+                            UsersListLineViewModel user = this.usersbox.Users.FirstOrDefault(x => x.UserId == senderId);
+                            if (user != null)
+                            {
+                                user.StatusColor = Brushes.Yellow.Color;
+                            }
+                            break;
+                        }
+                    case "4":
+                        {
+                            //User status became C.
+                            UsersListLineViewModel user = this.usersbox.Users.FirstOrDefault(x => x.UserId == senderId);
+                            if (user != null)
+                            {
+                                user.StatusColor = Brushes.Red.Color;
+                            }
+                            break;
+                        }
+                    default:
+                        {
+                            this.Dispatcher.Invoke(ListUsers);
+                            break;
+                        }
+                }
+            }
+
             //FillMembers();
         }
 
@@ -1119,6 +1186,25 @@ namespace WpfApp1.Pages
         //{
 
         //}
+
+        public async Task<bool> CheckUsers()
+        {
+            List<int> currently_online_users = await Inst.ApiRequests.GetOnlineUsersInRoom(this.room.roomId);
+            if (currently_online_users != null && currently_online_users.Count > 0)
+            {
+                List<UsersListLineViewModel> users_to_kick = this.usersbox.Users.Where(x => !currently_online_users.Contains(x.UserId)).ToList();
+                if (users_to_kick.Count > 0)
+                {
+                    users_to_kick.ForEach(x => this.usersbox.Users.Remove(x));
+                }
+            }
+            else
+            {
+                return false;
+            }
+            
+            return true;
+        }
 
         public async Task<bool> ListUsers()//Neefektyviai atnaujinamas listas. Reiketu po viena prideti/ismesti, kaip daroma kitur.
         {

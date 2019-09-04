@@ -41,7 +41,10 @@ namespace WpfApp1.Controls.UsersList
 
         private void UsersListLineControl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Inst.Utils.MainWindow.Fl_form.HandleUserControlsChange("Send message", this.last_clicked_user);
+            if (e.ClickCount == 2 && ((this.Parent as Grid)?.Parent as Grid)?.Parent as WpfApp1.Pages.RoomPage == null && (this.Parent as TabItem)?.Header?.ToString() == "Friends")
+            {
+                Inst.Utils.MainWindow.Fl_form.HandleUserControlsChange("Send message", this.last_clicked_user);
+            }
         }
 
         private void UsersListLineControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

@@ -54,41 +54,41 @@ namespace WpfApp1.ViewModels
             }
         }
 
-        private int notifications = 0;
-        public int Notifications
-        {
-            get { return notifications; }
-            set
-            {
-                notifications = value;
-                OnPropertyRaised("Notifications");
-                if (value == 0 && visibility)
-                {
-                    Visibility = false;
-                }
-                else
-                {
-                    if (value > 0 && !visibility)
-                    {
-                        Visibility = true;
-                    }
-                }
-            }
-        }
+        //private int notifications = 0;
+        //public int Notifications
+        //{
+        //    get { return notifications; }
+        //    set
+        //    {
+        //        notifications = value;
+        //        OnPropertyRaised("Notifications");
+        //        if (value == 0 && visibility)
+        //        {
+        //            Visibility = false;
+        //        }
+        //        else
+        //        {
+        //            if (value > 0 && !visibility)
+        //            {
+        //                Visibility = true;
+        //            }
+        //        }
+        //    }
+        //}
 
-        private bool visibility = false;
-        public bool Visibility
-        {
-            get
-            {
-                return visibility;
-            }
-            set
-            {
-                visibility = value;
-                OnPropertyRaised("Visibility");
-            }
-        }
+        //private bool visibility = false;
+        //public bool Visibility
+        //{
+        //    get
+        //    {
+        //        return visibility;
+        //    }
+        //    set
+        //    {
+        //        visibility = value;
+        //        OnPropertyRaised("Visibility");
+        //    }
+        //}
 
         //public bool Constantly_changing_property { get; set; }
 

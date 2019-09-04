@@ -21,12 +21,14 @@ namespace WebApi.Controllers
         private IChatLineService _chatLineService;
         private IUserService _userService;
         private IRoomService _roomService;
+        private INotificationService _notificationService;
 
-        public ChatLineController(IChatLineService chatLineService, IUserService userService, IRoomService roomService)
+        public ChatLineController(IChatLineService chatLineService, IUserService userService, IRoomService roomService, INotificationService notificationService)
         {
             _chatLineService = chatLineService;
             _userService = userService;
             _roomService = roomService;
+            _notificationService = notificationService;
         }
 
         [Route("create/{roomId:int}/room")]
@@ -83,6 +85,7 @@ namespace WebApi.Controllers
             //registeredUsers.Remove(requesterId);//Isimamas eilutes kurejas, jam atnaujinama lokaliai.
             //App.Inst.RaiseRoomchangedEvent(this, new ChangeEventArgs() { change = 1, roomId = roomId, registered_room_users = registeredUsers, data = text, senderId = requesterId });
             App.Inst.RaiseFriendschangedEvent(this, new FriendsChangeEventArgs() { senderId = requesterId, change = 7, receivers = new List<int>() { userId}, data = text });
+            _notificationService.LeaveNotificationStraightToDb(userId, -requesterId);
             return Ok();
         }
 

@@ -9,6 +9,10 @@ namespace WebApi.Entities
     {
         public int Id { get; set; }
         public int User_Id { get; set; }
+        public int RequestsInc_c { get; set; }
+        public int RequestsOut_c { get; set; }
+        public int Logs_c { get; set; }
+        public int TotalLogs_c { get; set; }
         public byte[] Notifications_Array { get; set; }
     }
 }

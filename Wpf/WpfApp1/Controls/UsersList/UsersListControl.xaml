@@ -22,7 +22,7 @@
         <ItemsControl ItemsSource="{Binding Users}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <local:UsersListLineControl MouseDown="UsersListLineControl_MouseDown" MouseDoubleClick="UsersListLineControl_MouseDoubleClick">
+                    <local:UsersListLineControl MouseDown="UsersListLineControl_MouseDown" MouseLeftButtonDown="UsersListLineControl_MouseDoubleClick">
                         <local:UsersListLineControl.Style>
                             <Style TargetType="local:UsersListLineControl">
                                 <Setter Property="ContextMenu" Value="{StaticResource cm_items}"/>

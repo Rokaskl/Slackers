@@ -4,16 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WpfApp1.Controls.NotifyingButton"
+             xmlns:converters="clr-namespace:WpfApp1.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="80" d:DesignWidth="150" Width="auto" Height="auto"
-             DataContext="{Binding}">
+             d:DesignHeight="80" d:DesignWidth="150" Width="auto" Height="auto">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" True="Visible" False="Hidden"/>
     </UserControl.Resources>
     <Grid>
-        <Button Content="Friends"/>
-        <Border x:Name="Notification_border" HorizontalAlignment="Right" VerticalAlignment="Top" MinWidth="20" Height="22" Background="PaleVioletRed" Margin="0, -5, 0, 0" CornerRadius="10" Visibility="{Binding Path=Visibility, FallbackValue=Hidden, Converter={StaticResource BoolToVisConverter}}">
-            <Label Content="{Binding Notifications}" Foreground="Black" Width="auto" HorizontalAlignment="Center" FontSize="10" VerticalAlignment="Center" Margin="0"/>
+        <Button/>
+        <Border x:Name="Notification_border" HorizontalAlignment="Right" VerticalAlignment="Top" MinWidth="20" Height="22" Background="PaleVioletRed" Margin="0, -5, 0, 0" CornerRadius="10" Visibility="{Binding FallbackValue=Hidden, Converter={StaticResource NullToVisibilityConverter}}">
+            <Label Content="{Binding}" Foreground="Black" Width="auto" HorizontalAlignment="Center" FontSize="10" VerticalAlignment="Center" Margin="0"/>
         </Border>
     </Grid>
 </UserControl>

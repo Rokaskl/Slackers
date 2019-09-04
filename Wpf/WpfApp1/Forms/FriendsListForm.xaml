@@ -33,7 +33,7 @@
                                     <Grid>
                                         <Border Background="Transparent" Margin="2,2,-8,0" BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="10">
                                             <Grid>
-                                                <ContentPresenter x:Name="ContentSite" ContentSource="Header" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,2,6,2" RecognizesAccessKey="True"/>
+                                                <ContentPresenter x:Name="ContentSite" ContentSource="Header" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="7,2,9,2" RecognizesAccessKey="True"/>
                                             </Grid>
                                         </Border>
                                         <Rectangle Height="50" Width="10" Margin="0,0,-10,0" Stroke="Black" VerticalAlignment="Bottom" HorizontalAlignment="Right" StrokeThickness="0" Fill="#FFD4D0C8"/>
@@ -79,11 +79,6 @@
                         <local1:UsersListControl x:Name="search_found_list" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Background="Transparent">
                         </local1:UsersListControl>
                     </Grid>
-                </TabItem>
-                <TabItem Header="Log" Width="36.5" DataContext="{Binding LogLines}" GotFocus="TabItem_GotFocus">
-                    <ScrollViewer x:Name="LogTab_ScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <ItemsControl ItemsSource="{Binding}"/>
-                    </ScrollViewer>
                 </TabItem>
             </TabControl>
             <Grid x:Name="friendless_grid" Margin="20" Visibility="Hidden">
