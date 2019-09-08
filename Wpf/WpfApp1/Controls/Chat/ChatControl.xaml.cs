@@ -344,7 +344,7 @@ namespace WpfApp1.Controls.Chat
             }
             finished_loading_chat_page = false;
             List<ChatLine> data = await Inst.ApiRequests.GetChat(GetContextId(), current_page + 1, this.items_per_page, this.room);
-            if (data != null)
+            if (data != null && data.Count > 0)
             {
                 //data.ForEach(async x =>
                 //        {
